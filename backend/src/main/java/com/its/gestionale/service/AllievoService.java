@@ -25,15 +25,18 @@ public class AllievoService {
         this.corsoRepository = corsoRepository;
     }
 
-    // Restituisce tutti gli allievi come DTO
+    // Restituisce tutti gli allievi convertiti in DTO.
+    // Complessita' temporale: O(n), dove n = numero di record letti dal DB.
+    // Complessita' spaziale: O(n), per la nuova lista di DTO creata in output.
+    // Costo nascosto: findAll() carica tutto in memoria; su tabelle grandi e' meglio paginare.
     public List<AllievoDTO> findAll() {
         return allievoRepository.findAll()
                 .stream()
-                // ↑ stream() = modo funzionale di iterare una lista
+                // stream() crea una pipeline di trasformazione (iterazione interna).
                 .map(AllievoDTO::fromEntity)
-                // ↑ converte ogni Allievo in AllievoDTO
+                // map applica fromEntity a ogni elemento: Allievo -> AllievoDTO.
                 .collect(Collectors.toList());
-                // ↑ raccoglie i risultati in una nuova lista
+                // collect materializza il risultato in una nuova List<AllievoDTO>.
     }
 
     // Restituisce gli allievi di un corso specifico
