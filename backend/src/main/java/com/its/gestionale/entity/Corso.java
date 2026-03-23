@@ -16,7 +16,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity                          // ← Dice a JPA "questa classe è una tabella"
-@Table(name = "corsi")          // ← Nome della tabella nel DB (buona pratica: plurale)
+@Table(name = "corso")
 @Data                            // ← Lombok: genera automaticamente getter, setter, toString, equals
 @NoArgsConstructor               // ← Lombok: genera costruttore senza parametri (richiesto da JPA)
 @AllArgsConstructor              // ← Lombok: genera costruttore con tutti i parametri
