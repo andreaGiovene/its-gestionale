@@ -16,8 +16,8 @@ Applicazione Spring Boot per la gestione dei corsi e degli allievi di una scuola
 |-----------|----------|------------|
 | **Java** | 21 | Linguaggio di programmazione |
 | **Spring Boot** | 3.5.11 | Framework principale |
-| **Spring Data JPA** | Latest | Persistenza dati e ORM |
-| **Spring Security** | Latest | Autenticazione e autorizzazione |
+| **Spring Data JPA** | Latest | Persistenza dati e ORM (Hibernate) |
+| **Spring Security** | Latest | Autenticazione, autorizzazione e RBAC |
 | **Spring Web** | Latest | REST API e controller |
 | **PostgreSQL** | 16 | Database relazionale |
 | **Lombok** | Latest | Generazione automatica di getters/setters |
@@ -52,18 +52,23 @@ backend/
 │   │   │   ├── GestionaleApplication.java        # Classe main
 │   │   │   ├── controller/                       # REST API
 │   │   │   │   ├── AllievoController.java
-│   │   │   │   └── CorsoController.java
+│   │   │   │   ├── CorsoController.java
+│   │   │   │   └── UtenteController.java
 │   │   │   ├── dto/                              # Data Transfer Objects
-│   │   │   │   └── AllievoDTO.java
+│   │   │   │   ├── AllievoDTO.java
+│   │   │   │   └── UtenteDTO.java
 │   │   │   ├── entity/                           # Entità JPA
 │   │   │   │   ├── Allievo.java
-│   │   │   │   └── Corso.java
+│   │   │   │   ├── Corso.java
+│   │   │   │   └── Utente.java (con RuoloUtente enum)
 │   │   │   ├── repository/                       # Data Access Layer
 │   │   │   │   ├── AllievoRepository.java
-│   │   │   │   └── CorsoRepository.java
+│   │   │   │   ├── CorsoRepository.java
+│   │   │   │   └── UtenteRepository.java
 │   │   │   └── service/                          # Business Logic
 │   │   │       ├── AllievoService.java
-│   │   │       └── CorsoService.java
+│   │   │       ├── CorsoService.java
+│   │   │       └── UtenteService.java
 │   │   └── resources/
 │   │       ├── application.properties            # Configurazione
 │   │       └── static/                           # Risorse statiche
@@ -207,11 +212,34 @@ curl http://localhost:8080/api/corsi
 | GET | `/api/allievi/{id}` | Ottieni allievo per ID |
 | POST | `/api/allievi` | Crea un nuovo allievo |
 | PUT | `/api/allievi/{id}` | Aggiorna un allievo |
-| DELETE | `/api/allievi/{id}` | Elimina un allievo |
+| DELETE | `/api/allievi/{id}` | Elimina un allievo || GET | `/api/allievi?corsoId={id}` | Ottieni allievi di un corso |
 
-## 🔐 Sicurezza
+### Utenti API
+
+| Metodo | Endpoint | Descrizione |
+|--------|----------|-------------||
+| GET | `/api/utenti` | Ottieni tutti gli utenti |
+| GET | `/api/utenti/username/{username}` | Cerca utente per username |
+| POST | `/api/utenti` | Crea un nuovo utente |
+| PUT | `/api/utenti/{id}` | Aggiorna un utente |
+| DELETE | `/api/utenti/{id}` | Disattiva un utente (soft delete) |
+## 🔐 Sicurezza e RBAC
 
 **⚠️ IMPORTANTE**: Spring Security è attualmente **disabilitata** per i test di sviluppo.
+
+### Ruoli Implementati (RBAC - Role-Based Access Control)
+
+L'applicazione supporta tre ruoli di accesso basati su permessi:
+
+| Ruolo | Permessi | Uso |
+|-------|----------|-----|
+| **VISUALIZZATORE** | Lettura (`SELECT`) | Didattica, Supervisori |
+| **JOB_PLACEMENT** | Lettura + Modifica (`SELECT`, `INSERT`, `UPDATE`) | Team job placement |
+| **AMMINISTRATORE** | Lettura + Modifica + Cancellazione (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) | Admin sistema |
+
+### Password Security
+
+**ATTENZIONE**: Le password sono attualmente memorizzate in **plain text** — solo per sviluppo!
 
 ### Prima della Produzione
 
@@ -222,12 +250,55 @@ curl http://localhost:8080/api/corsi
    ```
 
 2. Implementare:
+   - Hashing password con **bcrypt** o **Argon2** 
    - Configurazione di autenticazione e autorizzazione
    - JWT o OAuth 2.0 per gestire i token
    - HTTPS/TLS per le comunicazioni
    - CORS policies appropriate
+   - Validazione delle autorizzazioni con `@PreAuthorize` e `@Secured`
 
-## 🛠️ Sviluppo
+### Esempio di Uso RBAC (Futuro)
+
+```java
+@PreAuthorize("hasRole('AMMINISTRATORE') or hasRole('JOB_PLACEMENT')")
+@PutMapping("/api/allievi/{id}")
+public ResponseEntity<AllievoDTO> update(@PathVariable Long id, @RequestBody AllievoDTO dto) {
+    // Solo AMMINISTRATORE e JOB_PLACEMENT possono modificare
+    return ResponseEntity.ok(allievoService.update(id, dto));
+}
+```
+
+## � Gestione Utenti
+
+### Creazione Utente di Test
+
+Esempio di richiesta POST per creare un utente:
+
+```bash
+curl -X POST http://localhost:8080/api/utenti \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "password123",
+    "email": "admin@example.com",
+    "ruolo": "AMMINISTRATORE",
+    "nome": "Admin",
+    "cognome": "System",
+    "attivo": true
+  }'
+```
+
+### Soft Delete Utenti
+
+Il DELETE logico (_soft delete_) marca l'utente come inattivo senza eliminarlo dal database:
+
+```bash
+curl -X DELETE http://localhost:8080/api/utenti/1
+```
+
+L'utente rimane nei record per scopi di audit trail.
+
+## �🛠️ Sviluppo
 
 ### Compilare il Progetto
 
