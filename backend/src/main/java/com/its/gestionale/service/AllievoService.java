@@ -25,7 +25,10 @@ public class AllievoService {
         this.corsoRepository = corsoRepository;
     }
 
-    // Restituisce tutti gli allievi come DTO
+    // Restituisce tutti gli allievi convertiti in DTO.
+    // Complessita' temporale: O(n), dove n = numero di record letti dal DB.
+    // Complessita' spaziale: O(n), per la nuova lista di DTO creata in output.
+    // Costo nascosto: findAll() carica tutto in memoria; su tabelle grandi e' meglio paginare.
     public List<AllievoDTO> findAll() {
         List<Allievo> allievi = allievoRepository.findAll();
         List<AllievoDTO> dtos = new ArrayList<>();
