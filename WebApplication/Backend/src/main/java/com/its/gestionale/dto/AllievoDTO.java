@@ -15,8 +15,6 @@ public class AllievoDTO {
     private String codiceFiscale;
     private String email;
     private String telefono;
-    private java.time.LocalDate dataDiNascita;
-    private String note;
 
     // Invece dell'oggetto Corso intero, solo le info utili
     private Long corsoId;
@@ -32,8 +30,6 @@ public class AllievoDTO {
         dto.setCodiceFiscale(allievo.getCodiceFiscale());
         dto.setEmail(allievo.getEmail());
         dto.setTelefono(allievo.getTelefono());
-        dto.setDataDiNascita(allievo.getDataDiNascita());
-        dto.setNote(allievo.getNote());
 
         // Estrae solo id e nome dal Corso collegato
         // (se esiste — un allievo potrebbe non avere corso)
