@@ -38,6 +38,12 @@ public class Allievo {
 
     private String telefono;
 
+    @Column(name = "data_di_nascita")
+    private java.time.LocalDate dataDiNascita;
+
+    @Column(columnDefinition = "TEXT")
+    private String note;
+
     // ─────────────────────────────────────────
     // RELAZIONE: Allievo → Corso (ManyToOne)
     // ─────────────────────────────────────────

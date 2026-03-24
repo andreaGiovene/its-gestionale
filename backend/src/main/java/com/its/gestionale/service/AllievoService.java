@@ -57,6 +57,8 @@ public class AllievoService {
         allievo.setCodiceFiscale(dto.getCodiceFiscale());
         allievo.setEmail(dto.getEmail());
         allievo.setTelefono(dto.getTelefono());
+        allievo.setDataDiNascita(dto.getDataDiNascita());
+        allievo.setNote(dto.getNote());
 
         if (dto.getCorsoId() != null) {
             Corso corso = corsoRepository.findById(dto.getCorsoId())
