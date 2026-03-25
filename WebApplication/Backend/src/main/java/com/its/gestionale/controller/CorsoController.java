@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,11 +22,6 @@ import com.its.gestionale.service.CorsoService;
 
 @RequestMapping("/api/corsi")
 // ↑ Tutte le API di questa classe iniziano con /api/corsi
-
-@CrossOrigin(origins = "*")
-// ↑ Permette ad Angular (su porta 4200) di chiamare
-//   queste API (su porta 8080) — senza questo, il browser
-//   blocca le richieste per sicurezza (CORS policy)
 public class CorsoController {
 
     private final CorsoService corsoService;
