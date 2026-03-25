@@ -45,38 +45,56 @@ Applicazione Spring Boot per la gestione dei corsi e degli allievi di una scuola
 ### Struttura del Progetto
 
 ```
-backend/
-├── src/
-│   ├── main/
-│   │   ├── java/com/its/gestionale/
-│   │   │   ├── GestionaleApplication.java        # Classe main
-│   │   │   ├── controller/                       # REST API
-│   │   │   │   ├── AllievoController.java
-│   │   │   │   ├── CorsoController.java
-│   │   │   │   └── UtenteController.java
-│   │   │   ├── dto/                              # Data Transfer Objects
-│   │   │   │   ├── AllievoDTO.java
-│   │   │   │   └── UtenteDTO.java
-│   │   │   ├── entity/                           # Entità JPA
-│   │   │   │   ├── Allievo.java
-│   │   │   │   ├── Corso.java
-│   │   │   │   └── Utente.java (con RuoloUtente enum)
-│   │   │   ├── repository/                       # Data Access Layer
-│   │   │   │   ├── AllievoRepository.java
-│   │   │   │   ├── CorsoRepository.java
-│   │   │   │   └── UtenteRepository.java
-│   │   │   └── service/                          # Business Logic
-│   │   │       ├── AllievoService.java
-│   │   │       ├── CorsoService.java
-│   │   │       └── UtenteService.java
-│   │   └── resources/
-│   │       ├── application.properties            # Configurazione
-│   │       └── static/                           # Risorse statiche
-│   └── test/
-│       └── java/com/its/gestionale/
-│           └── GestionaleApplicationTests.java
-├── pom.xml                                       # Configurazione Maven
-└── mvnw / mvnw.cmd                              # Maven Wrapper
+WebApplication/
+├── Backend/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/its/gestionale/
+│   │   │   │   ├── GestionaleApplication.java        # Classe main
+│   │   │   │   ├── controller/                       # REST API
+│   │   │   │   │   ├── AllievoController.java
+│   │   │   │   │   ├── CorsoController.java
+│   │   │   │   │   └── UtenteController.java
+│   │   │   │   ├── dto/                              # Data Transfer Objects
+│   │   │   │   │   ├── AllievoDTO.java
+│   │   │   │   │   └── UtenteDTO.java
+│   │   │   │   ├── entity/                           # Entità JPA
+│   │   │   │   │   ├── Allievo.java
+│   │   │   │   │   ├── Corso.java
+│   │   │   │   │   └── Utente.java (con RuoloUtente enum)
+│   │   │   │   ├── repository/                       # Data Access Layer
+│   │   │   │   │   ├── AllievoRepository.java
+│   │   │   │   │   ├── CorsoRepository.java
+│   │   │   │   │   └── UtenteRepository.java
+│   │   │   │   └── service/                          # Business Logic
+│   │   │   │       ├── AllievoService.java
+│   │   │   │       ├── CorsoService.java
+│   │   │   │       └── UtenteService.java
+│   │   │   └── resources/
+│   │   │       ├── application.properties            # Configurazione
+│   │   │       └── static/                           # Risorse statiche
+│   │   └── test/
+│   │       └── java/com/its/gestionale/
+│   │           └── GestionaleApplicationTests.java
+│   ├── pom.xml                                       # Configurazione Maven
+│   └── mvnw / mvnw.cmd                               # Maven Wrapper
+└── Frontend/
+   └── gestionale-frontend/                          # Angular workspace
+      ├── angular.json
+      ├── package.json
+      ├── public/
+      │   └── favicon.ico
+      └── src/
+         ├── app/
+         │   ├── app.config.ts
+         │   ├── app.routes.ts
+         │   ├── app.ts
+         │   ├── app.html
+         │   ├── app.scss
+         │   └── app.spec.ts
+         ├── index.html
+         ├── main.ts
+         └── styles.scss
 ```
 
 ### Pattern Architetturale
