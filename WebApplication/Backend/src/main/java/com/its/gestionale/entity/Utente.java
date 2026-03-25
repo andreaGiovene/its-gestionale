@@ -55,12 +55,18 @@ public class Utente {
     // ─────────────────────────────────────────────────────────────
     // ENUM: Definisce i ruoli disponibili nel sistema
     // ─────────────────────────────────────────────────────────────
-    // VISUALIZZATORE: accesso in sola lettura (es. didattica)
-    // JOB_PLACEMENT: accesso in lettura e modifica (job placement)
-    // AMMINISTRATORE: accesso totale — CRUD su tutte le tabelle
+    // AMMINISTRATORE: accesso completo al sistema
+    // DIDATTICA: gestione corsi, allievi e documenti
+    // JOB_PLACEMENT: gestione colloqui, stage e aziende
+    // TUTOR: monitoraggio tirocini e comunicazioni
+    // DIREZIONE: accesso in sola lettura a dashboard/report
+    // VISUALIZZATORE: ruolo legacy mantenuto per retrocompatibilita
     public enum RuoloUtente {
-        VISUALIZZATORE,    // Solo lettura
-        JOB_PLACEMENT,     // Lettura + Modifica
-        AMMINISTRATORE     // CRUD completo
+        AMMINISTRATORE,    // Accesso completo
+        DIDATTICA,         // Corsi, allievi, documenti
+        JOB_PLACEMENT,     // Colloqui, tirocini, aziende
+        TUTOR,             // Monitoraggi e tirocini
+        DIREZIONE,         // Dashboard e report (read-only)
+        VISUALIZZATORE     // Legacy read-only
     }
 }

@@ -271,13 +271,15 @@ curl http://localhost:8080/api/corsi
 
 ### Ruoli Implementati (RBAC - Role-Based Access Control)
 
-L'applicazione supporta tre ruoli di accesso basati su permessi:
+L'applicazione supporta i seguenti ruoli di accesso basati su permessi:
 
-| Ruolo | Permessi | Uso |
-|-------|----------|-----|
-| **VISUALIZZATORE** | Lettura (`SELECT`) | Didattica, Supervisori |
-| **JOB_PLACEMENT** | Lettura + Modifica (`SELECT`, `INSERT`, `UPDATE`) | Team job placement |
-| **AMMINISTRATORE** | Lettura + Modifica + Cancellazione (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) | Admin sistema |
+| Ruolo | Descrizione | Accessi principali |
+|-------|-------------|--------------------|
+| **AMMINISTRATORE** | Utente con accesso completo al sistema | Tutte le funzioni + configurazione |
+| **DIDATTICA** | Gestione dei corsi e degli allievi | Corsi, Allievi, Documenti |
+| **JOB_PLACEMENT** | Gestione dei colloqui e degli stage | Colloqui, Tirocini, Aziende, Documenti |
+| **TUTOR** | Monitoraggio dei tirocini | Monitoraggi, Tirocini (lettura/scrittura), Email |
+| **DIREZIONE** | Visibilità KPI e dashboard | Dashboard, Report (sola lettura) |
 
 ### Password Security
 
