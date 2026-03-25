@@ -22,6 +22,9 @@ Applicazione Spring Boot per la gestione dei corsi e degli allievi di una scuola
 | **PostgreSQL** | 16 | Database relazionale |
 | **Lombok** | Latest | Generazione automatica di getters/setters |
 | **Maven** | Latest | Build tool e gestione dipendenze |
+| **Angular** | 19 | Frontend framework |
+| **TypeScript** | Latest | Linguaggio per il frontend |
+| **Node.js / npm** | LTS | Runtime e package manager frontend |
 
 ### Configurazione Ambiente
 
@@ -91,7 +94,14 @@ WebApplication/
          │   ├── app.ts
          │   ├── app.html
          │   ├── app.scss
-         │   └── app.spec.ts
+         │   ├── app.spec.ts
+         │   └── shared/
+         │       └── components/
+         │           └── layout/
+         │               ├── layout.ts
+         │               ├── layout.html
+         │               ├── layout.scss
+         │               └── layout.spec.ts
          ├── index.html
          ├── main.ts
          └── styles.scss
@@ -157,6 +167,7 @@ docker-compose down
 
 - **Java 21** o superiore
 - **Maven 3.6+** (o usare Maven Wrapper incluso)
+- **Node.js LTS** e **npm**
 - **Docker e Docker Compose** (per il database)
 - **Git**
 
@@ -164,7 +175,7 @@ docker-compose down
 
 ```bash
 git clone <repository-url>
-cd its-gestionale
+cd stage-its-interno
 ```
 
 ### Step 2: Avviare il Database
@@ -181,29 +192,42 @@ docker-compose ps
 ### Step 3: Compilare il Progetto
 
 ```bash
-cd backend
+cd WebApplication/Backend
 ./mvnw clean install
 ```
 
 Oppure su Windows:
 ```bash
+cd WebApplication\\Backend
 mvnw.cmd clean install
 ```
 
 ### Step 4: Avviare l'Applicazione
 
 ```bash
+cd WebApplication/Backend
 ./mvnw spring-boot:run
 ```
 
 Oppure su Windows:
 ```bash
+cd WebApplication\\Backend
 mvnw.cmd spring-boot:run
 ```
 
 L'applicazione sarà disponibile a: `http://localhost:8080`
 
-### Step 5: Verificare il Funzionamento
+### Step 5: Avviare il Frontend Angular
+
+```bash
+cd WebApplication/Frontend/gestionale-frontend
+npm install
+npm start
+```
+
+Il frontend sarà disponibile a: `http://localhost:4200`
+
+### Step 6: Verificare il Funzionamento Backend
 
 ```bash
 curl http://localhost:8080/api/corsi
@@ -321,32 +345,35 @@ L'utente rimane nei record per scopi di audit trail.
 ### Compilare il Progetto
 
 ```bash
+cd WebApplication/Backend
 ./mvnw clean compile
 ```
 
 ### Eseguire i Test
 
 ```bash
+cd WebApplication/Backend
 ./mvnw test
 ```
 
 ### Generare Package JAR
 
 ```bash
+cd WebApplication/Backend
 ./mvnw package
 ```
 
-Il file JAR sarà disponibile in `backend/target/gestionale-0.0.1-SNAPSHOT.jar`
+Il file JAR sarà disponibile in `WebApplication/Backend/target/gestionale-0.0.1-SNAPSHOT.jar`
 
 ### Eseguire il JAR
 
 ```bash
-java -jar backend/target/gestionale-0.0.1-SNAPSHOT.jar
+java -jar WebApplication/Backend/target/gestionale-0.0.1-SNAPSHOT.jar
 ```
 
 ## 📝 Configurazione
 
-Il file di configurazione principale è `backend/src/main/resources/application.properties`:
+Il file di configurazione principale è `WebApplication/Backend/src/main/resources/application.properties`:
 
 ```properties
 # Nome dell'applicazione
@@ -378,12 +405,14 @@ server.port=8080
 ### Test Unitari
 
 ```bash
+cd WebApplication/Backend
 ./mvnw test
 ```
 
 ### Test di Integrazione
 
 ```bash
+cd WebApplication/Backend
 ./mvnw verify
 ```
 
