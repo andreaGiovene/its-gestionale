@@ -69,12 +69,16 @@ WebApplication/
 │   │   │   │   │   ├── AllievoRepository.java
 │   │   │   │   │   ├── CorsoRepository.java
 │   │   │   │   │   └── UtenteRepository.java
-│   │   │   │   └── service/                          # Business Logic
-│   │   │   │       ├── AllievoService.java
-│   │   │   │       ├── CorsoService.java
-│   │   │   │       └── UtenteService.java
+│   │   │   ├── config/                           # Configurazioni applicative
+│   │   │   │   └── CorsConfig.java               # CORS globale per /api/**
+│   │   │   └── service/                          # Business Logic
+│   │   │       ├── AllievoService.java
+│   │   │       ├── CorsoService.java
+│   │   │       └── UtenteService.java
 │   │   │   └── resources/
-│   │   │       ├── application.properties            # Configurazione
+│   │   │       ├── application.properties            # Config comune + profilo default
+│   │   │       ├── application-dev.properties        # Config sviluppo
+│   │   │       ├── application-prod.properties       # Config produzione
 │   │   │       └── static/                           # Risorse statiche
 │   │   └── test/
 │   │       └── java/com/its/gestionale/
@@ -267,7 +271,7 @@ curl http://localhost:8080/api/corsi
 | DELETE | `/api/utenti/{id}` | Disattiva un utente (soft delete) |
 ## 🔐 Sicurezza e RBAC
 
-**⚠️ IMPORTANTE**: Spring Security è attualmente **disabilitata** per i test di sviluppo.
+**⚠️ IMPORTANTE**: Spring Security è attualmente **disabilitata** nel profilo di sviluppo (`application-dev.properties`).
 
 ### Ruoli Implementati (RBAC - Role-Based Access Control)
 
@@ -287,7 +291,7 @@ L'applicazione supporta i seguenti ruoli di accesso basati su permessi:
 
 ### Prima della Produzione
 
-1. Riabilitare Spring Security nel `application.properties`:
+1. Riabilitare Spring Security nel profilo `application-dev.properties` quando necessario:
    ```properties
    # Rimuovere questa riga:
    # spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
@@ -298,8 +302,26 @@ L'applicazione supporta i seguenti ruoli di accesso basati su permessi:
    - Configurazione di autenticazione e autorizzazione
    - JWT o OAuth 2.0 per gestire i token
    - HTTPS/TLS per le comunicazioni
-   - CORS policies appropriate
+    - CORS policies specifiche per ambiente
    - Validazione delle autorizzazioni con `@PreAuthorize` e `@Secured`
+
+### CORS e Profili Ambiente
+
+La configurazione CORS e gestita in modo **globale** tramite `CorsConfig.java` (non con annotazioni `@CrossOrigin` nei singoli controller).
+
+- Mapping CORS: `/api/**`
+- Metodi consentiti: `GET, POST, PUT, DELETE, OPTIONS`
+- Header consentiti: `Authorization, Content-Type, Accept, Origin, X-Requested-With`
+- Credenziali: abilitate (`app.cors.allow-credentials=true`)
+
+Origini consentite per profilo:
+
+- **dev** (`application-dev.properties`):
+   - `http://localhost:4200`
+   - `http://127.0.0.1:4200`
+- **prod** (`application-prod.properties`):
+   - lette da variabile `APP_CORS_ALLOWED_ORIGINS`
+   - fallback di esempio: `https://app.example.com`
 
 ### Esempio di Uso RBAC (Futuro)
 
@@ -375,24 +397,57 @@ java -jar WebApplication/Backend/target/gestionale-0.0.1-SNAPSHOT.jar
 
 ## 📝 Configurazione
 
-Il file di configurazione principale è `WebApplication/Backend/src/main/resources/application.properties`:
+I file di configurazione principali sono:
+
+- `WebApplication/Backend/src/main/resources/application.properties` (config comune)
+- `WebApplication/Backend/src/main/resources/application-dev.properties` (sviluppo)
+- `WebApplication/Backend/src/main/resources/application-prod.properties` (produzione)
+
+`application.properties`:
 
 ```properties
 # Nome dell'applicazione
 spring.application.name=gestionale
 
-# Database Configuration
+# Profilo di default
+spring.profiles.default=dev
+
+# CORS comune
+app.cors.allowed-methods=GET,POST,PUT,DELETE,OPTIONS
+app.cors.allowed-headers=Authorization,Content-Type,Accept,Origin,X-Requested-With
+app.cors.allow-credentials=true
+app.cors.max-age=3600
+
+# Server
+server.port=8080
+```
+
+`application-dev.properties`:
+
+```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/db_its_stage
 spring.datasource.username=admin
 spring.datasource.password=admin
 
-# JPA/Hibernate
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
 
-# Server
-server.port=8080
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+app.cors.allowed-origins=http://localhost:4200,http://127.0.0.1:4200
+```
+
+`application-prod.properties`:
+
+```properties
+spring.datasource.url=${SPRING_DATASOURCE_URL}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=false
+
+app.cors.allowed-origins=${APP_CORS_ALLOWED_ORIGINS}
 ```
 
 ### Variabili Ambiente Supportate
@@ -401,6 +456,8 @@ server.port=8080
 - `SPRING_DATASOURCE_USERNAME`: Username database
 - `SPRING_DATASOURCE_PASSWORD`: Password database
 - `SERVER_PORT`: Porta del server
+- `SPRING_PROFILES_ACTIVE`: Profilo attivo (`dev` o `prod`)
+- `APP_CORS_ALLOWED_ORIGINS`: Origini consentite CORS in produzione
 
 ## 🧪 Testing
 
