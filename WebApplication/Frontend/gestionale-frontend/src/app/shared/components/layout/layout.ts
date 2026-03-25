@@ -17,8 +17,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatListModule,
     MatIconModule,
   ],
-  templateUrl: './layout.component.html',
-  styleUrl: './layout.component.scss'
+  templateUrl: './layout.html',
+  styleUrl: './layout.scss'
 })
 export class LayoutComponent {
 
