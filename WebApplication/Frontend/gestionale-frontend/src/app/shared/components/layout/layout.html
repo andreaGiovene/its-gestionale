@@ -1,1 +1,41 @@
-<p>layout works!</p>
+<mat-sidenav-container class="sidenav-container">
+
+  <!-- ─── SIDEBAR ─────────────────────────────── -->
+  <mat-sidenav mode="side" opened class="sidenav">
+
+    <!-- Logo / titolo app -->
+    <div class="sidenav-header">
+      <mat-icon>school</mat-icon>
+      <span>ITS Gestionale</span>
+    </div>
+
+    <!-- Voci di menu -->
+    <mat-nav-list>
+      @for (item of menuItems; track item.route) {
+        <a mat-list-item
+           [routerLink]="item.route"
+           routerLinkActive="active-link">
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+
+  </mat-sidenav>
+
+  <!-- ─── CONTENUTO PRINCIPALE ─────────────────── -->
+  <mat-sidenav-content class="main-content">
+
+    <!-- Toolbar in alto -->
+    <mat-toolbar color="primary">
+      <span>ITS — Sistema Gestione Tirocini</span>
+    </mat-toolbar>
+
+    <!-- Qui Angular inserisce il componente della route corrente -->
+    <div class="content-area">
+      <router-outlet />
+    </div>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
