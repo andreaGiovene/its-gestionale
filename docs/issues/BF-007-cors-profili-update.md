@@ -1,4 +1,4 @@
-# BF-007 - Configurazione CORS e profili dev/prod
+# [BF-007] - Configurazione CORS e profili dev/prod
 
 ## Obiettivo
 Rendere la configurazione CORS gestibile per ambiente e introdurre profili Spring Boot separati per sviluppo e produzione.
