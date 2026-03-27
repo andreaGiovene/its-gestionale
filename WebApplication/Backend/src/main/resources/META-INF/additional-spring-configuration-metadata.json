@@ -1,0 +1,37 @@
+{"properties": [
+  {
+    "name": "\nspring.datasource.ur",
+    "type": "java.lang.String",
+    "description": "A description for '\nspring.datasource.ur'"
+  },
+  {
+    "name": "\nspring.datasource.usernam",
+    "type": "java.lang.String",
+    "description": "A description for '\nspring.datasource.usernam'"
+  },
+  {
+    "name": "\nspring.datasource.passwor",
+    "type": "java.lang.String",
+    "description": "A description for '\nspring.datasource.passwor'"
+  },
+  {
+    "name": "\r\nspring.jpa.hibernate.ddl-au",
+    "type": "java.lang.String",
+    "description": "A description for '\r\nspring.jpa.hibernate.ddl-au'"
+  },
+  {
+    "name": "\r\nspring.jpa.show-s",
+    "type": "java.lang.String",
+    "description": "A description for '\r\nspring.jpa.show-s'"
+  },
+  {
+    "name": "\r\nspring.jpa.properties.hibernate.format_s",
+    "type": "java.lang.String",
+    "description": "A description for '\r\nspring.jpa.properties.hibernate.format_s'"
+  },
+  {
+    "name": "\r\nspring.jpa.database-platfo",
+    "type": "java.lang.String",
+    "description": "A description for '\r\nspring.jpa.database-platfo'"
+  }
+]}
