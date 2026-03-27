@@ -14,20 +14,42 @@ public class Allievo {
     private String cognome;
 
     @ManyToOne
-    @JoinColumn(name = "corso_id") // deve esistere nel DB
+    @JoinColumn(name = "corso_id")
     private Corso corso;
 
     public Allievo() {}
 
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    // GETTER & SETTER
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public Integer getId() {
+        return id;
+    }
 
-    public String getCognome() { return cognome; }
-    public void setCognome(String cognome) { this.cognome = cognome; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    public Corso getCorso() { return corso; }
-    public void setCorso(Corso corso) { this.corso = corso; }
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCognome() {
+        return cognome;
+    }
+
+    public void setCognome(String cognome) {
+        this.cognome = cognome;
+    }
+
+    public Corso getCorso() {
+        return corso;
+    }
+
+    public void setCorso(Corso corso) {
+        this.corso = corso;
+    }
 }

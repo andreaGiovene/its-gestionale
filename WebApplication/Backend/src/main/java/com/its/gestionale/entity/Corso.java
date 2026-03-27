@@ -1,4 +1,5 @@
 package com.its.gestionale.entity;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -18,18 +19,10 @@ public class Corso {
     @Column(name = "stato")
     private String stato;
 
-    // --- COSTRUTTORI ---
-
+    // COSTRUTTORE VUOTO
     public Corso() {}
 
-    public Corso(String nome, String annoAccademico, String stato) {
-        this.nome = nome;
-        this.annoAccademico = annoAccademico;
-        this.stato = stato;
-    }
-
-    // --- GETTER & SETTER ---
-
+    // GETTER & SETTER
     public Integer getId() {
         return id;
     }
