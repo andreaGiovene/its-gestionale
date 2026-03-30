@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.its.gestionale.entity.Ruolo;
 import com.its.gestionale.entity.Utente;
 
 @Repository
@@ -17,5 +18,5 @@ public interface UtenteRepository extends JpaRepository<Utente, Long> {
     Optional<Utente> findByEmail(String email);
 
     // Conta gli utenti di un determinato ruolo (utilità per statistiche)
-    Long countByRuolo(Utente.RuoloUtente ruolo);
+    Long countByRuolo(Ruolo ruolo);
 }

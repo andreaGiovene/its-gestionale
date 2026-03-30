@@ -1,5 +1,6 @@
 package com.its.gestionale.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,16 +9,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.its.gestionale.dto.UtenteDTO;
+import com.its.gestionale.entity.Ruolo;
 import com.its.gestionale.entity.Utente;
+import com.its.gestionale.repository.RuoloRepository;
 import com.its.gestionale.repository.UtenteRepository;
 
 @Service
 public class UtenteService {
 
     private final UtenteRepository utenteRepository;
+    private final RuoloRepository ruoloRepository;
 
-    public UtenteService(UtenteRepository utenteRepository) {
+    public UtenteService(UtenteRepository utenteRepository, RuoloRepository ruoloRepository) {
         this.utenteRepository = utenteRepository;
+        this.ruoloRepository = ruoloRepository;
     }
 
     // Restituisce tutti gli utenti come DTO
@@ -53,10 +58,24 @@ public class UtenteService {
             );
         }
 
-        Utente utente = UtenteDTO.toEntity(dto);
-        // ↓ NOTA: In produzione, hashare la password con bcrypt o Argon2
-        // Per ora usiamo la password in plain text — SOLO PER SVILUPPO!
-        utente.setAttivo(true);
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Password obbligatoria"
+            );
+        }
+
+        Ruolo ruolo = findRuoloByCodice(dto.getRuolo());
+        LocalDateTime now = LocalDateTime.now();
+
+        Utente utente = new Utente();
+        utente.setUsername(dto.getUsername());
+        utente.setEmail(dto.getEmail());
+        utente.setPasswordHash(dto.getPassword());
+        utente.setRuolo(ruolo);
+        utente.setAttivo(dto.getAttivo() != null ? dto.getAttivo() : Boolean.TRUE);
+        utente.setCreatoIl(now);
+        utente.setAggiornatoIl(now);
 
         return UtenteDTO.fromEntity(utenteRepository.save(utente));
     }
@@ -70,10 +89,13 @@ public class UtenteService {
                 ));
 
         utente.setEmail(dto.getEmail());
-        utente.setNome(dto.getNome());
-        utente.setCognome(dto.getCognome());
-        utente.setRuolo(Utente.RuoloUtente.valueOf(dto.getRuolo()));
+        utente.setUsername(dto.getUsername());
+        utente.setRuolo(findRuoloByCodice(dto.getRuolo()));
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            utente.setPasswordHash(dto.getPassword());
+        }
         utente.setAttivo(dto.getAttivo());
+        utente.setAggiornatoIl(LocalDateTime.now());
 
         return UtenteDTO.fromEntity(utenteRepository.save(utente));
     }
@@ -87,6 +109,22 @@ public class UtenteService {
                 ));
 
         utente.setAttivo(false);
+        utente.setAggiornatoIl(LocalDateTime.now());
         utenteRepository.save(utente);
+    }
+
+    private Ruolo findRuoloByCodice(String codice) {
+        if (codice == null || codice.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Ruolo obbligatorio"
+            );
+        }
+
+        return ruoloRepository.findByCodice(codice)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Ruolo " + codice + " non trovato"
+                ));
     }
 }
