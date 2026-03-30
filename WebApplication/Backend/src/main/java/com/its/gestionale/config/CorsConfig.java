@@ -33,6 +33,13 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedHeaders(splitCsv(allowedHeaders))
                 .allowCredentials(allowCredentials)
                 .maxAge(maxAge);
+
+        registry.addMapping("/auth/**")
+            .allowedOrigins(splitCsv(allowedOrigins))
+            .allowedMethods(splitCsv(allowedMethods))
+            .allowedHeaders(splitCsv(allowedHeaders))
+            .allowCredentials(allowCredentials)
+            .maxAge(maxAge);
     }
 
     private String[] splitCsv(String csvValue) {
