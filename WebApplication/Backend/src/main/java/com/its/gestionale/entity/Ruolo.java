@@ -8,6 +8,7 @@ public class Ruolo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_ruolo")
     private Integer idRuolo;
 
     @Column(nullable = false, unique = true)
