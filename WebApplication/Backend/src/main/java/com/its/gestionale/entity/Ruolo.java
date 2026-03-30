@@ -1,43 +1,34 @@
 package com.its.gestionale.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "ruolo")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Ruolo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_ruolo")
     private Integer idRuolo;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     private String codice;
 
+    @Column(length = 255)
     private String descrizione;
 
-    // ===== GETTER & SETTER =====
-
-    public Integer getIdRuolo() {
-        return idRuolo;
-    }
-
-    public void setIdRuolo(Integer idRuolo) {
-        this.idRuolo = idRuolo;
-    }
-
-    public String getCodice() {
-        return codice;
-    }
-
-    public void setCodice(String codice) {
-        this.codice = codice;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
 }
+
+
+   
