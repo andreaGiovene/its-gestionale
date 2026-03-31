@@ -1,59 +1,125 @@
-# GestionaleFrontend
+# Frontend - Gestionale ITS
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3.
+Applicazione Angular per autenticazione, dashboard e gestione funzionale del dominio ITS.
 
-## Development server
+## Stack frontend
 
-To start a local development server, run:
+- Angular CLI 21.2.3
+- TypeScript
+- SCSS
+- HttpClient + interceptor per header Authorization
+
+## Struttura principale
+
+- src/app/core: guard, interceptor, servizi base
+- src/app/features: moduli funzionali (auth, dashboard, corsi, allievi, aziende)
+- src/app/shared: componenti e modelli condivisi
+- src/styles.scss: stile globale
+
+## Architettura frontend (focus tecnico)
+
+### Core/AuthService
+
+Responsabilita:
+- login verso backend
+- persistenza token in localStorage
+- fetch profilo utente corrente
+
+Nota progettuale:
+- il servizio nasconde i dettagli del trasporto HTTP ai componenti
+- i componenti consumano solo metodi ad alto livello
+
+### Core/auth.interceptor
+
+Responsabilita:
+- intercettare richieste HTTP
+- aggiungere Authorization Bearer quando esiste token
+
+Vantaggio:
+- nessuna duplicazione header nei vari service di feature
+
+### Core/auth.guard
+
+Responsabilita:
+- protezione route private
+- redirect a /login quando manca il token
+
+Limitazione nota:
+- la verifica e client-side, quindi in produzione va rafforzata con validazione server-side robusta
+
+## Prerequisiti
+
+- Node.js LTS
+- npm
+- Backend attivo su http://localhost:8080
+
+## Avvio sviluppo
 
 ```bash
-ng serve
+npm install
+npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Frontend disponibile su http://localhost:4200
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Build
 
 ```bash
-ng generate component component-name
+npm run build
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Output in dist/.
+
+## Test
 
 ```bash
-ng generate --help
+npm test
 ```
 
-## Building
+Per test manuali funzionali consultare TEST_CHECKLIST.md.
 
-To build the project run:
+## Contratto API Auth (stato attuale)
 
-```bash
-ng build
+### Login
+
+- Endpoint: POST http://localhost:8080/auth/login
+- Request body:
+
+```json
+{
+	"email": "admin@scuola.it",
+	"password": "hash_secure_123"
+}
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+- Response body:
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
+```json
+{
+	"token": "admin@scuola.it",
+	"tokenType": "Bearer",
+	"expiresInSeconds": 0
+}
 ```
 
-## Running end-to-end tests
+### Profilo utente
 
-For end-to-end (e2e) testing, run:
+- Endpoint: GET http://localhost:8080/auth/me
+- Header: Authorization: Bearer <token>
 
-```bash
-ng e2e
-```
+## Sezioni da controllare quando qualcosa non funziona
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+- Login non naviga a dashboard:
+	- verificare token in localStorage (chiave auth_token)
+	- verificare risposta 200 di POST /auth/login
+- Chiamate API non autorizzate:
+	- verificare che interceptor sia registrato in app config
+	- verificare formato header Authorization
+- Loop sul guard:
+	- verificare che token venga salvato dopo login
+	- verificare route path /login e route protette
 
-## Additional Resources
+## Note sviluppo
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- L'auth e semplificata per accelerare sviluppo e test integrati.
+- Quando si reintroduce un token robusto, aggiornare solo il servizio auth e l'interceptor mantenendo invariati i componenti di dominio.

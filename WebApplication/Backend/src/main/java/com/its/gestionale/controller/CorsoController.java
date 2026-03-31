@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.its.gestionale.entity.Corso;
+import com.its.gestionale.dto.CorsoDTO;
 import com.its.gestionale.service.CorsoService;
+
+import jakarta.validation.Valid;
 
 @RestController
 // ↑ Dice a Spring: "questa classe gestisce richieste HTTP
@@ -22,6 +25,7 @@ import com.its.gestionale.service.CorsoService;
 
 @RequestMapping("/api/corsi")
 // ↑ Tutte le API di questa classe iniziano con /api/corsi
+@Validated
 public class CorsoController {
 
     private final CorsoService corsoService;
@@ -35,10 +39,8 @@ public class CorsoController {
     // Restituisce tutti i corsi
     // ─────────────────────────────────────────
     @GetMapping
-    public ResponseEntity<List<Corso>> findAll() {
-        List<Corso> corsi = corsoService.findAll();
-        return ResponseEntity.ok(corsi);
-        // ResponseEntity.ok() = risposta HTTP 200 con il body
+    public ResponseEntity<List<CorsoDTO>> findAll() {
+        return ResponseEntity.ok(corsoService.findAll());
     }
 
     // ─────────────────────────────────────────
@@ -47,13 +49,8 @@ public class CorsoController {
     // ─────────────────────────────────────────
     @GetMapping("/{id}")
     // ↑ {id} è una variabile nel percorso URL
-    public ResponseEntity<Corso> findById(@PathVariable Integer id) {
-        // @PathVariable prende il valore {id} dall'URL
-        return corsoService.findById(id)
-                .map(ResponseEntity::ok)
-                // ↑ Se trovato → risposta 200 con il corso
-                .orElse(ResponseEntity.notFound().build());
-                // ↑ Se non trovato → risposta 404
+    public ResponseEntity<CorsoDTO> findById(@PathVariable Integer id) {
+        return ResponseEntity.ok(corsoService.findById(id));
     }
 
     // ─────────────────────────────────────────
@@ -63,13 +60,9 @@ public class CorsoController {
     // { "nome": "Corso X", "annoAccademico": "2025/2026", "stato": "ATTIVO" }
     // ─────────────────────────────────────────
     @PostMapping
-    public ResponseEntity<Corso> create(@RequestBody Corso corso) {
-        // @RequestBody converte automaticamente il JSON
-        // ricevuto in un oggetto Corso Java
-        Corso salvato = corsoService.save(corso);
+    public ResponseEntity<CorsoDTO> create(@Valid @RequestBody CorsoDTO corsoDTO) {
+        CorsoDTO salvato = corsoService.create(corsoDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvato);
-        // ↑ Risposta HTTP 201 (Created) con il corso appena creato
-        //   (incluso l'id generato dal DB)
     }
 
     // ─────────────────────────────────────────
@@ -77,20 +70,10 @@ public class CorsoController {
     // Aggiorna il corso con id=1
     // ─────────────────────────────────────────
     @PutMapping("/{id}")
-    public ResponseEntity<Corso> update(
+    public ResponseEntity<CorsoDTO> update(
             @PathVariable Integer id,
-            @RequestBody Corso corso) {
-
-        return corsoService.findById(id)
-                .map(corsoEsistente -> {
-                    // Aggiorna i campi del corso esistente
-                    corsoEsistente.setNome(corso.getNome());
-                    corsoEsistente.setAnnoAccademico(corso.getAnnoAccademico());
-                    corsoEsistente.setStato(corso.getStato());
-                    // Salva e restituisce il corso aggiornato
-                    return ResponseEntity.ok(corsoService.save(corsoEsistente));
-                })
-                .orElse(ResponseEntity.notFound().build());
+            @Valid @RequestBody CorsoDTO corsoDTO) {
+        return ResponseEntity.ok(corsoService.update(id, corsoDTO));
     }
 
     // ─────────────────────────────────────────
@@ -99,10 +82,6 @@ public class CorsoController {
     // ─────────────────────────────────────────
 @DeleteMapping("/{id}")
 public ResponseEntity<Void> delete(@PathVariable Integer id) {
-    if (!corsoService.findById(id).isPresent()) {
-        return ResponseEntity.notFound().build();
-        // ↑ 404 se il corso non esiste
-    }
     corsoService.deleteById(id);
     return ResponseEntity.noContent().build();
     // ↑ 204 No Content — eliminato con successo
