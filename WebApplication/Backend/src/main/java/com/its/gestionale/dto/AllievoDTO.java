@@ -30,8 +30,6 @@ public class AllievoDTO {
         dto.setNome(allievo.getNome());
         dto.setCognome(allievo.getCognome());
         dto.setCodiceFiscale(allievo.getCodiceFiscale());
-        dto.setEmail(allievo.getEmail());
-        dto.setTelefono(allievo.getTelefono());
         dto.setDataDiNascita(allievo.getDataDiNascita());
         dto.setNote(allievo.getNote());
 

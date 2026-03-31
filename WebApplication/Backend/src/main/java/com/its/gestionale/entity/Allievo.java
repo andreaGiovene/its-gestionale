@@ -34,9 +34,6 @@ public class Allievo {
     //   Non possono esistere due allievi con lo stesso CF
     private String codiceFiscale;
 
-    private String email;
-
-    private String telefono;
 
     @Column(name = "data_di_nascita")
     private java.time.LocalDate dataDiNascita;
