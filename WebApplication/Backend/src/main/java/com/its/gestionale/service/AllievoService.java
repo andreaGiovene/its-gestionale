@@ -58,8 +58,6 @@ public class AllievoService {
         allievo.setNome(dto.getNome());
         allievo.setCognome(dto.getCognome());
         allievo.setCodiceFiscale(dto.getCodiceFiscale());
-        allievo.setEmail(dto.getEmail());
-        allievo.setTelefono(dto.getTelefono());
         allievo.setDataDiNascita(dto.getDataDiNascita());
         allievo.setNote(dto.getNote());
 
