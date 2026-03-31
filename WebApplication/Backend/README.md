@@ -33,11 +33,16 @@ Backend/
 │   │   │   │   └── UtenteController.java
 │   │   │   ├── dto/
 │   │   │   │   ├── AllievoDTO.java
+│   │   │   │   ├── CorsoDTO.java
 │   │   │   │   ├── UtenteDTO.java
 │   │   │   │   └── auth/
 │   │   │   │       ├── LoginRequest.java
 │   │   │   │       ├── LoginResponse.java
 │   │   │   │       └── MeResponse.java
+│   │   │   ├── exception/
+│   │   │   │   ├── ApiErrorResponse.java
+│   │   │   │   ├── CorsoNotFoundException.java
+│   │   │   │   └── GlobalExceptionHandler.java
 │   │   │   ├── entity/
 │   │   │   │   ├── Allievo.java
 │   │   │   │   ├── Azienda.java
