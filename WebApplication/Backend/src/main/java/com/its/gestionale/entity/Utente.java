@@ -47,7 +47,7 @@ public class Utente {
     @Column(name = "ultimo_accesso")
     private LocalDateTime ultimoAccesso;
 
-    @ManyToOne  // ← manca qualcosa rispetto a come hai mappato Corso in Allievo
+    @ManyToOne  // 1 Utente puo' avere 1 Ruolo
     @JoinColumn(name = "id_ruolo", nullable = false)
     private Ruolo ruolo;
 }
