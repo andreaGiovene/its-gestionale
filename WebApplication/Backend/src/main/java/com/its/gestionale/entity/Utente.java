@@ -48,7 +48,7 @@ public class Utente {
     @Column(name = "ultimo_accesso")
     private LocalDateTime ultimoAccesso;
 
-    @ManyToOne (fetch = FetchType.LAZY) // 1 Utente puo' avere 1 Ruolo
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_ruolo", nullable = false)
     private Ruolo ruolo;
 }
