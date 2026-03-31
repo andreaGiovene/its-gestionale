@@ -164,6 +164,88 @@ curl http://localhost:8080/health
 curl -X POST http://localhost:8080/auth/login -H "Content-Type: application/json" -d "{\"email\":\"admin@scuola.it\",\"password\":\"hash_secure_123\"}"
 ```
 
+## API REST corsi
+
+Endpoint implementati secondo naming REST standard:
+
+- GET /api/corsi: lista di tutti i corsi
+- GET /api/corsi/{id}: dettaglio corso
+- POST /api/corsi: creazione corso
+- PUT /api/corsi/{id}: aggiornamento corso esistente
+- DELETE /api/corsi/{id}: eliminazione corso
+
+### DTO e mapping
+
+Il controller non espone direttamente le entity JPA ma usa CorsoDTO.
+
+Campi CorsoDTO:
+- id
+- nome (obbligatorio)
+- annoAccademico
+- stato (obbligatorio)
+- allieviCount (campo derivato, predisposto per integrazione futura con modulo allievi)
+
+Il mapping Entity <-> DTO e centralizzato in CorsoService, che contiene anche tutta la logica applicativa CRUD.
+
+### Esempio payload POST/PUT
+
+```json
+{
+	"nome": "Corso Java Backend",
+	"annoAccademico": "2025/2026",
+	"stato": "In corso"
+}
+```
+
+### Gestione errori
+
+E presente una gestione eccezioni globale con @RestControllerAdvice:
+
+- 404 Corso non trovato:
+	- eccezione: CorsoNotFoundException
+	- casi: GET/PUT/DELETE su id inesistente
+- 400 Validazione input:
+	- eccezione: MethodArgumentNotValidException
+	- casi: payload non conforme ai vincoli (@NotBlank, @Size)
+- 500 Errore imprevisto:
+	- fallback centralizzato
+
+Formato risposta errore (ApiErrorResponse):
+- timestamp
+- status
+- error
+- message
+- path
+- validationErrors (mappa campo -> messaggio, solo per 400 di validazione)
+
+Esempio 404:
+
+```json
+{
+	"timestamp": "2026-03-31T11:30:00Z",
+	"status": 404,
+	"error": "Not Found",
+	"message": "Corso con id 999 non trovato",
+	"path": "/api/corsi/999",
+	"validationErrors": null
+}
+```
+
+Esempio 400 (validazione):
+
+```json
+{
+	"timestamp": "2026-03-31T11:31:00Z",
+	"status": 400,
+	"error": "Bad Request",
+	"message": "Input non valido",
+	"path": "/api/corsi",
+	"validationErrors": {
+		"nome": "Il nome del corso e obbligatorio"
+	}
+}
+```
+
 ## Ambiti di miglioramento futuri
 
 - reintroduzione autenticazione robusta per produzione

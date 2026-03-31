@@ -1,11 +1,14 @@
 package com.its.gestionale.service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.its.gestionale.dto.CorsoDTO;
 import com.its.gestionale.entity.Corso;
+import com.its.gestionale.exception.CorsoNotFoundException;
 import com.its.gestionale.repository.CorsoRepository;
 
 
@@ -23,29 +26,76 @@ public class CorsoService {
     }
 
     // Restituisce tutti i corsi
-    public List<Corso> findAll() {
-        return corsoRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<CorsoDTO> findAll() {
+        return corsoRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
-     // Cerca un corso per ID
-    // Optional<Corso> = "potrebbe esserci o no" (evita NullPointerException)
-    public Optional<Corso> findById(Integer id) {
-        return corsoRepository.findById(id);
+    // Cerca un corso per ID e restituisce 404 se non esiste.
+    @Transactional(readOnly = true)
+    public CorsoDTO findById(Integer id) {
+        Corso corso = corsoRepository.findById(id)
+                .orElseThrow(() -> new CorsoNotFoundException(id));
+        return toDto(corso);
     }
 
-    // Crea un nuovo corso o aggiorna uno esistente
-    public Corso save(Corso corso) {
-        return corsoRepository.save(corso);
+    // Crea un nuovo corso.
+    public CorsoDTO create(CorsoDTO dto) {
+        Corso corso = toEntity(dto);
+        Corso salvato = corsoRepository.save(corso);
+        return toDto(salvato);
+    }
+
+    // Aggiorna un corso esistente.
+    public CorsoDTO update(Integer id, CorsoDTO dto) {
+        Corso esistente = corsoRepository.findById(id)
+                .orElseThrow(() -> new CorsoNotFoundException(id));
+
+        esistente.setNome(dto.getNome());
+        esistente.setAnnoAccademico(dto.getAnnoAccademico());
+        esistente.setStato(dto.getStato());
+
+        Corso aggiornato = corsoRepository.save(esistente);
+        return toDto(aggiornato);
     }
 
     // Elimina un corso per ID
     public void deleteById(Integer id) {
+        if (!corsoRepository.existsById(id)) {
+            throw new CorsoNotFoundException(id);
+        }
         corsoRepository.deleteById(id);
     }
     
    // Cerca corsi per stato
-    public List<Corso> findByStato(String stato) {
-        return corsoRepository.findByStato(stato);
+    @Transactional(readOnly = true)
+    public List<CorsoDTO> findByStato(String stato) {
+        return corsoRepository.findByStato(stato)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    private CorsoDTO toDto(Corso corso) {
+        CorsoDTO dto = new CorsoDTO();
+        dto.setId(corso.getId());
+        dto.setNome(corso.getNome());
+        dto.setAnnoAccademico(corso.getAnnoAccademico());
+        dto.setStato(corso.getStato());
+        // Placeholder per futura integrazione con allievi senza esporre entita annidate.
+        dto.setAllieviCount(corso.getAllievi() == null ? 0 : corso.getAllievi().size());
+        return dto;
+    }
+
+    private Corso toEntity(CorsoDTO dto) {
+        Corso corso = new Corso();
+        corso.setNome(dto.getNome());
+        corso.setAnnoAccademico(dto.getAnnoAccademico());
+        corso.setStato(dto.getStato());
+        return corso;
     }
 
 }
