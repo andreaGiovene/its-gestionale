@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,7 +48,7 @@ public class Utente {
     @Column(name = "ultimo_accesso")
     private LocalDateTime ultimoAccesso;
 
-    @ManyToOne  // 1 Utente puo' avere 1 Ruolo
+    @ManyToOne (fetch = FetchType.LAZY) // 1 Utente puo' avere 1 Ruolo
     @JoinColumn(name = "id_ruolo", nullable = false)
     private Ruolo ruolo;
 }
