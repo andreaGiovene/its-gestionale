@@ -11,17 +11,14 @@ import com.its.gestionale.dto.auth.LoginResponse;
 import com.its.gestionale.dto.auth.MeResponse;
 import com.its.gestionale.entity.Utente;
 import com.its.gestionale.repository.UtenteRepository;
-import com.its.gestionale.security.JwtService;
 
 @Service
 public class AuthService {
 
     private final UtenteRepository utenteRepository;
-    private final JwtService jwtService;
 
-    public AuthService(UtenteRepository utenteRepository, JwtService jwtService) {
+    public AuthService(UtenteRepository utenteRepository) {
         this.utenteRepository = utenteRepository;
-        this.jwtService = jwtService;
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -40,7 +37,20 @@ public class AuthService {
         utente.setAggiornatoIl(LocalDateTime.now());
         utenteRepository.save(utente);
 
-        return new LoginResponse(jwtService.generateToken(utente), "Bearer", jwtService.getExpirationSeconds());
+        return new LoginResponse(utente.getEmail(), "Bearer", 0);
+    }
+
+    public MeResponse meFromAuthorization(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization header mancante o non valido");
+        }
+
+        String email = authorizationHeader.substring(7).trim();
+        if (email.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token non valido");
+        }
+
+        return me(email);
     }
 
     public MeResponse me(String email) {
