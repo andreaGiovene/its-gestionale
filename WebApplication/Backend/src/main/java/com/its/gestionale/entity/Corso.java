@@ -2,6 +2,8 @@ package com.its.gestionale.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -51,5 +53,6 @@ public class Corso {
 //    colonna, usa quella già esistente"
 // Senza mappedBy Hibernate creerebbe una tabella
 // di join intermedia — non è quello che vogliamo!
+@JsonIgnore
 private List<Allievo> allievi;
 }

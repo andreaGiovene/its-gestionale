@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.its.gestionale.dto.AllievoDTO;
@@ -29,6 +30,7 @@ public class AllievoService {
     // Complessita' temporale: O(n), dove n = numero di record letti dal DB.
     // Complessita' spaziale: O(n), per la nuova lista di DTO creata in output.
     // Costo nascosto: findAll() carica tutto in memoria; su tabelle grandi e' meglio paginare.
+    @Transactional(readOnly = true)
     public List<AllievoDTO> findAll() {
         List<Allievo> allievi = allievoRepository.findAll();
         List<AllievoDTO> dtos = new ArrayList<>();
@@ -41,6 +43,7 @@ public class AllievoService {
     }
 
     // Restituisce gli allievi di un corso specifico
+    @Transactional(readOnly = true)
     public List<AllievoDTO> findByCorsoId(Integer corsoId) {
         List<Allievo> allievi = allievoRepository.findByCorsoId(corsoId);
         List<AllievoDTO> dtos = new ArrayList<>();
