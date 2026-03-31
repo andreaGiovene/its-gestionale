@@ -74,8 +74,7 @@ Backend/
 │   │   │   │   ├── RuoloRepository.java
 │   │   │   │   ├── TirocinioRepository.java
 │   │   │   │   └── UtenteRepository.java
-│   │   │   ├── security/
-│   │   │   │   └── (vuoto: JWT rimosso in favore di auth dev-light)
+│   │   │   |
 │   │   │   └── service/
 │   │   │       ├── AllievoService.java
 │   │   │       ├── AuthService.java
