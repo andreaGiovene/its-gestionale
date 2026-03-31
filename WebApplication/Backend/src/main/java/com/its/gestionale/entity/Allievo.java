@@ -1,16 +1,14 @@
 package com.its.gestionale.entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "allievo")
@@ -21,7 +19,7 @@ public class Allievo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false)
     private String nome;
@@ -36,7 +34,7 @@ public class Allievo {
 
 
     @Column(name = "data_di_nascita")
-    private java.time.LocalDate dataDiNascita;
+    private LocalDate dataDiNascita;
 
     @Column(columnDefinition = "TEXT")
     private String note;
@@ -45,16 +43,27 @@ public class Allievo {
     // RELAZIONE: Allievo → Corso (ManyToOne)
     // ─────────────────────────────────────────
     @ManyToOne(fetch = FetchType.LAZY)
-    // ↑ fetch = LAZY significa: "non caricare il Corso
-    //   automaticamente quando carichi un Allievo"
-    //   Lo carichi solo se lo richiedi esplicitamente.
-    //   L'alternativa è EAGER (carica sempre tutto subito)
-    //   LAZY è più efficiente — evita query inutili
-
     @JoinColumn(name = "corso_id")
-    // ↑ Dice ad Hibernate: "la chiave esterna nella tabella
-    //   'allievi' si chiama 'corso_id'"
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Corso corso;
-    // ↑ Non è un Long id, ma l'oggetto Corso intero!
-    //   Hibernate gestisce la traduzione automaticamente
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_utente", unique = true)
+    private Utente utente;
+
+    @OneToMany(mappedBy = "allievo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Tirocinio> tirocini;
+
+    @OneToMany(mappedBy = "allievo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<CasoCritico> casiCritici;
+
+    @OneToMany(mappedBy = "allievo", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<ColloquioTirocinio> colloqui;
 }
