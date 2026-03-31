@@ -1,14 +1,15 @@
 package com.its.gestionale.repository;
 
-import com.its.gestionale.entity.Responsabile;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.its.gestionale.entity.Responsabile;
 
 @Repository
 public interface ResponsabileRepository extends JpaRepository<Responsabile, Integer> {
     Optional<Responsabile> findByCodiceFiscale(String codiceFiscale);
     Optional<Responsabile> findByEmail(String email);
-    Optional<Responsabile> findByUtenteId(Integer utenteId);
+    Optional<Responsabile> findByUtenteIdUtente(Integer utenteId);
 }
