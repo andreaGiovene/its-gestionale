@@ -35,10 +35,6 @@ public class Utente {
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-    @ManyToOne
-    @JoinColumn(name = "id_ruolo", nullable = false)
-    private Ruolo ruolo;
-
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT true")
     private Boolean attivo;
 
@@ -50,4 +46,8 @@ public class Utente {
 
     @Column(name = "ultimo_accesso")
     private LocalDateTime ultimoAccesso;
+
+    @ManyToOne  // ← manca qualcosa rispetto a come hai mappato Corso in Allievo
+    @JoinColumn(name = "id_ruolo", nullable = false)
+    private Ruolo ruolo;
 }
