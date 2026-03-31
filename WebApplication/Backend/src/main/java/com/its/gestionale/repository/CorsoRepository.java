@@ -11,7 +11,7 @@ import com.its.gestionale.entity.Corso;
 public interface CorsoRepository extends JpaRepository<Corso, Integer> {
     
     
-    List<Corso> findByStato(Corso.StatoCorso stato);
+    List<Corso> findByStato(String stato);
 
     List<Corso> findByNomeContainingIgnoreCase(String nome);
     

@@ -44,7 +44,7 @@ public class CorsoService {
     }
     
    // Cerca corsi per stato
-    public List<Corso> findByStato(Corso.StatoCorso stato) {
+    public List<Corso> findByStato(String stato) {
         return corsoRepository.findByStato(stato);
     }
 

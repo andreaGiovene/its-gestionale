@@ -6,8 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,23 +27,15 @@ public class Corso {
                                                           //    (AUTO INCREMENT in PostgreSQL)
     private Integer id;
 
-    @Column(nullable = false)                             // ← La colonna NON può essere NULL
+    @Column(name = "nome_corso", nullable = false)      // ← La colonna NON può essere NULL
     private String nome;
 
     @Column(name = "anno_accademico")                     // ← Specifica il nome colonna nel DB
     private String annoAccademico;                        //   (Java usa camelCase, DB usa snake_case)
 
-    @Enumerated(EnumType.STRING)   // ← Salva l'enum come stringa nel DB (es. "ATTIVO")
-                                   //   invece che come numero (0, 1, 2) — molto più leggibile
     @Column(nullable = false)
-    private StatoCorso stato;
+    private String stato;
 
-    // Enum annidato — definisce i valori ammessi per "stato"
-    public enum StatoCorso {
-        ATTIVO,
-        CONCLUSO,
-        IN_PIANIFICAZIONE
-    }
 @OneToMany(mappedBy = "corso")
 // ↑ mappedBy = "corso" significa:
 //   "la relazione è già mappata dal campo 'corso'
