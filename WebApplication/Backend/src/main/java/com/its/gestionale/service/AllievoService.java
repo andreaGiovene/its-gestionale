@@ -41,7 +41,7 @@ public class AllievoService {
     }
 
     // Restituisce gli allievi di un corso specifico
-    public List<AllievoDTO> findByCorsoId(Long corsoId) {
+    public List<AllievoDTO> findByCorsoId(Integer corsoId) {
         List<Allievo> allievi = allievoRepository.findByCorsoId(corsoId);
         List<AllievoDTO> dtos = new ArrayList<>();
 

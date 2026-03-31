@@ -81,7 +81,7 @@ public class UtenteService {
     }
 
     // Aggiorna un utente esistente
-    public UtenteDTO update(Long id, UtenteDTO dto) {
+    public UtenteDTO update(Integer id, UtenteDTO dto) {
         Utente utente = utenteRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -101,7 +101,7 @@ public class UtenteService {
     }
 
     // Disattiva un utente (soft delete — non lo cancella, solo lo marca come inattivo)
-    public void disattivaUtente(Long id) {
+    public void disattivaUtente(Integer id) {
         Utente utente = utenteRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,

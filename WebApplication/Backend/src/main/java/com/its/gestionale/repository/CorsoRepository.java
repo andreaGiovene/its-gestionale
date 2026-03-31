@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.its.gestionale.entity.Corso;
 
 @Repository 
-public interface CorsoRepository extends JpaRepository<Corso, Long> {
+public interface CorsoRepository extends JpaRepository<Corso, Integer> {
     
     
     List<Corso> findByStato(Corso.StatoCorso stato);

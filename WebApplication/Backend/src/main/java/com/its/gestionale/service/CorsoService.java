@@ -29,7 +29,7 @@ public class CorsoService {
 
      // Cerca un corso per ID
     // Optional<Corso> = "potrebbe esserci o no" (evita NullPointerException)
-    public Optional<Corso> findById(Long id) {
+    public Optional<Corso> findById(Integer id) {
         return corsoRepository.findById(id);
     }
 
@@ -39,7 +39,7 @@ public class CorsoService {
     }
 
     // Elimina un corso per ID
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) {
         corsoRepository.deleteById(id);
     }
     

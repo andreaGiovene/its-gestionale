@@ -47,7 +47,7 @@ public class CorsoController {
     // ─────────────────────────────────────────
     @GetMapping("/{id}")
     // ↑ {id} è una variabile nel percorso URL
-    public ResponseEntity<Corso> findById(@PathVariable Long id) {
+    public ResponseEntity<Corso> findById(@PathVariable Integer id) {
         // @PathVariable prende il valore {id} dall'URL
         return corsoService.findById(id)
                 .map(ResponseEntity::ok)
@@ -78,7 +78,7 @@ public class CorsoController {
     // ─────────────────────────────────────────
     @PutMapping("/{id}")
     public ResponseEntity<Corso> update(
-            @PathVariable Long id,
+            @PathVariable Integer id,
             @RequestBody Corso corso) {
 
         return corsoService.findById(id)
@@ -98,7 +98,7 @@ public class CorsoController {
     // Elimina il corso con id=1
     // ─────────────────────────────────────────
 @DeleteMapping("/{id}")
-public ResponseEntity<Void> delete(@PathVariable Long id) {
+public ResponseEntity<Void> delete(@PathVariable Integer id) {
     if (!corsoService.findById(id).isPresent()) {
         return ResponseEntity.notFound().build();
         // ↑ 404 se il corso non esiste

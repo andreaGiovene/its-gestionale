@@ -50,7 +50,7 @@ public class UtenteController {
     // PUT /api/utenti/{id}
     @PutMapping("/{id}")
     public ResponseEntity<UtenteDTO> update(
-            @PathVariable Long id,
+            @PathVariable Integer id,
             @RequestBody UtenteDTO dto) {
         return ResponseEntity.ok(utenteService.update(id, dto));
     }
@@ -58,7 +58,7 @@ public class UtenteController {
     // DELETE /api/utenti/{id}
     // ↑ Soft delete — l'utente rimane nel DB ma inattivo
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
         utenteService.disattivaUtente(id);
         return ResponseEntity.noContent().build();
     }

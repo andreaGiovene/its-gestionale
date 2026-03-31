@@ -7,7 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class MeResponse {
 
-    private Long idUtente;
+    private Integer idUtente;
     private String email;
     private String username;
     private String ruolo;

@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 import com.its.gestionale.entity.Allievo;
 
 @Repository
-public interface AllievoRepository extends JpaRepository<Allievo, Long> {
+public interface AllievoRepository extends JpaRepository<Allievo, Integer> {
 
     // Tutti gli allievi di un corso specifico
-    List<Allievo> findByCorsoId(Long corsoId);
+    List<Allievo> findByCorsoId(Integer corsoId);
 
     // Ricerca per cognome (case insensitive)
     List<Allievo> findByCognomeContainingIgnoreCase(String cognome);

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AllievoDTO {
 
-    private Long id;
+    private Integer id;
     private String nome;
     private String cognome;
     private String codiceFiscale;
@@ -19,7 +19,7 @@ public class AllievoDTO {
     private String note;
 
     // Invece dell'oggetto Corso intero, solo le info utili
-    private Long corsoId;
+    private Integer corsoId;
     private String corsoNome;
 
     // Metodo statico di conversione Entity → DTO

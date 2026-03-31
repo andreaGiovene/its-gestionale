@@ -34,7 +34,7 @@ public class AllievoController {
     // ↑ Parametro opzionale — filtra per corso
     @GetMapping(params = "corsoId")
     public ResponseEntity<List<AllievoDTO>> findByCorso(
-            @RequestParam Long corsoId) {
+            @RequestParam Integer corsoId) {
         // @RequestParam prende il valore dal query string
         // es. /api/allievi?corsoId=1
         return ResponseEntity.ok(allievoService.findByCorsoId(corsoId));
