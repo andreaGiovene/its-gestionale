@@ -1,14 +1,13 @@
 package com.its.gestionale.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.util.List;
+
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "ruolo")
@@ -28,11 +27,10 @@ public class Ruolo {
     @Column(length = 255)
     private String descrizione;
 
-   // @OneToMany(mappedBy = "ruolo")
-   // @ToString.Exclude         // ← evita loop toString → ruolo → utenti → ruolo...
-   // @EqualsAndHashCode.Exclude
-   // private List<Utente> utenti;
-
+    @OneToMany(mappedBy = "ruolo", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Utente> utenti;
 }
 
 

@@ -25,7 +25,7 @@ public class Corso {
     @Id                                                    // ← Questa è la chiave primaria
     @GeneratedValue(strategy = GenerationType.IDENTITY)   // ← Il DB genera l'ID automaticamente
                                                           //    (AUTO INCREMENT in PostgreSQL)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false)                             // ← La colonna NON può essere NULL
     private String nome;
