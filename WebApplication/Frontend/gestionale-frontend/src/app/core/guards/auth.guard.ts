@@ -7,6 +7,8 @@ export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  // Accesso consentito solo se esiste token in storage.
+  // In caso contrario redirect deterministico alla login.
   if (authService.isAuthenticated()) {
     return true;
   }

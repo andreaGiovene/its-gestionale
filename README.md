@@ -1,50 +1,60 @@
 ﻿# ITS Gestionale Tirocini
 
-Monorepo per la gestione di corsi, allievi e tirocini ITS.
+Monorepo applicativo per la gestione del ciclo corsi-allievi-tirocini ITS.
 
-## Panoramica
+## Obiettivo del repository
 
-Il progetto e composto da:
-- Backend Spring Boot con API REST, autenticazione JWT e accesso PostgreSQL
-- Frontend Angular per login e dashboard
-- Database PostgreSQL avviabile via Docker Compose
+Il repository centralizza:
+- applicazione web (backend + frontend)
+- dataset e dump SQL di lavoro
+- artefatti di analisi BI
+- materiale di supporto operativo
 
-## Stack Tecnologico
+## Architettura ad alto livello
 
-- Java 21
-- Spring Boot 3.5.11
-- Spring Data JPA / Hibernate
-- Spring Security + JWT
-- PostgreSQL 16
-- Maven
-- Angular (workspace in WebApplication/Frontend/gestionale-frontend)
-- Docker Compose
+- Frontend Angular: interfaccia utente e navigazione per aree funzionali
+- Backend Spring Boot: API REST, logica applicativa, persistenza JPA
+- Database PostgreSQL: storage relazionale del dominio formativo
+- Docker Compose: bootstrap locale del servizio database
 
-## Struttura Repository
+## Macro-aree del progetto
 
-- WebApplication/Backend: applicazione Spring Boot
-- WebApplication/Frontend/gestionale-frontend: applicazione Angular
-- compose.yaml: servizi locali (PostgreSQL)
-- Database, PowerBI, PowerApps, docs: materiali di supporto
+- WebApplication: codice sorgente applicativo
+- Database: dump SQL e contenuti di inizializzazione
+- PowerBI: artefatti di reporting
+- PowerApps: workspace integrazione low-code
+- docs: documentazione tecnica e issue notes
 
-## Avvio Rapido
+## Mappa documentazione
 
-### 1) Avvia il database
+- README root: visione complessiva repository
+- WebApplication/README.md: guida applicativa full stack
+- WebApplication/Backend/README.md: struttura backend aggiornata e operativita runtime
+- WebApplication/Frontend/gestionale-frontend/README.md: guida frontend aggiornata
+- Database/README.md: gestione dump e ripristino
+- docs/APPLICATION_LIFECYCLE.md: ciclo di vita completo dell'applicazione
+
+## Avvio rapido locale
+
+### 1. Database
 
 ```bash
 docker compose up -d
 ```
 
-### 2) Avvia il backend
+### 2. Backend
 
 ```bash
 cd WebApplication/Backend
-mvnw.cmd spring-boot:run
+mvnw.cmd clean package -DskipTests
+java -jar target/gestionale-0.0.1-SNAPSHOT.jar
 ```
 
-Backend disponibile su http://localhost:8080
+Backend su:
+- http://localhost:8080
+- http://localhost:8080/health
 
-### 3) Avvia il frontend
+### 3. Frontend
 
 ```bash
 cd WebApplication/Frontend/gestionale-frontend
@@ -52,101 +62,23 @@ npm install
 npm start
 ```
 
-Frontend disponibile su http://localhost:4200
+Frontend su:
+- http://localhost:4200
 
-## Configurazione Backend (profilo dev)
+## Modello di autenticazione in sviluppo
 
-File: WebApplication/Backend/src/main/resources/application-dev.properties
+Per favorire leggerezza e velocita di sviluppo:
+- e stata rimossa l'implementazione JWT completa
+- login continua a usare email/password
+- il token restituito e semplificato (valore identificativo utente)
+- /auth/me legge l'header Authorization in formato Bearer
 
-Valori correnti principali:
-- Database: jdbc:postgresql://localhost:5432/db_its_stage
-- Username/password: admin/admin
-- Hibernate DDL: none
-- SQL log: false
-- CORS: http://localhost:4200,http://127.0.0.1:4200
-- JWT expiration: 480 minuti
+Nota: in produzione e consigliata una strategia token robusta (JWT o sessione server-side con rotazione e policy).
 
-Nota sicurezza:
-- app.jwt.secret e impostato per sviluppo locale; cambiarlo prima di ambienti condivisi o produzione.
+## Note operative
 
-## Entita e Schema
+- Branch di lavoro principale: andrea-dev
+- Remoto condiviso: origin
+- Remoto personale: backup
 
-Le entita principali sono allineate con PostgreSQL (12 tabelle):
-- allievo
-- azienda
-- caso_critico
-- colloquio_tirocinio
-- contatto_aziendale
-- corso
-- documento_tirocinio
-- monitoraggio
-- responsabile
-- ruolo
-- tirocinio
-- utente
-
-Sono presenti enum applicativi per i tipi del dominio (esito, tipo documento, ruolo contatto, tipo responsabile).
-
-## Endpoint Principali
-
-### Sistema
-- GET /
-- GET /health
-
-### Auth
-- POST /auth/login
-- GET /auth/me
-
-### API gestionali
-- /api/corsi
-- /api/allievi
-- /api/utenti
-
-## Build e Verifica
-
-Compilazione backend:
-
-```bash
-cd WebApplication/Backend
-mvnw.cmd compile -DskipTests
-```
-
-Package jar:
-
-```bash
-cd WebApplication/Backend
-mvnw.cmd package -DskipTests
-```
-
-## Troubleshooting
-
-### Backend non parte da jar
-
-Verifica:
-- di essere nella cartella corretta del backend
-- che il database PostgreSQL sia raggiungibile
-- che la porta 8080 sia libera
-
-Comando utile:
-
-```bash
-cd WebApplication/Backend
-java -jar target/gestionale-0.0.1-SNAPSHOT.jar
-```
-
-### Errore di connessione DB all'avvio
-
-Controlla che il container PostgreSQL sia running:
-
-```bash
-docker compose ps
-docker compose logs postgres
-```
-
-## Note Git
-
-Branch di lavoro principale: andrea-dev
-
-Remoti tipici:
-- origin: repository condiviso
-- backup: repository personale
+Per dettagli architetturali e processo operativo, consultare docs/APPLICATION_LIFECYCLE.md.
