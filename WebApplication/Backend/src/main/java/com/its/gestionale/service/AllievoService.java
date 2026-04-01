@@ -55,6 +55,17 @@ public class AllievoService {
         return dtos;
     }
 
+    // Trova un allievo per ID
+    @Transactional(readOnly = true)
+    public AllievoDTO findById(Integer id) {
+        Allievo allievo = allievoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Allievo con id " + id + " non trovato"
+                ));
+        return AllievoDTO.fromEntity(allievo);
+    }
+
     // Crea un nuovo allievo
     public AllievoDTO save(AllievoDTO dto) {
         Allievo allievo = new Allievo();
@@ -74,5 +85,42 @@ public class AllievoService {
         }
 
         return AllievoDTO.fromEntity(allievoRepository.save(allievo));
+    }
+
+    // Aggiorna un allievo esistente
+    public AllievoDTO update(Integer id, AllievoDTO dto) {
+        Allievo allievo = allievoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Allievo con id " + id + " non trovato"
+                ));
+
+        allievo.setNome(dto.getNome());
+        allievo.setCognome(dto.getCognome());
+        allievo.setCodiceFiscale(dto.getCodiceFiscale());
+        allievo.setDataDiNascita(dto.getDataDiNascita());
+        allievo.setNote(dto.getNote());
+
+        if (dto.getCorsoId() != null) {
+            Corso corso = corsoRepository.findById(dto.getCorsoId())
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Corso con id " + dto.getCorsoId() + " non trovato"
+                    ));
+            allievo.setCorso(corso);
+        }
+
+        return AllievoDTO.fromEntity(allievoRepository.save(allievo));
+    }
+
+    // Elimina un allievo
+    public void deleteById(Integer id) {
+        if (!allievoRepository.existsById(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Allievo con id " + id + " non trovato"
+            );
+        }
+        allievoRepository.deleteById(id);
     }
 }
