@@ -1,0 +1,42 @@
+.sidenav-container {
+  height: 100vh; // occupa tutta l'altezza della finestra
+}
+
+.sidenav {
+  width: 240px;
+  background-color: #1a237e; // blu scuro ITS
+  color: white;
+
+  // Le icone e il testo del menu diventano bianchi
+  mat-icon, span {
+    color: white;
+  }
+}
+
+.sidenav-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 16px;
+  font-size: 18px;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+// Stile del link attivo nel menu
+.active-link {
+  background-color: rgba(255,255,255,0.15) !important;
+  border-radius: 4px;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.content-area {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+}

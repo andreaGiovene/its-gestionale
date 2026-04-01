@@ -1,0 +1,53 @@
+<div class="aziende-container">
+  <div class="header">
+    <h1>Aziende</h1>
+    <button class="btn btn-primary" (click)="createNew()">Nuova Azienda</button>
+  </div>
+
+  <ng-container *ngIf="isLoading">
+    <p class="loading">Caricamento in corso...</p>
+  </ng-container>
+
+  <ng-container *ngIf="error && !isLoading">
+    <div class="error-message alert alert-danger">
+      {{ error }}
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading && !error">
+    <ng-container *ngIf="aziende.length > 0; else emptyState">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Ragione Sociale</th>
+            <th>Partita IVA</th>
+            <th>Telefono</th>
+            <th>Email</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let azienda of aziende" (click)="viewDetail(azienda.id)" class="cursor-pointer">
+            <td>{{ azienda.id }}</td>
+            <td>{{ azienda.ragioneSociale }}</td>
+            <td>{{ azienda.partitaIva }}</td>
+            <td>{{ azienda.telefono || '-' }}</td>
+            <td>{{ azienda.email || '-' }}</td>
+            <td>
+              <button class="btn btn-sm btn-info" (click)="viewDetail(azienda.id)">Dettagli</button>
+              <button class="btn btn-sm btn-danger" (click)="delete(azienda.id, $event)">Elimina</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <p>Nessuna azienda disponibile.</p>
+        <button class="btn btn-primary" (click)="createNew()">Crea la prima azienda</button>
+      </div>
+    </ng-template>
+  </ng-container>
+</div>

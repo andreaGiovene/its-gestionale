@@ -1,0 +1,131 @@
+<div class="azienda-detail-container">
+  <div class="header">
+    <button class="btn btn-outline-secondary" (click)="cancel()">← Indietro</button>
+    <h1>{{ isNew ? 'Nuova Azienda' : 'Dettagli Azienda' }}</h1>
+    <span></span>
+  </div>
+
+  <ng-container *ngIf="isLoading">
+    <p class="loading">Caricamento in corso...</p>
+  </ng-container>
+
+  <ng-container *ngIf="error && !isLoading">
+    <div class="error-message alert alert-danger">
+      {{ error }}
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading">
+    <form [formGroup]="form" class="form-container">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="ragioneSociale">Ragione Sociale *</label>
+          <input
+            type="text"
+            id="ragioneSociale"
+            class="form-control"
+            formControlName="ragioneSociale"
+            placeholder="Inserisci la ragione sociale"
+          />
+          <small class="form-text text-muted" *ngIf="form.get('ragioneSociale')?.errors?.['required']">
+            La ragione sociale è obbligatoria
+          </small>
+          <small class="form-text text-muted" *ngIf="form.get('ragioneSociale')?.errors?.['maxlength']">
+            Massimo 100 caratteri
+          </small>
+        </div>
+
+        <div class="form-group col-md-6">
+          <label for="partitaIva">Partita IVA *</label>
+          <input
+            type="text"
+            id="partitaIva"
+            class="form-control"
+            formControlName="partitaIva"
+            placeholder="Inserisci la partita IVA"
+          />
+          <small class="form-text text-muted" *ngIf="form.get('partitaIva')?.errors?.['required']">
+            La partita IVA è obbligatoria
+          </small>
+          <small class="form-text text-muted" *ngIf="form.get('partitaIva')?.errors?.['maxlength']">
+            Massimo 20 caratteri
+          </small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="telefono">Telefono</label>
+          <input
+            type="tel"
+            id="telefono"
+            class="form-control"
+            formControlName="telefono"
+            placeholder="Inserisci il numero di telefono"
+          />
+          <small class="form-text text-muted" *ngIf="form.get('telefono')?.errors?.['maxlength']">
+            Massimo 20 caratteri
+          </small>
+        </div>
+
+        <div class="form-group col-md-6">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            formControlName="email"
+            placeholder="Inserisci l'indirizzo email"
+          />
+          <small class="form-text text-muted" *ngIf="form.get('email')?.errors?.['maxlength']">
+            Massimo 100 caratteri
+          </small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-8">
+          <label for="indirizzo">Indirizzo</label>
+          <input
+            type="text"
+            id="indirizzo"
+            class="form-control"
+            formControlName="indirizzo"
+            placeholder="Inserisci l'indirizzo completo"
+          />
+          <small class="form-text text-muted" *ngIf="form.get('indirizzo')?.errors?.['maxlength']">
+            Massimo 150 caratteri
+          </small>
+        </div>
+
+        <div class="form-group col-md-4">
+          <label for="cap">CAP</label>
+          <input
+            type="text"
+            id="cap"
+            class="form-control"
+            formControlName="cap"
+            placeholder="Inserisci il CAP"
+          />
+          <small class="form-text text-muted" *ngIf="form.get('cap')?.errors?.['maxlength']">
+            Massimo 10 caratteri
+          </small>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="isSubmitting">
+          Annulla
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="save()"
+          [disabled]="form.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? 'Salvataggio...' : 'Salva' }}
+        </button>
+      </div>
+    </form>
+  </ng-container>
+</div>

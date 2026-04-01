@@ -1,55 +1,69 @@
 package com.its.gestionale.entity;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "allievo")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Allievo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
     private String nome;
+
+    @Column(nullable = false)
     private String cognome;
 
-    @ManyToOne
+    @Column(name = "codice_fiscale", unique = true)
+    // ↑ unique = true → PostgreSQL crea un indice univoco
+    //   Non possono esistere due allievi con lo stesso CF
+    private String codiceFiscale;
+
+
+    @Column(name = "data_di_nascita")
+    private LocalDate dataDiNascita;
+
+    @Column(columnDefinition = "TEXT")
+    private String note;
+
+    // ─────────────────────────────────────────
+    // RELAZIONE: Allievo → Corso (ManyToOne)
+    // ─────────────────────────────────────────
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "corso_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Corso corso;
 
-    public Allievo() {}
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_utente", unique = true)
+    private Utente utente;
 
-    // GETTER & SETTER
+    @OneToMany(mappedBy = "allievo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Tirocinio> tirocini;
 
-    public Integer getId() {
-        return id;
-    }
+    @OneToMany(mappedBy = "allievo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<CasoCritico> casiCritici;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getCognome() {
-        return cognome;
-    }
-
-    public void setCognome(String cognome) {
-        this.cognome = cognome;
-    }
-
-    public Corso getCorso() {
-        return corso;
-    }
-
-    public void setCorso(Corso corso) {
-        this.corso = corso;
-    }
+    @OneToMany(mappedBy = "allievo", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<ColloquioTirocinio> colloqui;
 }

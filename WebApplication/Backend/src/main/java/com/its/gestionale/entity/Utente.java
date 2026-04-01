@@ -1,10 +1,25 @@
 package com.its.gestionale.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "utente")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Utente {
 
     @Id
@@ -12,94 +27,28 @@ public class Utente {
     @Column(name = "id_utente")
     private Integer idUtente;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(unique = true)
+    @Column(unique = true, length = 100)
     private String username;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(nullable = false, unique = true, length = 255)
+    private String email;
+
+    @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-    @ManyToOne
-    @JoinColumn(name = "id_ruolo", nullable = false)
-    private Ruolo ruolo;
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT true")
+    private Boolean attivo;
 
-    @Column(nullable = false)
-    private Boolean attivo = true;
-
-    @Column(name = "creato_il")
+    @Column(name = "creato_il", nullable = false)
     private LocalDateTime creatoIl;
+
+    @Column(name = "aggiornato_il", nullable = false)
+    private LocalDateTime aggiornatoIl;
 
     @Column(name = "ultimo_accesso")
     private LocalDateTime ultimoAccesso;
 
-    // --- COSTRUTTORE VUOTO ---
-    public Utente() {}
-
-    // --- GETTER & SETTER ---
-
-    public Integer getIdUtente() {
-        return idUtente;
-    }
-
-    public void setIdUtente(Integer idUtente) {
-        this.idUtente = idUtente;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
-
-    public Ruolo getRuolo() {
-        return ruolo;
-    }
-
-    public void setRuolo(Ruolo ruolo) {
-        this.ruolo = ruolo;
-    }
-
-    public Boolean getAttivo() {
-        return attivo;
-    }
-
-    public void setAttivo(Boolean attivo) {
-        this.attivo = attivo;
-    }
-
-    public LocalDateTime getCreatoIl() {
-        return creatoIl;
-    }
-
-    public void setCreatoIl(LocalDateTime creatoIl) {
-        this.creatoIl = creatoIl;
-    }
-
-    public LocalDateTime getUltimoAccesso() {
-        return ultimoAccesso;
-    }
-
-    public void setUltimoAccesso(LocalDateTime ultimoAccesso) {
-        this.ultimoAccesso = ultimoAccesso;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_ruolo", nullable = false)
+    private Ruolo ruolo;
 }

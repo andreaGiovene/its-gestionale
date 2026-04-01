@@ -1,9 +1,19 @@
 package com.its.gestionale.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "ruolo")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Ruolo {
 
     @Id
@@ -11,34 +21,17 @@ public class Ruolo {
     @Column(name = "id_ruolo")
     private Integer idRuolo;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     private String codice;
 
+    @Column(length = 255)
     private String descrizione;
 
-    // ===== GETTER & SETTER =====
-
-    public Integer getIdRuolo() {
-        return idRuolo;
-    }
-
-    public void setIdRuolo(Integer idRuolo) {
-        this.idRuolo = idRuolo;
-    }
-
-    public String getCodice() {
-        return codice;
-    }
-
-    public void setCodice(String codice) {
-        this.codice = codice;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
+    @OneToMany(mappedBy = "ruolo", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Utente> utenti;
 }
+
+
+   
