@@ -1,7 +1,7 @@
 package com.its.gestionale.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +22,15 @@ public class AziendaService {
 
     @Transactional(readOnly = true)
     public List<AziendaDTO> findAll() {
-        return aziendaRepository.findAll()
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+        List<Azienda> aziende = aziendaRepository.findAll();
+        List<AziendaDTO> result = new ArrayList<>();
+
+        for (Azienda azienda : aziende) {
+            AziendaDTO dto = toDto(azienda);
+            result.add(dto);
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)

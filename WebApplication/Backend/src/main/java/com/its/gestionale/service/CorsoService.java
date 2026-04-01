@@ -1,7 +1,7 @@
 package com.its.gestionale.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +28,15 @@ public class CorsoService {
     // Restituisce tutti i corsi
     @Transactional(readOnly = true)
     public List<CorsoDTO> findAll() {
-        return corsoRepository.findAll()
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+        List<Corso> corsi = corsoRepository.findAll();
+        List<CorsoDTO> result = new ArrayList<>();
+
+        for (Corso corso : corsi) {
+            CorsoDTO dto = toDto(corso);
+            result.add(dto);
+        }
+
+        return result;
     }
 
     // Cerca un corso per ID e restituisce 404 se non esiste.
@@ -73,10 +78,15 @@ public class CorsoService {
    // Cerca corsi per stato
     @Transactional(readOnly = true)
     public List<CorsoDTO> findByStato(String stato) {
-        return corsoRepository.findByStato(stato)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+        List<Corso> corsi = corsoRepository.findByStato(stato);
+        List<CorsoDTO> result = new ArrayList<>();
+
+        for (Corso corso : corsi) {
+            CorsoDTO dto = toDto(corso);
+            result.add(dto);
+        }
+
+        return result;
     }
 
     private CorsoDTO toDto(Corso corso) {
