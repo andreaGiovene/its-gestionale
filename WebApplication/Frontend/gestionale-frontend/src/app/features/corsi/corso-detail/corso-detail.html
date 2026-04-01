@@ -1,0 +1,79 @@
+<div class="corso-detail-container">
+  <div class="header">
+    <button class="btn btn-outline-secondary" (click)="cancel()">← Indietro</button>
+    <h1>{{ isNew ? 'Nuovo Corso' : 'Dettagli Corso' }}</h1>
+    <span></span>
+  </div>
+
+  <ng-container *ngIf="isLoading">
+    <p class="loading">Caricamento in corso...</p>
+  </ng-container>
+
+  <ng-container *ngIf="error && !isLoading">
+    <div class="error-message alert alert-danger">
+      {{ error }}
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading">
+    <form [formGroup]="form" class="form-container">
+      <div class="form-group">
+        <label for="nome">Nome Corso *</label>
+        <input
+          type="text"
+          id="nome"
+          class="form-control"
+          formControlName="nome"
+          placeholder="Inserisci il nome del corso"
+        />
+        <small class="form-text text-muted" *ngIf="form.get('nome')?.errors?.['required']">
+          Il nome è obbligatorio
+        </small>
+        <small class="form-text text-muted" *ngIf="form.get('nome')?.errors?.['maxlength']">
+          Massimo 255 caratteri
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="annoAccademico">Anno Accademico</label>
+        <input
+          type="text"
+          id="annoAccademico"
+          class="form-control"
+          formControlName="annoAccademico"
+          placeholder="es. 2024/2025"
+        />
+        <small class="form-text text-muted" *ngIf="form.get('annoAccademico')?.errors?.['maxlength']">
+          Massimo 32 caratteri
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="stato">Stato *</label>
+        <select id="stato" class="form-control" formControlName="stato">
+          <option value="">-- Seleziona stato --</option>
+          <option value="ATTIVO">Attivo</option>
+          <option value="INATTIVO">Inattivo</option>
+          <option value="ARCHIVIATO">Archiviato</option>
+        </select>
+        <small class="form-text text-muted" *ngIf="form.get('stato')?.errors?.['required']">
+          Lo stato è obbligatorio
+        </small>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="isSubmitting">
+          Annulla
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="save()"
+          [disabled]="form.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? 'Salvataggio...' : 'Salva' }}
+        </button>
+      </div>
+    </form>
+  </ng-container>
+</div>

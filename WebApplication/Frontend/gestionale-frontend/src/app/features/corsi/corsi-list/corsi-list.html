@@ -1,0 +1,57 @@
+<div class="corsi-container">
+  <div class="header">
+    <h1>Corsi</h1>
+    <button class="btn btn-primary" (click)="createNew()">Nuovo Corso</button>
+  </div>
+
+  <ng-container *ngIf="isLoading">
+    <p class="loading">Caricamento in corso...</p>
+  </ng-container>
+
+  <ng-container *ngIf="error && !isLoading">
+    <div class="error-message alert alert-danger">
+      {{ error }}
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading && !error">
+    <ng-container *ngIf="corsi.length > 0; else emptyState">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Anno Accademico</th>
+            <th>Stato</th>
+            <th>Allievi</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let corso of corsi" (click)="viewDetail(corso.id)" class="cursor-pointer">
+            <td>{{ corso.id }}</td>
+            <td>{{ corso.nome }}</td>
+            <td>{{ corso.annoAccademico }}</td>
+            <td>
+              <span class="badge" [ngClass]="{'badge-success': corso.stato === 'ATTIVO', 'badge-secondary': corso.stato !== 'ATTIVO'}">
+                {{ corso.stato }}
+              </span>
+            </td>
+            <td>{{ corso.allieviCount || 0 }}</td>
+            <td>
+              <button class="btn btn-sm btn-info" (click)="viewDetail(corso.id)">Dettagli</button>
+              <button class="btn btn-sm btn-danger" (click)="delete(corso.id, $event)">Elimina</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <p>Nessun corso disponibile.</p>
+        <button class="btn btn-primary" (click)="createNew()">Crea il primo corso</button>
+      </div>
+    </ng-template>
+  </ng-container>
+</div>
