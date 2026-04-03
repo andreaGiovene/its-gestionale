@@ -6,6 +6,10 @@ import { CorsiList } from './features/corsi/corsi-list/corsi-list';
 import { CorsoDetail } from './features/corsi/corso-detail/corso-detail';
 import { AziendeList } from './features/aziende/aziende-list/aziende-list';
 import { AziendaDetail } from './features/aziende/azienda-detail/azienda-detail';
+import { AllieviList } from './features/allievi/allievi-list/allievi-list';
+import { AllievoDetail } from './features/allievi/allievo-detail/allievo-detail';
+import { ColloquiPlaceholder } from './features/colloqui/colloqui-placeholder/colloqui-placeholder';
+import { TirociniPlaceholder } from './features/tirocini/tirocini-placeholder/tirocini-placeholder';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -26,6 +30,14 @@ export const routes: Routes = [
       // Aziende routes
       { path: 'aziende', component: AziendeList },
       { path: 'aziende/:id', component: AziendaDetail },
+
+      // Allievi routes
+      { path: 'allievi', component: AllieviList },
+      { path: 'allievi/:id', component: AllievoDetail },
+
+      // Placeholder routes
+      { path: 'colloqui', component: ColloquiPlaceholder },
+      { path: 'tirocini', component: TirociniPlaceholder },
     ]
   },
   { path: '**', redirectTo: '' }

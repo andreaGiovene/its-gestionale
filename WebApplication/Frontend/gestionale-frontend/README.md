@@ -2,6 +2,13 @@
 
 Applicazione Angular per autenticazione, dashboard e gestione funzionale del dominio ITS.
 
+Funzionalita disponibili al momento:
+- Login + area protetta
+- Dashboard
+- CRUD Corsi
+- CRUD Aziende
+- CRUD Allievi
+
 ## Stack frontend
 
 - Angular CLI 21.2.3

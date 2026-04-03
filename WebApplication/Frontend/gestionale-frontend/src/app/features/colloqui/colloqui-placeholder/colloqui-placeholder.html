@@ -1,0 +1,68 @@
+<div class="placeholder-page">
+  <div class="header">
+    <h1>Colloqui</h1>
+    <span class="tag">Placeholder operativo</span>
+  </div>
+
+  <p class="intro">
+    Pagina predisposta per gli inserimenti. Le bozze create sotto sono locali e servono a preparare il flusso UI in attesa di API dedicate.
+  </p>
+
+  <form class="form-grid" [formGroup]="form" (ngSubmit)="addBozza()">
+    <label>
+      Data *
+      <input type="date" formControlName="data" />
+    </label>
+
+    <label>
+      Ora *
+      <input type="time" formControlName="ora" />
+    </label>
+
+    <label>
+      Allievo *
+      <input type="text" formControlName="allievo" placeholder="Nome e cognome" />
+    </label>
+
+    <label>
+      Azienda *
+      <input type="text" formControlName="azienda" placeholder="Ragione sociale" />
+    </label>
+
+    <label class="full-width">
+      Esito / note
+      <textarea rows="3" formControlName="esito" placeholder="Esito colloquio o note"></textarea>
+    </label>
+
+    <div class="actions full-width">
+      <button type="submit" class="btn-primary">Aggiungi bozza</button>
+    </div>
+  </form>
+
+  <section class="list-section">
+    <h2>Bozze inserite</h2>
+
+    <p *ngIf="bozze.length === 0" class="empty">Nessuna bozza inserita.</p>
+
+    <table *ngIf="bozze.length > 0" class="draft-table">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Ora</th>
+          <th>Allievo</th>
+          <th>Azienda</th>
+          <th>Esito</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let bozza of bozze">
+          <td>{{ bozza.data }}</td>
+          <td>{{ bozza.ora }}</td>
+          <td>{{ bozza.allievo }}</td>
+          <td>{{ bozza.azienda }}</td>
+          <td>{{ bozza.esito || '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
