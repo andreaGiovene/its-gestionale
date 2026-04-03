@@ -64,6 +64,7 @@ File aggiornati:
 - Impostare origine frontend:
   - APP_CORS_ALLOWED_ORIGINS=https://tuo-frontend.example.com
 - Impostare credenziali database (consigliato):
+  - Nota: `SPRING_DATASOURCE_USERNAME` indica l'utente del database, non il campo `username` del dominio applicativo, che è stato eliminato.
   - SPRING_DATASOURCE_URL
   - SPRING_DATASOURCE_USERNAME
   - SPRING_DATASOURCE_PASSWORD
