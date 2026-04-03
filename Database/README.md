@@ -39,6 +39,20 @@ docker compose down -v
 docker compose up -d
 ```
 
+## Migrazioni manuali
+
+Quando lo schema applicativo cambia senza rigenerare il dump principale, usare gli script in `Database/migrations` sugli ambienti gia' inizializzati.
+
+### Rimozione colonna username da utente
+
+Eseguire la migrazione:
+
+```bash
+psql -U admin -d db_its_stage -f migrations/2026-04-03-drop-utente-username.sql
+```
+
+Nota: il dump principale resta il punto di partenza per le nuove installazioni; gli script di migrazione servono per allineare gli ambienti gia' avviati.
+
 ## Catalogo tabelle
 
 Lo schema applicativo e composto da 12 tabelle principali:
