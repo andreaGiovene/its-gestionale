@@ -15,6 +15,9 @@ Macro-area dati con schema relazionale PostgreSQL utilizzato dal backend Spring 
 
 ## Ripristino dati
 
+All'avvio tramite Docker Compose, `dump.sql` viene importato automaticamente da PostgreSQL.
+Questa inizializzazione viene eseguita solo al primo avvio, quando il volume dati e vuoto.
+
 ### Ripristino in PostgreSQL locale
 
 ```bash
@@ -25,6 +28,15 @@ psql -U admin -d db_its_stage -f dump.sql
 
 ```bash
 docker exec -i postgres_db psql -U admin -d db_its_stage < dump.sql
+```
+
+### Reinizializzare da zero il database Docker
+
+Se il container e gia stato avviato in precedenza, il volume persiste i dati e l'import automatico non viene rieseguito.
+
+```bash
+docker compose down -v
+docker compose up -d
 ```
 
 ## Catalogo tabelle

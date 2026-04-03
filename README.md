@@ -42,6 +42,8 @@ Il repository centralizza:
 docker compose up -d
 ```
 
+Al primo avvio viene importato automaticamente `Database/dump.sql`.
+
 ### 2. Backend
 
 ```bash
