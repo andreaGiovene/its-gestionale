@@ -11,9 +11,6 @@ import com.its.gestionale.entity.Utente;
 @Repository
 public interface UtenteRepository extends JpaRepository<Utente, Integer> {
 
-    // Trova un utente per username — utile per login
-    Optional<Utente> findByUsername(String username);
-
     // Trova un utente per email
     Optional<Utente> findByEmail(String email);
 

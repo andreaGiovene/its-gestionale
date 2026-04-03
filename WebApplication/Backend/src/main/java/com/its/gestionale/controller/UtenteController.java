@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,11 +33,11 @@ public class UtenteController {
         return ResponseEntity.ok(utenteService.findAll());
     }
 
-    // GET /api/utenti/username/{username}
-    @GetMapping("/username/{username}")
-    public ResponseEntity<UtenteDTO> findByUsername(
-            @PathVariable String username) {
-        return ResponseEntity.ok(utenteService.findByUsername(username));
+    // GET /api/utenti/email?email=...
+    @GetMapping("/email")
+    public ResponseEntity<UtenteDTO> findByEmail(
+            @RequestParam String email) {
+        return ResponseEntity.ok(utenteService.findByEmail(email));
     }
 
     // POST /api/utenti

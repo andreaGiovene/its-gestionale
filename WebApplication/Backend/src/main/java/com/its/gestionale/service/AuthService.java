@@ -71,10 +71,9 @@ public class AuthService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato"));
 
         return new MeResponse(
-                utente.getIdUtente(),
-                utente.getEmail(),
-                utente.getUsername(),
-                utente.getRuolo() != null ? utente.getRuolo().getCodice() : null,
-                utente.getAttivo());
+            utente.getIdUtente(),
+            utente.getEmail(),
+            utente.getRuolo() != null ? utente.getRuolo().getCodice() : null,
+            utente.getAttivo());
     }
 }

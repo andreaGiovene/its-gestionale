@@ -9,7 +9,6 @@ public class MeResponse {
 
     private Integer idUtente;
     private String email;
-    private String username;
     private String ruolo;
     private Boolean attivo;
 }

@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 public class UtenteDTO {
 
     private Integer idUtente;
-    private String username;
     private String password;
     private String email;
     private String ruolo;
@@ -20,7 +19,6 @@ public class UtenteDTO {
     public static UtenteDTO fromEntity(Utente utente) {
         UtenteDTO dto = new UtenteDTO();
         dto.setIdUtente(utente.getIdUtente());
-        dto.setUsername(utente.getUsername());
         dto.setEmail(utente.getEmail());
         dto.setRuolo(utente.getRuolo() != null ? utente.getRuolo().getCodice() : null);
         dto.setAttivo(utente.getAttivo());

@@ -37,12 +37,12 @@ public class UtenteService {
         return dtos;
     }
 
-    // Trova un utente per username — utile per login
-    public UtenteDTO findByUsername(String username) {
-        Utente utente = utenteRepository.findByUsername(username)
+    // Trova un utente per email
+    public UtenteDTO findByEmail(String email) {
+        Utente utente = utenteRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Utente con username " + username + " non trovato"
+                        "Utente con email " + email + " non trovato"
                 ));
 
         return UtenteDTO.fromEntity(utente);
@@ -50,11 +50,11 @@ public class UtenteService {
 
     // Crea un nuovo utente
     public UtenteDTO save(UtenteDTO dto) {
-        // ↓ Controlla che username non sia già in uso
-        if (utenteRepository.findByUsername(dto.getUsername()).isPresent()) {
+        // ↓ Controlla che email non sia già in uso
+        if (utenteRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Username " + dto.getUsername() + " è già in uso"
+                    "Email " + dto.getEmail() + " è già in uso"
             );
         }
 
@@ -69,7 +69,6 @@ public class UtenteService {
         LocalDateTime now = LocalDateTime.now();
 
         Utente utente = new Utente();
-        utente.setUsername(dto.getUsername());
         utente.setEmail(dto.getEmail());
         utente.setPasswordHash(dto.getPassword());
         utente.setRuolo(ruolo);
@@ -88,8 +87,15 @@ public class UtenteService {
                         "Utente con id " + id + " non trovato"
                 ));
 
+        if (dto.getEmail() != null && !dto.getEmail().equalsIgnoreCase(utente.getEmail())
+            && utenteRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Email " + dto.getEmail() + " è già in uso"
+            );
+        }
+
         utente.setEmail(dto.getEmail());
-        utente.setUsername(dto.getUsername());
         utente.setRuolo(findRuoloByCodice(dto.getRuolo()));
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             utente.setPasswordHash(dto.getPassword());

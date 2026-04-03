@@ -27,9 +27,6 @@ public class Utente {
     @Column(name = "id_utente")
     private Integer idUtente;
 
-    @Column(unique = true, length = 100)
-    private String username;
-
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 

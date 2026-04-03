@@ -16,7 +16,6 @@ export interface LoginResponse {
 export interface MeResponse {
   idUtente: number;
   email: string;
-  username: string;
   ruolo: string;
   attivo: boolean;
 }
