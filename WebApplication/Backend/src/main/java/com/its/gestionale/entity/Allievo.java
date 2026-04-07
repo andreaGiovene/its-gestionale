@@ -3,7 +3,18 @@ package com.its.gestionale.entity;
 import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,9 +43,12 @@ public class Allievo {
     //   Non possono esistere due allievi con lo stesso CF
     private String codiceFiscale;
 
-
+    
     @Column(name = "data_di_nascita")
     private LocalDate dataDiNascita;
+
+    @Column(name= "telefono")
+    private String telefono;
 
     @Column(columnDefinition = "TEXT")
     private String note;

@@ -31,6 +31,7 @@ public class AllievoDTO {
         dto.setCognome(allievo.getCognome());
         dto.setCodiceFiscale(allievo.getCodiceFiscale());
         dto.setDataDiNascita(allievo.getDataDiNascita());
+        dto.setTelefono(allievo.getTelefono());
         dto.setNote(allievo.getNote());
 
         // Estrae solo id e nome dal Corso collegato

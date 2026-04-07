@@ -3,7 +3,7 @@
 ## Prerequisiti
 - Frontend: http://localhost:4200
 - Backend: http://localhost:8080 (modo test)
-- Credenziali demo: `test.login@its.local` / `password123`
+- Credenziali demo: `admin@scuola.it` / `hash_secure_123`
 
 ---
 
@@ -25,8 +25,8 @@
 ## FASE 2: Login Credenziali ✓ / ✗
 
 **Step 2** - Inserisci credenziali:
-- Email: `test.login@its.local`
-- Password: `password123`
+- Email: `admin@scuola.it`
+- Password: `hash_secure_123`
 
 **Step 3** - Clicca bottone "Entra"
 

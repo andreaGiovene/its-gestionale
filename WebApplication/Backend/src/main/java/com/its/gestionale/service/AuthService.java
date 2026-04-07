@@ -2,6 +2,8 @@ package com.its.gestionale.service;
 
 import java.time.LocalDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,6 +16,8 @@ import com.its.gestionale.repository.UtenteRepository;
 
 @Service
 public class AuthService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UtenteRepository utenteRepository;
 
@@ -39,9 +43,13 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide");
         }
 
-        utente.setUltimoAccesso(LocalDateTime.now());
-        utente.setAggiornatoIl(LocalDateTime.now());
-        utenteRepository.save(utente);
+        try {
+            utente.setUltimoAccesso(LocalDateTime.now());
+            utente.setAggiornatoIl(LocalDateTime.now());
+            utenteRepository.save(utente);
+        } catch (RuntimeException ex) {
+            log.warn("Impossibile aggiornare i metadati di login per {}: {}", request.getEmail(), ex.getMessage());
+        }
 
         // Token intentionally semplice:
         // il frontend si aspetta un campo token e continua a inviarlo come Bearer.
