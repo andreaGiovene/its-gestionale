@@ -1,5 +1,6 @@
 package com.its.gestionale.dto;
 
+import com.its.gestionale.entity.Azienda;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -30,4 +31,17 @@ public class AziendaDTO {
 
     @Size(max = 10, message = "Il CAP non può superare 10 caratteri")
     private String cap;
+
+    public static AziendaDTO fromEntity(Azienda azienda) {
+        AziendaDTO dto = new AziendaDTO();
+        dto.setId(azienda.getId());
+        dto.setRagioneSociale(azienda.getRagioneSociale());
+        dto.setPartitaIva(azienda.getPartitaIva());
+        dto.setTelefono(azienda.getTelefono());
+        dto.setEmail(azienda.getEmail());
+        dto.setIndirizzo(azienda.getIndirizzo());
+        dto.setCap(azienda.getCap());
+        return dto;
+    }
 }
+
