@@ -26,8 +26,7 @@ public class AziendaService {
         List<AziendaDTO> result = new ArrayList<>();
 
         for (Azienda azienda : aziende) {
-            AziendaDTO dto = toDto(azienda);
-            result.add(dto);
+            result.add(AziendaDTO.fromEntity(azienda));
         }
 
         return result;
@@ -35,15 +34,16 @@ public class AziendaService {
 
     @Transactional(readOnly = true)
     public AziendaDTO findById(Integer id) {
-        Azienda azienda = aziendaRepository.findById(id)
-                .orElseThrow(() -> new AziendaNotFoundException(id));
-        return toDto(azienda);
+    return aziendaRepository.findById(id)
+            .map(AziendaDTO::fromEntity)
+            .orElseThrow(() -> new AziendaNotFoundException(id));
     }
 
     public AziendaDTO create(AziendaDTO dto) {
         Azienda azienda = toEntity(dto);
         Azienda salvata = aziendaRepository.save(azienda);
-        return toDto(salvata);
+
+        return AziendaDTO.fromEntity(salvata);
     }
 
     public AziendaDTO update(Integer id, AziendaDTO dto) {
@@ -58,26 +58,16 @@ public class AziendaService {
         esistente.setCap(dto.getCap());
 
         Azienda aggiornata = aziendaRepository.save(esistente);
-        return toDto(aggiornata);
+
+        return AziendaDTO.fromEntity(aggiornata);
     }
 
     public void deleteById(Integer id) {
         if (!aziendaRepository.existsById(id)) {
             throw new AziendaNotFoundException(id);
         }
-        aziendaRepository.deleteById(id);
-    }
 
-    private AziendaDTO toDto(Azienda azienda) {
-        AziendaDTO dto = new AziendaDTO();
-        dto.setId(azienda.getId());
-        dto.setRagioneSociale(azienda.getRagioneSociale());
-        dto.setPartitaIva(azienda.getPartitaIva());
-        dto.setTelefono(azienda.getTelefono());
-        dto.setEmail(azienda.getEmail());
-        dto.setIndirizzo(azienda.getIndirizzo());
-        dto.setCap(azienda.getCap());
-        return dto;
+        aziendaRepository.deleteById(id);
     }
 
     private Azienda toEntity(AziendaDTO dto) {

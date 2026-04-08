@@ -32,9 +32,6 @@ public class Allievo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
-    private String telefono;
-
     @Column(nullable = false)
     private String nome;
 
