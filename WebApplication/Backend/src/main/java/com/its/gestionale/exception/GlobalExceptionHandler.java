@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,9 +16,21 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * Gestore centralizzato delle eccezioni per tutte le API REST.
+ *
+ * Converte eccezioni tecniche e di dominio in una risposta uniforme
+ * {@link ApiErrorResponse}, cosi il frontend puo gestire gli errori in modo
+ * prevedibile.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    /**
+     * Traduce l'eccezione di corso non trovato in HTTP 404.
+     */
     @ExceptionHandler(CorsoNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleCorsoNotFound(
             CorsoNotFoundException ex,
@@ -24,6 +38,9 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI(), null);
     }
 
+    /**
+     * Traduce l'eccezione di azienda non trovata in HTTP 404.
+     */
     @ExceptionHandler(AziendaNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleAziendaNotFound(
             AziendaNotFoundException ex,
@@ -31,6 +48,9 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI(), null);
     }
 
+    /**
+     * Raccoglie e restituisce gli errori di validazione input (HTTP 400).
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleValidation(
             MethodArgumentNotValidException ex,
@@ -43,6 +63,9 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.BAD_REQUEST, "Input non valido", request.getRequestURI(), errors);
     }
 
+    /**
+     * Gestisce errori di argomento non valido generati dall'applicazione.
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiErrorResponse> handleIllegalArgument(
             IllegalArgumentException ex,
@@ -50,10 +73,14 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI(), null);
     }
 
+    /**
+     * Propaga il codice HTTP dichiarato nelle {@link ResponseStatusException}.
+     */
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ApiErrorResponse> handleResponseStatus(
+    public ResponseEntity<ApiErrorResponse> handleResponseStatusException(
             ResponseStatusException ex,
             HttpServletRequest request) {
+        log.warn("ResponseStatusException on {}: {}", request.getRequestURI(), ex.getMessage());
         HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
         if (status == null) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -63,16 +90,23 @@ public class GlobalExceptionHandler {
         return buildError(status, message, request.getRequestURI(), null);
     }
 
+    /**
+     * Fallback per eccezioni non previste: ritorna HTTP 500.
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGeneric(
             Exception ex,
             HttpServletRequest request) {
+        log.error("Unhandled exception on {}", request.getRequestURI(), ex);
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR,
                 "Errore interno del server",
                 request.getRequestURI(),
                 null);
     }
 
+    /**
+     * Crea il payload errore standard e lo incapsula nella response HTTP.
+     */
     private ResponseEntity<ApiErrorResponse> buildError(
             HttpStatus status,
             String message,
