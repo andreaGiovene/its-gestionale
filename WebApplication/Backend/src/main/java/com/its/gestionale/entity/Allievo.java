@@ -32,9 +32,6 @@ public class Allievo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
-    private String telefono;
-
     @Column(nullable = false)
     private String nome;
 
@@ -50,7 +47,7 @@ public class Allievo {
     @Column(name = "data_di_nascita")
     private LocalDate dataDiNascita;
 
-    @Column(name= "telefono")
+    @Column(name = "telefono")
     private String telefono;
 
     @Column(columnDefinition = "TEXT")
