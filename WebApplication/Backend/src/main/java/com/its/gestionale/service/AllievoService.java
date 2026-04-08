@@ -30,7 +30,8 @@ public class AllievoService {
     // Complessita' temporale: O(n), dove n = numero di record letti dal DB.
     // Complessita' spaziale: O(n), per la nuova lista di DTO creata in output.
     // Costo nascosto: findAll() carica tutto in memoria; su tabelle grandi e' meglio paginare.
-    @Transactional(readOnly = true)
+
+    @Transactional(readOnly = true)  // Apre una transazione di sola lettura: evita flush/modifiche non volute e puo ottimizzare le query lato JPA/DB.
     public List<AllievoDTO> findAll() {
         List<Allievo> allievi = allievoRepository.findAll();
         List<AllievoDTO> dtos = new ArrayList<>();
