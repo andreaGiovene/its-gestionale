@@ -72,6 +72,7 @@ public class AllievoService {
         Allievo allievo = new Allievo();
         allievo.setNome(dto.getNome());
         allievo.setCognome(dto.getCognome());
+        extracted(dto, allievo);
         allievo.setCodiceFiscale(dto.getCodiceFiscale());
         allievo.setDataDiNascita(dto.getDataDiNascita());
         allievo.setNote(dto.getNote());
@@ -98,6 +99,7 @@ public class AllievoService {
 
         allievo.setNome(dto.getNome());
         allievo.setCognome(dto.getCognome());
+        extracted(dto, allievo);
         allievo.setCodiceFiscale(dto.getCodiceFiscale());
         allievo.setDataDiNascita(dto.getDataDiNascita());
         allievo.setNote(dto.getNote());
@@ -112,6 +114,10 @@ public class AllievoService {
         }
 
         return AllievoDTO.fromEntity(allievoRepository.save(allievo));
+    }
+
+    private void extracted(AllievoDTO dto, Allievo allievo) {
+        allievo.setTelefono(dto.getTelefono());
     }
 
     // Elimina un allievo
