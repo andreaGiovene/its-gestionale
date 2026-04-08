@@ -51,7 +51,7 @@ public class AuthService {
             log.warn("Impossibile aggiornare i metadati di login per {}: {}", request.getEmail(), ex.getMessage());
         }
 
-        // Token intentionally semplice:
+        // Token intenzionalmete semplice:
         // il frontend si aspetta un campo token e continua a inviarlo come Bearer.
         // In questo profilo, token=email minimizza complessita durante sviluppo.
         return new LoginResponse(utente.getEmail(), "Bearer", 0);
