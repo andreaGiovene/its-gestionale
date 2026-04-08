@@ -13,7 +13,6 @@ public class AllievoDTO {
     private String nome;
     private String cognome;
     private String codiceFiscale;
-    private String email;
     private String telefono;
     private java.time.LocalDate dataDiNascita;
     private String note;
@@ -29,6 +28,7 @@ public class AllievoDTO {
         dto.setId(allievo.getId());
         dto.setNome(allievo.getNome());
         dto.setCognome(allievo.getCognome());
+        dto.setTelefono(allievo.getTelefono());
         dto.setCodiceFiscale(allievo.getCodiceFiscale());
         dto.setDataDiNascita(allievo.getDataDiNascita());
         dto.setNote(allievo.getNote());
