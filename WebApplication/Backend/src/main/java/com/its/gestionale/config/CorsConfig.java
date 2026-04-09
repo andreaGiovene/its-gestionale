@@ -1,7 +1,7 @@
 package com.its.gestionale.config;
 
 import java.util.Arrays;
-
+import org.springframework.lang.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -44,7 +44,7 @@ public class CorsConfig implements WebMvcConfigurer {
      * (/api/**) sia alle rotte di autenticazione (/auth/**).
      */
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedOrigins(splitCsv(allowedOrigins))
                 .allowedMethods(splitCsv(allowedMethods))
@@ -53,20 +53,25 @@ public class CorsConfig implements WebMvcConfigurer {
                 .maxAge(maxAge);
 
         registry.addMapping("/auth/**")
-            .allowedOrigins(splitCsv(allowedOrigins))
-            .allowedMethods(splitCsv(allowedMethods))
-            .allowedHeaders(splitCsv(allowedHeaders))
-            .allowCredentials(allowCredentials)
-            .maxAge(maxAge);
+                .allowedOrigins(splitCsv(allowedOrigins))
+                .allowedMethods(splitCsv(allowedMethods))
+                .allowedHeaders(splitCsv(allowedHeaders))
+                .allowCredentials(allowCredentials)
+                .maxAge(maxAge);
     }
 
     /**
-     * Converte una stringa CSV in array di stringhe pulite, ignorando valori vuoti.
+     * Converte una stringa CSV in array di stringhe pulite.
+     * Evita errori se il valore è null.
      */
     private String[] splitCsv(String csvValue) {
-        return Arrays.stream(csvValue.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isBlank())
-                .toArray(String[]::new);
+    if (csvValue == null) {
+        return new String[0];
+    }
+
+    return Arrays.stream(csvValue.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isBlank())
+            .toArray(String[]::new);
     }
 }
