@@ -15,7 +15,71 @@
   </ng-container>
 
   <ng-container *ngIf="!isLoading && !error">
-    <ng-container *ngIf="corsi.length > 0; else emptyState">
+    <div class="filters-panel">
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label for="filterNome">Nome corso</label>
+          <select
+            id="filterNome"
+            class="form-control"
+            [(ngModel)]="selectedNomeCorso"
+            (ngModelChange)="applyFilters()"
+          >
+            <option value="">Tutti i corsi</option>
+            <option *ngFor="let nome of nomiCorsiDisponibili" [value]="nome">{{ nome }}</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label for="searchNome">Ricerca testuale nome</label>
+          <div class="search-row">
+            <input
+              id="searchNome"
+              type="text"
+              class="form-control"
+              placeholder="Cerca nel nome corso"
+              [(ngModel)]="searchTerm"
+              (keyup.enter)="applyFilters()"
+            />
+            <button type="button" class="btn btn-primary btn-search" (click)="applyFilters()">
+              Cerca
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-item">
+          <label for="filterStato">Stato</label>
+          <select
+            id="filterStato"
+            class="form-control"
+            [(ngModel)]="selectedStato"
+            (ngModelChange)="applyFilters()"
+          >
+            <option value="">Tutti gli stati</option>
+            <option *ngFor="let stato of statiDisponibili" [value]="stato">{{ stato }}</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label for="filterAnno">Anno accademico</label>
+          <select
+            id="filterAnno"
+            class="form-control"
+            [(ngModel)]="selectedAnnoAccademico"
+            (ngModelChange)="applyFilters()"
+          >
+            <option value="">Tutti gli anni</option>
+            <option *ngFor="let anno of anniDisponibili" [value]="anno">{{ anno }}</option>
+          </select>
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn btn-secondary" (click)="resetFilters()">Reset filtri</button>
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="filteredCorsi.length > 0; else emptyState">
       <table class="table table-hover">
         <thead>
           <tr>
@@ -28,7 +92,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let corso of corsi" (click)="viewDetail(corso.id)" class="cursor-pointer">
+          <tr *ngFor="let corso of filteredCorsi" (click)="viewDetail(corso.id)" class="cursor-pointer">
             <td>{{ corso.id }}</td>
             <td>{{ corso.nome }}</td>
             <td>{{ corso.annoAccademico }}</td>
@@ -49,8 +113,14 @@
 
     <ng-template #emptyState>
       <div class="empty-state">
-        <p>Nessun corso disponibile.</p>
-        <button class="btn btn-primary" (click)="createNew()">Crea il primo corso</button>
+        <p *ngIf="allCorsi.length === 0">Nessun corso disponibile.</p>
+        <p *ngIf="allCorsi.length > 0">Nessun corso corrisponde ai filtri selezionati.</p>
+        <button *ngIf="allCorsi.length > 0" class="btn btn-secondary" (click)="resetFilters()">
+          Azzera filtri
+        </button>
+        <button *ngIf="allCorsi.length === 0" class="btn btn-primary" (click)="createNew()">
+          Crea il primo corso
+        </button>
       </div>
     </ng-template>
   </ng-container>

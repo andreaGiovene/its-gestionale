@@ -1,12 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CorsoService } from '@core/services/corso.service';
 import { Corso } from '@shared/models';
 
 @Component({
   selector: 'app-corsi-list',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './corsi-list.html',
   styleUrl: './corsi-list.scss',
 })
@@ -15,23 +16,34 @@ export class CorsiList implements OnInit {
   private readonly router = inject(Router);
 
   allCorsi: Corso[] = [];
-  corsi: Corso[] = [];
+  filteredCorsi: Corso[] = [];
+  selectedNomeCorso = '';
   searchTerm = '';
   selectedStato = '';
   selectedAnnoAccademico = '';
   isLoading = true;
   error: string | null = null;
 
+  get nomiCorsiDisponibili(): string[] {
+    return [
+      ...new Set(this.allCorsi.map((c) => c.nome).filter((value): value is string => !!value)),
+    ].sort((a, b) => a.localeCompare(b));
+  }
+
   get statiDisponibili(): string[] {
-    return [...new Set(this.allCorsi.map((c) => c.stato).filter(Boolean))].sort((a, b) =>
-      a.localeCompare(b),
-    );
+    return [
+      ...new Set(this.allCorsi.map((c) => c.stato).filter((value): value is string => !!value)),
+    ].sort((a, b) => a.localeCompare(b));
   }
 
   get anniDisponibili(): string[] {
-    return [...new Set(this.allCorsi.map((c) => c.annoAccademico).filter(Boolean))].sort((a, b) =>
-      b.localeCompare(a),
-    );
+    return [
+      ...new Set(
+        this.allCorsi
+          .map((c) => c.annoAccademico)
+          .filter((value): value is string => !!value),
+      ),
+    ].sort((a, b) => b.localeCompare(a));
   }
 
   ngOnInit(): void {
@@ -59,18 +71,21 @@ export class CorsiList implements OnInit {
   applyFilters(): void {
     const search = this.searchTerm.trim().toLowerCase();
 
-    this.corsi = this.allCorsi.filter((corso) => {
-      const matchNome = search.length === 0 || corso.nome.toLowerCase().includes(search);
+    this.filteredCorsi = this.allCorsi.filter((corso) => {
+      const matchNome =
+        this.selectedNomeCorso.length === 0 || corso.nome === this.selectedNomeCorso;
+      const matchNomeSearch = search.length === 0 || corso.nome.toLowerCase().includes(search);
       const matchStato = this.selectedStato.length === 0 || corso.stato === this.selectedStato;
       const matchAnno =
         this.selectedAnnoAccademico.length === 0 ||
         corso.annoAccademico === this.selectedAnnoAccademico;
 
-      return matchNome && matchStato && matchAnno;
+      return matchNome && matchNomeSearch && matchStato && matchAnno;
     });
   }
 
   resetFilters(): void {
+    this.selectedNomeCorso = '';
     this.searchTerm = '';
     this.selectedStato = '';
     this.selectedAnnoAccademico = '';
