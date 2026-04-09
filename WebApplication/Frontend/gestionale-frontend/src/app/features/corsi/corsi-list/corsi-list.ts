@@ -11,31 +11,53 @@ import { Corso } from '@shared/models';
   templateUrl: './corsi-list.html',
   styleUrl: './corsi-list.scss',
 })
+/**
+ * Gestisce la lista corsi con filtri client-side e azioni CRUD di navigazione/eliminazione.
+ */
 export class CorsiList implements OnInit {
   private readonly corsoService = inject(CorsoService);
   private readonly router = inject(Router);
 
+  /** Dataset completo ricevuto da API, usato come source of truth per i filtri. */
   allCorsi: Corso[] = [];
+  /** Dataset visualizzato in tabella dopo l'applicazione dei filtri correnti. */
   filteredCorsi: Corso[] = [];
+
+  /** Filtro nome da dropdown (match esatto). */
   selectedNomeCorso = '';
+  /** Filtro testuale libero sul nome (contains, case-insensitive). */
   searchTerm = '';
+  /** Filtro stato (match esatto). */
   selectedStato = '';
+  /** Filtro anno accademico (match esatto). */
   selectedAnnoAccademico = '';
+
+  /** Stato UI durante caricamento dati. */
   isLoading = true;
+  /** Messaggio errore da mostrare in pagina in caso di fetch fallita. */
   error: string | null = null;
 
+  /**
+   * Restituisce l'elenco univoco e ordinato dei nomi corso disponibili.
+   */
   get nomiCorsiDisponibili(): string[] {
     return [
       ...new Set(this.allCorsi.map((c) => c.nome).filter((value): value is string => !!value)),
     ].sort((a, b) => a.localeCompare(b));
   }
 
+  /**
+   * Restituisce l'elenco univoco e ordinato degli stati disponibili.
+   */
   get statiDisponibili(): string[] {
     return [
       ...new Set(this.allCorsi.map((c) => c.stato).filter((value): value is string => !!value)),
     ].sort((a, b) => a.localeCompare(b));
   }
 
+  /**
+   * Restituisce l'elenco univoco degli anni accademici in ordine decrescente.
+   */
   get anniDisponibili(): string[] {
     return [
       ...new Set(
@@ -50,6 +72,9 @@ export class CorsiList implements OnInit {
     this.loadCorsi();
   }
 
+  /**
+   * Carica i corsi dal backend e inizializza la lista filtrata.
+   */
   private loadCorsi(): void {
     this.isLoading = true;
     this.error = null;
@@ -68,6 +93,9 @@ export class CorsiList implements OnInit {
     });
   }
 
+  /**
+   * Applica in AND tutti i filtri attivi e aggiorna la lista visualizzata.
+   */
   applyFilters(): void {
     const search = this.searchTerm.trim().toLowerCase();
 
@@ -84,6 +112,9 @@ export class CorsiList implements OnInit {
     });
   }
 
+  /**
+   * Ripristina lo stato iniziale dei filtri e ricalcola la lista.
+   */
   resetFilters(): void {
     this.selectedNomeCorso = '';
     this.searchTerm = '';
@@ -92,14 +123,26 @@ export class CorsiList implements OnInit {
     this.applyFilters();
   }
 
+  /**
+   * Naviga alla pagina dettaglio del corso selezionato.
+   * @param id identificativo del corso
+   */
   viewDetail(id: number): void {
     this.router.navigate(['/corsi', id]);
   }
 
+  /**
+   * Naviga alla pagina di creazione nuovo corso.
+   */
   createNew(): void {
     this.router.navigate(['/corsi', 'new']);
   }
 
+  /**
+   * Elimina un corso dopo conferma utente e ricarica i dati dalla API.
+   * @param id identificativo del corso da eliminare
+   * @param event evento del click, usato per evitare la propagazione alla riga tabella
+   */
   delete(id: number, event: Event): void {
     event.stopPropagation();
     if (confirm('Sei sicuro di voler eliminare questo corso?')) {

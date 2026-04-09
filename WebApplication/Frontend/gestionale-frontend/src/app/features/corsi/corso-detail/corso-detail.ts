@@ -13,20 +13,33 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './corso-detail.html',
   styleUrl: './corso-detail.scss',
 })
+/**
+ * Gestisce creazione e modifica di un corso tramite form reattiva.
+ */
 export class CorsoDetail implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly corsoService = inject(CorsoService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  /** Subject usato per chiudere le subscription al destroy del componente. */
   private readonly destroy$ = new Subject<void>();
 
+  /** Form principale del dettaglio corso. */
   form!: FormGroup;
+  /** Flag caricamento iniziale dati. */
   isLoading = true;
+  /** Flag invio/salvataggio in corso. */
   isSubmitting = false;
+  /** Messaggio errore da mostrare in UI. */
   error: string | null = null;
+  /** Indica se la pagina è in modalità creazione (`/corsi/new`). */
   isNew = false;
+  /** Corso corrente in modalità modifica, nullo in creazione. */
   corso: Corso | null = null;
 
+  /**
+   * Inizializza form e determina modalità nuova/modifica in base alla route.
+   */
   ngOnInit(): void {
     this.initForm();
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
@@ -40,11 +53,17 @@ export class CorsoDetail implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Rilascia le subscription attive legate al ciclo vita del componente.
+   */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  /**
+   * Crea la struttura e le validazioni della form corso.
+   */
   private initForm(): void {
     this.form = this.fb.group({
       nome: ['', [Validators.required, Validators.maxLength(255)]],
@@ -53,6 +72,10 @@ export class CorsoDetail implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Carica un corso esistente e popola la form in modalità modifica.
+   * @param id identificativo del corso
+   */
   private loadCorso(id: number): void {
     this.isLoading = true;
     this.error = null;
@@ -78,6 +101,9 @@ export class CorsoDetail implements OnInit, OnDestroy {
       });
   }
 
+  /**
+   * Salva il corso: create in modalità new, update in modalità edit.
+   */
   save(): void {
     if (this.form.invalid) {
       alert('Form non valido compila tutti i campi richiesti');
@@ -106,6 +132,9 @@ export class CorsoDetail implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Torna alla lista corsi senza salvare modifiche.
+   */
   cancel(): void {
     this.router.navigate(['/corsi']);
   }
