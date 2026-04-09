@@ -1,37 +1,29 @@
-{"properties": [
-  {
-    "name": "\nspring.datasource.ur",
-    "type": "java.lang.String",
-    "description": "A description for '\nspring.datasource.ur'"
-  },
-  {
-    "name": "\nspring.datasource.usernam",
-    "type": "java.lang.String",
-    "description": "A description for '\nspring.datasource.usernam'"
-  },
-  {
-    "name": "\nspring.datasource.passwor",
-    "type": "java.lang.String",
-    "description": "A description for '\nspring.datasource.passwor'"
-  },
-  {
-    "name": "\r\nspring.jpa.hibernate.ddl-au",
-    "type": "java.lang.String",
-    "description": "A description for '\r\nspring.jpa.hibernate.ddl-au'"
-  },
-  {
-    "name": "\r\nspring.jpa.show-s",
-    "type": "java.lang.String",
-    "description": "A description for '\r\nspring.jpa.show-s'"
-  },
-  {
-    "name": "\r\nspring.jpa.properties.hibernate.format_s",
-    "type": "java.lang.String",
-    "description": "A description for '\r\nspring.jpa.properties.hibernate.format_s'"
-  },
-  {
-    "name": "\r\nspring.jpa.database-platfo",
-    "type": "java.lang.String",
-    "description": "A description for '\r\nspring.jpa.database-platfo'"
-  }
-]}
+{
+  "properties": [
+    {
+      "name": "app.cors.allowed-origins",
+      "type": "java.lang.String",
+      "description": "Origini consentite per le richieste CORS (es: frontend Angular)"
+    },
+    {
+      "name": "app.cors.allowed-methods",
+      "type": "java.lang.String",
+      "description": "Metodi HTTP consentiti (GET, POST, PUT, DELETE, OPTIONS)"
+    },
+    {
+      "name": "app.cors.allowed-headers",
+      "type": "java.lang.String",
+      "description": "Header HTTP consentiti nelle richieste"
+    },
+    {
+      "name": "app.cors.allow-credentials",
+      "type": "java.lang.Boolean",
+      "description": "Indica se permettere l'invio di cookie/credenziali"
+    },
+    {
+      "name": "app.cors.max-age",
+      "type": "java.lang.Long",
+      "description": "Tempo di cache delle richieste preflight (in secondi)"
+    }
+  ]
+}
