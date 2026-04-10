@@ -12,7 +12,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "azienda")
@@ -44,8 +46,12 @@ public class Azienda {
     private String cap;
 
     @OneToMany(mappedBy = "azienda", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ContattoAziendale> contatti;
 
     @OneToMany(mappedBy = "azienda", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Tirocinio> tirocini;
 }
