@@ -16,6 +16,13 @@ import com.its.gestionale.exception.AziendaNotFoundException;
 import com.its.gestionale.repository.AziendaRepository;
 import com.its.gestionale.repository.specification.AziendaSpecifications;
 
+/**
+ * Service applicativo per la gestione delle aziende.
+ *
+ * Espone operazioni CRUD e ricerca avanzata con filtri combinabili,
+ * mantenendo separata la logica di persistenza (repository) dalla
+ * rappresentazione dati verso i controller (DTO).
+ */
 @Service
 public class AziendaService {
 
@@ -46,12 +53,25 @@ public class AziendaService {
         return result;
     }
 
+    /**
+     * Esegue la ricerca paginata delle aziende combinando filtri opzionali.
+     *
+     * Filtri supportati:
+     * - tipo azienda (madrina/non madrina)
+     * - ragione sociale (match parziale case-insensitive)
+     * - corso specifico in cui l'azienda è madrina
+     *
+     * @param tipo tipo logico azienda; se nullo il filtro non viene applicato
+     * @param ragioneSociale testo libero per filtro su ragione sociale
+     * @param corsoId identificativo corso per filtro su azienda madrina
+     * @param pageable metadati di paginazione e ordinamento
+     * @return pagina di {@link AziendaDTO} coerente con i filtri richiesti
+     */
     @Transactional(readOnly = true)
     public Page<AziendaDTO> search(TipoAzienda tipo, String ragioneSociale, Integer corsoId, Pageable pageable) {
-        Specification<Azienda> specification = Specification
-                .where(AziendaSpecifications.ragioneSocialeContains(ragioneSociale))
+        Specification<Azienda> specification = AziendaSpecifications.ragioneSocialeContains(ragioneSociale)
                 .and(AziendaSpecifications.hasCorsoMadrina(corsoId))
-            .and(AziendaSpecifications.hasTipoAzienda(tipo));
+                .and(AziendaSpecifications.hasTipoAzienda(tipo));
 
         return aziendaRepository.findAll(specification, pageable).map(AziendaDTO::fromEntity);
     }
@@ -65,7 +85,7 @@ public class AziendaService {
      */
     @Transactional(readOnly = true)
     public AziendaDTO findById(Integer id) {
-    return aziendaRepository.findById(id)
+        return aziendaRepository.findById(id)
             .map(AziendaDTO::fromEntity)
             .orElseThrow(() -> new AziendaNotFoundException(id));
     }
@@ -145,6 +165,12 @@ public class AziendaService {
         return azienda;
     }
 
+    /**
+     * Traduce l'enum di dominio nel valore persistito in tabella.
+     *
+     * @param tipoAzienda valore logico ricevuto dal layer applicativo
+     * @return valore canonicale da salvare nel campo azienda.tipo
+     */
     private String toDbTipo(TipoAzienda tipoAzienda) {
         if (tipoAzienda == TipoAzienda.MADRINA) {
             return "MADRINA";
