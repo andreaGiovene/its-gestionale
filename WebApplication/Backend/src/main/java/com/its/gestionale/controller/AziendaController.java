@@ -24,6 +24,34 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
+/**
+ * REST Controller per la gestione delle aziende.
+ *
+ * Espone l'API REST per operazioni CRUD e ricerca avanzata su aziende,
+ * delegando la logica di business al service layer (AziendaService).
+ *
+ * Endpoint disponibili:
+ * - GET /api/aziende - ricerca paginata con filtri opzionali (tipo, ragioneSociale, corsoId)
+ * - GET /api/aziende/{id} - recupero singolo per ID
+ * - POST /api/aziende - creazione nuova azienda
+ * - PUT /api/aziende/{id} - aggiornamento azienda esistente
+ * - DELETE /api/aziende/{id} - eliminazione azienda
+ *
+ * Validazioni applicate:
+ * - Path variable: ids positivi
+ * - RequestParam: ragioneSociale max 100 char, corsoId positivo
+ * - RequestBody: validazioni dal DTO (@Valid)
+ *
+ * HTTP Status restituiti:
+ * - 200 OK: operazione completata
+ * - 201 CREATED: risorsa creata con POST
+ * - 204 NO_CONTENT: eliminazione riuscita
+ * - 400 BAD_REQUEST: validazione fallita
+ * - 404 NOT_FOUND: risorsa non trovata
+ *
+ * @see AziendaService
+ * @see AziendaDTO
+ */
 @RestController
 @RequestMapping("/api/aziende")
 @Validated

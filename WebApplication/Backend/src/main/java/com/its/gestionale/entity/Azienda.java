@@ -24,6 +24,33 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+/**
+ * Entity JPA per l'azienda (partner del percorso di tirocinio).
+ *
+ * Rappresenta l'azienda come entry point nella gestione dei tirocini e del rapporto
+ * azienda-ITS. Ogni azienda è classificata come MADRINA (sede principale del tirocinio)
+ * o NON_MADRINA (eventuale partner secondaria).
+ *
+ * Mapping relazionale:
+ * - OneToMany: contatti aziendali, tirocini ospitati
+ * - Inverse relationship: corsi per i quali l'azienda è madrina
+ *
+ * Campo enum 'tipo':
+ * - Mappato a PostgreSQL enum nativo tipo_azienda_enum (valori: MADRINA, NON_MADRINA)
+ * - NOT NULL obbligatorio a livello DB e applicazione
+ * - Annotazioni: @JdbcTypeCode(SqlTypes.NAMED_ENUM), @Enumerated(EnumType.STRING), @NotNull
+ *
+ * Validazioni:
+ * - ragioneSociale: max 100 char
+ * - partitaIva: max 20 char
+ * - tipo: obbligatorio (enum MADRINA|NON_MADRINA)
+ * - contatti e tirocini caricati con FetchType.LAZY per ottimizzazione
+ *
+ * @see TipoAzienda
+ * @see ContattoAziendale
+ * @see Tirocinio
+ * @see Corso
+ */
 @Entity
 @Table(name = "azienda")
 @Data

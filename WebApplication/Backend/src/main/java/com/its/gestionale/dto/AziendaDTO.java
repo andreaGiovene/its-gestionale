@@ -9,6 +9,25 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data Transfer Object per l'entity Azienda.
+ *
+ * Rappresenta i dati di un'azienda esposti dall'API REST, con validazioni
+ * dichiarative per garantire integrità dei dati in ingresso (annotazioni @NotBlank, @NotNull, @Size).
+ * Disaccoppia il modello di persistenza (JPA) dalla rappresentazione HTTP, consentendo
+ * evoluzione indipendente dell'API e del database.
+ *
+ * Il metodo statico {@code fromEntity()} consente la conversione bidirezionale entity ↔ DTO.
+ *
+ * Validazioni applicate:
+ * - ragioneSociale: obbligatoria, 1-100 caratteri
+ * - partitaIva: obbligatoria, 1-20 caratteri
+ * - tipoAzienda: obbligatorio, enum MADRINA|NON_MADRINA
+ * - campi facoltativi (telefono, email, etc.) con vincoli di lunghezza
+ *
+ * @see Azienda
+ * @see TipoAzienda
+ */
 @Data
 @NoArgsConstructor
 public class AziendaDTO {
@@ -41,6 +60,16 @@ public class AziendaDTO {
     @NotNull(message = "Il tipo di azienda è obbligatorio")
     private TipoAzienda tipoAzienda;
 
+    /**
+     * Converte un'entity JPA in DTO per esposizione REST.
+     *
+     * Questa conversione centralizzata garantisce allineamento fra entity e DTO
+     * e facilita futuri interventi se i campi divergessero. Il mapping è manuale
+     * (non MapStruct) per chiarezza e tracciabilità dei campi esposti.
+     *
+     * @param azienda entity da convertire (non null)
+     * @return DTO con tutti i campi valorizzati dall'entity
+     */
     public static AziendaDTO fromEntity(Azienda azienda) {
         AziendaDTO dto = new AziendaDTO();
         dto.setId(azienda.getId());
