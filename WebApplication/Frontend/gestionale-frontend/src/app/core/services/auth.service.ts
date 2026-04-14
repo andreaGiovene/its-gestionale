@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 
 export interface LoginRequest {
@@ -23,6 +24,7 @@ export interface MeResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
   private readonly apiBase = 'http://localhost:8080';
   private readonly tokenKey = 'auth_token';
 
@@ -47,6 +49,7 @@ export class AuthService {
   // In modalita stateless non e richiesto endpoint server di invalidazione.
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    void this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 
   // Espone il token grezzo per interceptor/guard.
