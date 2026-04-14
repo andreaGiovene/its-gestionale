@@ -50,12 +50,14 @@ html, body {
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  text-align: left;
   padding: 0.9rem 1rem;
   border-bottom: 1px solid #dfe5ec;
   vertical-align: middle;
 }
 
 .table tbody td {
+  text-align: left;
   padding: 0.9rem 1rem;
   border-top: 1px solid #e8edf3;
   color: #1f2937;
@@ -74,7 +76,9 @@ html, body {
   margin-left: 0.5rem;
 }
 
+.table thead th:last-child,
 .table td:last-child {
+  text-align: right;
   white-space: nowrap;
 }
 

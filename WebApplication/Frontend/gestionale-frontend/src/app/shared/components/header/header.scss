@@ -1,0 +1,22 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-button {
+  color: white;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.logout-button {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.logout-button mat-icon {
+  margin-right: 6px;
+}

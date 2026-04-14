@@ -1,0 +1,26 @@
+:host {
+  display: block;
+  color: white;
+  --mdc-list-list-item-label-text-color: white;
+}
+
+.sidenav-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 16px;
+  font-size: 18px;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+:host mat-icon,
+:host span,
+:host a {
+  color: white;
+}
+
+.active-link {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 4px;
+}

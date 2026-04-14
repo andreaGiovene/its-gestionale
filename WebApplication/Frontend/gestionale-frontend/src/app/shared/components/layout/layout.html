@@ -1,40 +1,16 @@
 <mat-sidenav-container class="sidenav-container">
 
   <!-- ─── SIDEBAR ─────────────────────────────── -->
-  <mat-sidenav mode="side" opened class="sidenav">
-
-    <!-- Logo / titolo app -->
-    <div class="sidenav-header">
-      <mat-icon>school</mat-icon>
-      <span>ITS Gestionale</span>
-    </div>
-
-    <!-- Voci di menu -->
-    <mat-nav-list>
-      @for (item of menuItems; track item.route) {
-        <a mat-list-item
-           [routerLink]="item.route"
-           routerLinkActive="active-link">
-          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          <span matListItemTitle>{{ item.label }}</span>
-        </a>
-      }
-    </mat-nav-list>
+  <mat-sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile" class="sidenav">
+    <app-sidebar [items]="menuItems" (navigate)="onMenuNavigate()" />
 
   </mat-sidenav>
 
   <!-- ─── CONTENUTO PRINCIPALE ─────────────────── -->
   <mat-sidenav-content class="main-content">
 
-    <!-- Toolbar in alto -->
-    <mat-toolbar color="primary">
-      <span>ITS — Sistema Gestione Tirocini</span>
-      <span class="toolbar-spacer"></span>
-      <button mat-stroked-button type="button" class="logout-button" (click)="onLogout()">
-        <mat-icon>logout</mat-icon>
-        <span>Esci</span>
-      </button>
-    </mat-toolbar>
+    <app-header [showMenuButton]="isMobile" (menuToggle)="toggleSidenav()" (logout)="onLogout()" />
+    <app-breadcrumb />
 
     <!-- Qui Angular inserisce il componente della route corrente -->
     <div class="content-area">

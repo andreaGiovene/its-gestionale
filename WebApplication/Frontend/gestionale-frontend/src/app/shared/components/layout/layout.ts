@@ -1,36 +1,41 @@
-import { Component, inject } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatListModule } from '@angular/material/list';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
+import { Subscription } from 'rxjs';
 
 import { AuthService } from '../../../core/services/auth.service';
+import { BreadcrumbComponent } from '../breadcrumb/breadcrumb';
+import { HeaderComponent } from '../header/header';
+import { SidebarComponent, SidebarItem } from '../sidebar/sidebar';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
   imports: [
     RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-    MatButtonModule,
     MatSidenavModule,
-    MatToolbarModule,
-    MatListModule,
     MatIconModule,
+    SidebarComponent,
+    HeaderComponent,
+    BreadcrumbComponent,
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.scss'
 })
-export class LayoutComponent {
+export class LayoutComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
+  private readonly breakpointObserver = inject(BreakpointObserver);
+  private breakpointSub?: Subscription;
+
+  @ViewChild(MatSidenav) sidenav?: MatSidenav;
+  isMobile = false;
 
   // Voci del menu laterale
   // In futuro aggiungeremo qui la logica per nascondere voci
   // in base al ruolo dell'utente (RBAC)
-  menuItems = [
+  menuItems: SidebarItem[] = [
     { label: 'Dashboard',  icon: 'dashboard',   route: '/dashboard' },
     { label: 'Corsi',      icon: 'school',       route: '/corsi' },
     { label: 'Allievi',    icon: 'people',       route: '/allievi' },
@@ -38,6 +43,38 @@ export class LayoutComponent {
     { label: 'Colloqui',   icon: 'handshake',    route: '/colloqui' },
     { label: 'Tirocini',   icon: 'work',         route: '/tirocini' },
   ];
+
+  ngOnInit(): void {
+    this.breakpointSub = this.breakpointObserver
+      .observe('(max-width: 959px)')
+      .subscribe((state) => {
+        this.isMobile = state.matches;
+
+        if (this.sidenav) {
+          if (this.isMobile) {
+            this.sidenav.close();
+          } else {
+            this.sidenav.open();
+          }
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.breakpointSub?.unsubscribe();
+  }
+
+  toggleSidenav(): void {
+    if (this.isMobile) {
+      this.sidenav?.toggle();
+    }
+  }
+
+  onMenuNavigate(): void {
+    if (this.isMobile) {
+      this.sidenav?.close();
+    }
+  }
 
   onLogout(): void {
     this.authService.logout();
