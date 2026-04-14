@@ -2,10 +2,17 @@
 
 Macro-area applicativa che contiene backend e frontend del gestionale ITS.
 
+## Architettura
+
+- **Backend Spring Boot**: API REST RESTful con ricerca avanzata (Criteria API), logica di dominio, persistenza JPA/Hibernate
+- **Frontend Angular**: UI reattiva, autenticazione client-side, guard di routing con RBAC (role-based access control)
+- **PostgreSQL**: persistenza relazionale con enum nativo (tipo_azienda_enum) e migrazione versionata
+
 ## Struttura
 
 - Backend: API REST, persistenza, logica applicativa
-- Frontend/gestionale-frontend: UI Angular
+- Frontend/gestionale-frontend: UI Angular con componenti reattivi e guards
+- Database: dump SQL e migrazioni
 
 ## Flusso locale consigliato
 
