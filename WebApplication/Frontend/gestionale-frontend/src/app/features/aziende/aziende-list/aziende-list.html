@@ -1,11 +1,47 @@
 <div class="aziende-container">
   <div class="header">
-    <h1>Aziende</h1>
+    <div>
+      <h1>Aziende</h1>
+      <p class="subtitle">Ricerca aziende madrine e non madrine con filtri dinamici.</p>
+    </div>
     <button class="btn btn-primary" (click)="createNew()">Nuova Azienda</button>
   </div>
 
+  <form class="search-panel" [formGroup]="searchForm" (ngSubmit)="search(0)">
+    <div class="filters-grid">
+      <div class="filter-item">
+        <label for="tipo">Tipologia</label>
+        <select id="tipo" class="form-control" formControlName="tipo">
+          <option value="">Tutte</option>
+          <option value="MADRINA">Aziende madrine</option>
+          <option value="NON_MADRINA">Non madrine</option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label for="ragioneSociale">Ragione sociale</label>
+        <input id="ragioneSociale" type="text" class="form-control" formControlName="ragioneSociale" placeholder="Cerca per nome" />
+      </div>
+
+      <div class="filter-item">
+        <label for="corsoId">Corso di riferimento</label>
+        <select id="corsoId" class="form-control" formControlName="corsoId">
+          <option value="">Tutti i corsi</option>
+          <option *ngFor="let corso of corsi" [value]="corso.id">
+            {{ corso.nome }} - {{ corso.annoAccademico }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button type="button" class="btn btn-secondary" (click)="resetFilters()">Azzera</button>
+        <button type="submit" class="btn btn-primary" [disabled]="isSearching">Cerca</button>
+      </div>
+    </div>
+  </form>
+
   <ng-container *ngIf="isLoading">
-    <p class="loading">Caricamento in corso...</p>
+    <p class="loading">Ricerca in corso...</p>
   </ng-container>
 
   <ng-container *ngIf="error && !isLoading">
@@ -15,6 +51,11 @@
   </ng-container>
 
   <ng-container *ngIf="!isLoading && !error">
+    <div class="results-summary" *ngIf="totalElements > 0">
+      <span>Risultati trovati: {{ totalElements }}</span>
+      <span>Pagina {{ currentPage + 1 }} di {{ totalPages }}</span>
+    </div>
+
     <ng-container *ngIf="aziende.length > 0; else emptyState">
       <table class="table table-hover">
         <thead>
@@ -24,6 +65,7 @@
             <th>Partita IVA</th>
             <th>Telefono</th>
             <th>Email</th>
+            <th>Città</th>
             <th>Azioni</th>
           </tr>
         </thead>
@@ -34,18 +76,29 @@
             <td>{{ azienda.partitaIva }}</td>
             <td>{{ azienda.telefono || '-' }}</td>
             <td>{{ azienda.email || '-' }}</td>
+            <td>{{ azienda.citta || '-' }}</td>
             <td>
-              <button class="btn btn-sm btn-info" (click)="viewDetail(azienda.id)">Dettagli</button>
-              <button class="btn btn-sm btn-danger" (click)="delete(azienda.id, $event)">Elimina</button>
+              <button class="btn btn-sm btn-info" type="button" (click)="viewDetail(azienda.id); $event.stopPropagation()">Dettagli</button>
+              <button class="btn btn-sm btn-danger" type="button" (click)="delete(azienda.id, $event)">Elimina</button>
             </td>
           </tr>
         </tbody>
       </table>
+
+      <div class="pagination-bar" *ngIf="totalPages > 1">
+        <button class="btn btn-outline-secondary btn-sm" type="button" (click)="previousPage()" [disabled]="currentPage === 0">
+          Precedente
+        </button>
+        <span>Pagina {{ currentPage + 1 }} / {{ totalPages }}</span>
+        <button class="btn btn-outline-secondary btn-sm" type="button" (click)="nextPage()" [disabled]="currentPage + 1 >= totalPages">
+          Successiva
+        </button>
+      </div>
     </ng-container>
 
     <ng-template #emptyState>
       <div class="empty-state">
-        <p>Nessuna azienda disponibile.</p>
+        <p>Nessuna azienda corrisponde ai filtri selezionati.</p>
         <button class="btn btn-primary" (click)="createNew()">Crea la prima azienda</button>
       </div>
     </ng-template>

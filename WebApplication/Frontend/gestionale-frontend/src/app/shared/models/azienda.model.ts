@@ -6,6 +6,27 @@ export interface Azienda {
   email?: string;
   indirizzo?: string;
   cap?: string;
+  citta?: string;
+}
+
+export type AziendaSearchTipo = 'MADRINA' | 'NON_MADRINA';
+
+export interface AziendaSearchFilters {
+  tipo?: AziendaSearchTipo | '';
+  ragioneSociale?: string;
+  corsoId?: number | null;
+  page?: number;
+  size?: number;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  first?: boolean;
+  last?: boolean;
 }
 
 export interface CreateAziendaRequest {
@@ -15,6 +36,7 @@ export interface CreateAziendaRequest {
   email?: string;
   indirizzo?: string;
   cap?: string;
+  citta?: string;
 }
 
 export interface UpdateAziendaRequest extends CreateAziendaRequest {}

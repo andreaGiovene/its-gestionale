@@ -1,7 +1,8 @@
 package com.its.gestionale.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -12,12 +13,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.its.gestionale.dto.AziendaDTO;
+import com.its.gestionale.entity.enums.TipoAzienda;
 import com.its.gestionale.service.AziendaService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/api/aziende")
@@ -31,8 +36,12 @@ public class AziendaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AziendaDTO>> findAll() {
-        return ResponseEntity.ok(aziendaService.findAll());
+    public ResponseEntity<Page<AziendaDTO>> search(
+            @RequestParam(required = false) TipoAzienda tipo,
+            @RequestParam(required = false) @Size(max = 100) String ragioneSociale,
+            @RequestParam(required = false) @Positive Integer corsoId,
+            @PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(aziendaService.search(tipo, ragioneSociale, corsoId, pageable));
     }
 
     @GetMapping("/{id}")

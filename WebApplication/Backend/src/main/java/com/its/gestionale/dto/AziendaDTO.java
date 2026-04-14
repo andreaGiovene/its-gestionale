@@ -1,6 +1,8 @@
 package com.its.gestionale.dto;
 
 import com.its.gestionale.entity.Azienda;
+import com.its.gestionale.entity.enums.TipoAzienda;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -32,6 +34,11 @@ public class AziendaDTO {
     @Size(max = 10, message = "Il CAP non può superare 10 caratteri")
     private String cap;
 
+    @Size(max = 100, message = "La città non può superare 100 caratteri")
+    private String citta;
+
+    private TipoAzienda tipoAzienda;
+
     public static AziendaDTO fromEntity(Azienda azienda) {
         AziendaDTO dto = new AziendaDTO();
         dto.setId(azienda.getId());
@@ -41,6 +48,9 @@ public class AziendaDTO {
         dto.setEmail(azienda.getEmail());
         dto.setIndirizzo(azienda.getIndirizzo());
         dto.setCap(azienda.getCap());
+        dto.setCitta(azienda.getCitta());
+        boolean isMadrina = azienda.getCorsiConAziendaMadrina() != null && !azienda.getCorsiConAziendaMadrina().isEmpty();
+        dto.setTipoAzienda(isMadrina ? TipoAzienda.MADRINA : TipoAzienda.NON_MADRINA);
         return dto;
     }
 }

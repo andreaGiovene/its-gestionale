@@ -1,7 +1,19 @@
 package com.its.gestionale.entity;
 
-import com.its.gestionale.entity.enums.RuoloContatto;
-import jakarta.persistence.*;
+import com.its.gestionale.entity.enums.RuoloContattoAziendale;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,7 +41,7 @@ public class ContattoAziendale {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ruolo")
-    private RuoloContatto ruolo;
+    private RuoloContattoAziendale ruolo;
 
     @Column(length = 20)
     private String telefono;

@@ -45,6 +45,12 @@ public class Azienda {
     @Column(length = 10)
     private String cap;
 
+    @Column(length = 100)
+    private String citta;
+
+    @Column(name = "tipo", length = 50)
+    private String tipo;
+
     @OneToMany(mappedBy = "azienda", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
@@ -54,4 +60,9 @@ public class Azienda {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Tirocinio> tirocini;
+
+    @OneToMany(mappedBy = "aziendaMadrina", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Corso> corsiConAziendaMadrina;
 }

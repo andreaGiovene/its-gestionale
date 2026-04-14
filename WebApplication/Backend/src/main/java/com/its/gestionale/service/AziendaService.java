@@ -3,13 +3,18 @@ package com.its.gestionale.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.its.gestionale.dto.AziendaDTO;
 import com.its.gestionale.entity.Azienda;
+import com.its.gestionale.entity.enums.TipoAzienda;
 import com.its.gestionale.exception.AziendaNotFoundException;
 import com.its.gestionale.repository.AziendaRepository;
+import com.its.gestionale.repository.specification.AziendaSpecifications;
 
 @Service
 public class AziendaService {
@@ -39,6 +44,16 @@ public class AziendaService {
         }
 
         return result;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AziendaDTO> search(TipoAzienda tipo, String ragioneSociale, Integer corsoId, Pageable pageable) {
+        Specification<Azienda> specification = Specification
+                .where(AziendaSpecifications.ragioneSocialeContains(ragioneSociale))
+                .and(AziendaSpecifications.hasCorsoMadrina(corsoId))
+            .and(AziendaSpecifications.hasTipoAzienda(tipo));
+
+        return aziendaRepository.findAll(specification, pageable).map(AziendaDTO::fromEntity);
     }
 
     /**
@@ -87,6 +102,10 @@ public class AziendaService {
         esistente.setEmail(dto.getEmail());
         esistente.setIndirizzo(dto.getIndirizzo());
         esistente.setCap(dto.getCap());
+        esistente.setCitta(dto.getCitta());
+        if (dto.getTipoAzienda() != null) {
+            esistente.setTipo(toDbTipo(dto.getTipoAzienda()));
+        }
 
         Azienda aggiornata = aziendaRepository.save(esistente);
 
@@ -121,6 +140,15 @@ public class AziendaService {
         azienda.setEmail(dto.getEmail());
         azienda.setIndirizzo(dto.getIndirizzo());
         azienda.setCap(dto.getCap());
+        azienda.setCitta(dto.getCitta());
+        azienda.setTipo(toDbTipo(dto.getTipoAzienda()));
         return azienda;
+    }
+
+    private String toDbTipo(TipoAzienda tipoAzienda) {
+        if (tipoAzienda == TipoAzienda.MADRINA) {
+            return "MADRINA";
+        }
+        return "NON_MADRINA";
     }
 }

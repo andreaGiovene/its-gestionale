@@ -53,6 +53,7 @@ export class AziendaDetail implements OnInit, OnDestroy {
       email: ['', [Validators.maxLength(100)]],
       indirizzo: ['', [Validators.maxLength(150)]],
       cap: ['', [Validators.maxLength(10)]],
+      citta: ['', [Validators.maxLength(100)]],
     });
   }
 
@@ -73,6 +74,7 @@ export class AziendaDetail implements OnInit, OnDestroy {
             email: data.email,
             indirizzo: data.indirizzo,
             cap: data.cap,
+            citta: data.citta,
           });
           this.isLoading = false;
         },
