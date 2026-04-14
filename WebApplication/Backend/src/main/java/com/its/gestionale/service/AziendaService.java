@@ -123,9 +123,7 @@ public class AziendaService {
         esistente.setIndirizzo(dto.getIndirizzo());
         esistente.setCap(dto.getCap());
         esistente.setCitta(dto.getCitta());
-        if (dto.getTipoAzienda() != null) {
-            esistente.setTipo(toDbTipo(dto.getTipoAzienda()));
-        }
+        esistente.setTipo(dto.getTipoAzienda());
 
         Azienda aggiornata = aziendaRepository.save(esistente);
 
@@ -161,20 +159,7 @@ public class AziendaService {
         azienda.setIndirizzo(dto.getIndirizzo());
         azienda.setCap(dto.getCap());
         azienda.setCitta(dto.getCitta());
-        azienda.setTipo(toDbTipo(dto.getTipoAzienda()));
+        azienda.setTipo(dto.getTipoAzienda());
         return azienda;
-    }
-
-    /**
-     * Traduce l'enum di dominio nel valore persistito in tabella.
-     *
-     * @param tipoAzienda valore logico ricevuto dal layer applicativo
-     * @return valore canonicale da salvare nel campo azienda.tipo
-     */
-    private String toDbTipo(TipoAzienda tipoAzienda) {
-        if (tipoAzienda == TipoAzienda.MADRINA) {
-            return "MADRINA";
-        }
-        return "NON_MADRINA";
     }
 }

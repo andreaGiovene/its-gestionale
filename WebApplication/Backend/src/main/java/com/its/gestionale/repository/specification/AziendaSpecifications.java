@@ -54,26 +54,19 @@ public final class AziendaSpecifications {
     }
 
     /**
-     * Filtra per ruolo madrina/non madrina in base alla relazione con i corsi.
+     * Filtra per tipo applicativo azienda usando la colonna persistita "tipo".
      *
-     * Regola di dominio:
-     * - MADRINA: l'azienda è associata ad almeno un corso come azienda madrina.
-     * - NON_MADRINA: l'azienda non è associata a nessun corso come azienda madrina.
-     *
-     * Se tipoAzienda è nullo, non applica alcun filtro.
+     * Se tipoAzienda è nullo, non applica alcun filtro (filtro opzionale).
+     * Questo permette di usare il metodo sia in ricerche specifiche che generiche.
      */
     public static Specification<Azienda> hasTipoAzienda(TipoAzienda tipoAzienda) {
         return (root, query, criteriaBuilder) -> {
+            // Filtro opzionale: se non specificato, ritorna condizione vera per includere tutti i record
             if (tipoAzienda == null) {
                 return criteriaBuilder.conjunction();
             }
 
-            query.distinct(true);
-            if (tipoAzienda == TipoAzienda.MADRINA) {
-                return criteriaBuilder.isNotEmpty(root.get("corsiConAziendaMadrina"));
-            }
-
-            return criteriaBuilder.isEmpty(root.get("corsiConAziendaMadrina"));
+            return criteriaBuilder.equal(root.get("tipo"), tipoAzienda);
         };
     }
 }

@@ -4,6 +4,7 @@ import com.its.gestionale.entity.Azienda;
 import com.its.gestionale.entity.enums.TipoAzienda;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,7 @@ public class AziendaDTO {
     @Size(max = 100, message = "La città non può superare 100 caratteri")
     private String citta;
 
+    @NotNull(message = "Il tipo di azienda è obbligatorio")
     private TipoAzienda tipoAzienda;
 
     public static AziendaDTO fromEntity(Azienda azienda) {
@@ -49,8 +51,7 @@ public class AziendaDTO {
         dto.setIndirizzo(azienda.getIndirizzo());
         dto.setCap(azienda.getCap());
         dto.setCitta(azienda.getCitta());
-        boolean isMadrina = azienda.getCorsiConAziendaMadrina() != null && !azienda.getCorsiConAziendaMadrina().isEmpty();
-        dto.setTipoAzienda(isMadrina ? TipoAzienda.MADRINA : TipoAzienda.NON_MADRINA);
+        dto.setTipoAzienda(azienda.getTipo());
         return dto;
     }
 }

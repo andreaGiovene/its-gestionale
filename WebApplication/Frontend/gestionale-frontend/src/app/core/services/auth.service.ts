@@ -27,6 +27,7 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly apiBase = 'http://localhost:8080';
   private readonly tokenKey = 'auth_token';
+  private currentUser: MeResponse | null = null;
 
   // Login applicativo:
   // - invia credenziali al backend
@@ -45,10 +46,23 @@ export class AuthService {
     return this.http.get<MeResponse>(`${this.apiBase}/auth/me`);
   }
 
+  setCurrentUser(user: MeResponse | null): void {
+    this.currentUser = user;
+  }
+
+  getCurrentUser(): MeResponse | null {
+    return this.currentUser;
+  }
+
+  hasRole(role: string): boolean {
+    return this.currentUser?.ruolo === role;
+  }
+
   // Logout locale: elimina solo lo stato client-side.
   // In modalita stateless non e richiesto endpoint server di invalidazione.
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    this.currentUser = null;
     void this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 

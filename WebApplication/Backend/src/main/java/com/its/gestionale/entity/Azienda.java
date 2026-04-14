@@ -2,14 +2,22 @@ package com.its.gestionale.entity;
 
 import java.util.List;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import com.its.gestionale.entity.enums.TipoAzienda;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -48,8 +56,11 @@ public class Azienda {
     @Column(length = 100)
     private String citta;
 
-    @Column(name = "tipo", length = 50)
-    private String tipo;
+    @NotNull(message = "Il tipo di azienda è obbligatorio")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo", nullable = false, columnDefinition = "tipo_azienda_enum")
+    private TipoAzienda tipo;
 
     @OneToMany(mappedBy = "azienda", fetch = FetchType.LAZY)
     @ToString.Exclude

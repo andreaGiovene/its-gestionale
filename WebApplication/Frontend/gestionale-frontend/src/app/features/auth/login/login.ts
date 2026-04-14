@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { switchMap } from 'rxjs';
 
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -44,8 +45,11 @@ export class Login {
     this.loading = true;
     this.errorMessage = '';
 
-    this.authService.login(this.loginForm.getRawValue()).subscribe({
-      next: () => {
+    this.authService.login(this.loginForm.getRawValue()).pipe(
+      switchMap(() => this.authService.me())
+    ).subscribe({
+      next: (user) => {
+        this.authService.setCurrentUser(user);
         this.loading = false;
         this.router.navigateByUrl('/dashboard');
       },
