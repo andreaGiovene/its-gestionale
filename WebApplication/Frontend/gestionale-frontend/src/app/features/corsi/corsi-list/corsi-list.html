@@ -127,7 +127,7 @@
         <p *ngIf="allCorsi.length === 0">Nessun corso disponibile.</p>
         <p *ngIf="allCorsi.length > 0">Nessun corso corrisponde ai filtri selezionati.</p>
         <button *ngIf="allCorsi.length > 0" class="btn btn-secondary" (click)="resetFilters()">
-          Azzera filtri
+          Reset filtri
         </button>
         <button *ngIf="allCorsi.length === 0" class="btn btn-primary" (click)="createNew()">
           Crea il primo corso

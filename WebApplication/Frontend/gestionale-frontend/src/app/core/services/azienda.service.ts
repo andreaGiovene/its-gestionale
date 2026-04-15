@@ -10,7 +10,7 @@ export class AziendaService {
   private readonly apiBase = 'http://localhost:8080/api/aziende';
 
   /**
-   * Recupera aziende filtrate con paginazione.
+   * Recupera aziende filtrate con paginazione e ordinamento server-side.
    */
   getCerca(filtri: AziendaSearchFilters): Observable<PageResponse<Azienda>> {
     let params = new HttpParams();
@@ -29,6 +29,11 @@ export class AziendaService {
 
     params = params.set('page', String(filtri.page ?? 0));
     params = params.set('size', String(filtri.size ?? 10));
+
+    // Se fornito un sortDirection, lo manda al backend via sort parameter (formato Spring Data: field,direction)
+    if (filtri.sortDirection) {
+      params = params.set('sort', `ragioneSociale,${filtri.sortDirection}`);
+    }
 
     return this.http.get<PageResponse<Azienda>>(this.apiBase, { params });
   }

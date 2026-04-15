@@ -87,9 +87,10 @@ export class AziendeList implements OnInit {
       corsoId,
       page,
       size: this.pageSize,
+      sortDirection: this.ragioneSocialeSortDirection,
     }).subscribe({
       next: (response) => {
-        this.aziende = this.sortAziendeByRagioneSociale(response.content);
+        this.aziende = response.content;
         this.currentPage = response.number;
         this.pageSize = response.size;
         this.totalElements = response.totalElements;
@@ -156,26 +157,9 @@ export class AziendeList implements OnInit {
     }
   }
 
-  /** Alterna l'ordinamento locale per ragione sociale. */
+  /** Alterna l'ordinamento per ragione sociale e lancia una nuova ricerca. */
   toggleRagioneSocialeSort(): void {
     this.ragioneSocialeSortDirection = this.ragioneSocialeSortDirection === 'asc' ? 'desc' : 'asc';
-    this.aziende = this.sortAziendeByRagioneSociale(this.aziende);
-  }
-
-  /** Ordina le aziende per ragione sociale, e a parità per ID. */
-  private sortAziendeByRagioneSociale(aziende: Azienda[]): Azienda[] {
-    const directionMultiplier = this.ragioneSocialeSortDirection === 'asc' ? 1 : -1;
-
-    return [...aziende].sort((first, second) => {
-      const comparison = (first.ragioneSociale || '').localeCompare(second.ragioneSociale || '', 'it', {
-        sensitivity: 'base',
-      });
-
-      if (comparison !== 0) {
-        return comparison * directionMultiplier;
-      }
-
-      return (first.id - second.id) * directionMultiplier;
-    });
+    this.search(0);
   }
 }

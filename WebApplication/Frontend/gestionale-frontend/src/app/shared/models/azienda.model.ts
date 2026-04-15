@@ -17,6 +17,7 @@ export interface AziendaSearchFilters {
   corsoId?: number | null;
   page?: number;
   size?: number;
+  sortDirection?: 'asc' | 'desc';
 }
 
 export interface PageResponse<T> {
