@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.its.gestionale.entity.ContattoAziendale;
 
 @Repository
-public interface ContattoAzienddaleRepository extends JpaRepository<ContattoAziendale, Integer> {
+public interface ContattoAziendaleRepository extends JpaRepository<ContattoAziendale, Integer> {
     List<ContattoAziendale> findByAziendaId(Integer aziendaId);
     List<ContattoAziendale> findByUtenteIdUtente(Integer utenteId);
 }

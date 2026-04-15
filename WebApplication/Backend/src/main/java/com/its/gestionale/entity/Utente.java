@@ -48,4 +48,5 @@ public class Utente {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_ruolo", nullable = false)
     private Ruolo ruolo;
+
 }
