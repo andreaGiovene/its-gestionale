@@ -142,4 +142,23 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(status).body(body);
     }
+
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiErrorResponse> handleEnumError(
+            org.springframework.http.converter.HttpMessageNotReadableException ex,
+            HttpServletRequest request) {
+
+        String message = "Formato JSON non valido";
+
+        if (ex.getMessage() != null && ex.getMessage().contains("RuoloContatto")) {
+            message = "Valore non valido per il campo 'ruolo'";
+        }
+
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                message,
+                request.getRequestURI(),
+                null
+        );
+    }
 }

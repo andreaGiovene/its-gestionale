@@ -1,6 +1,6 @@
 package com.its.gestionale.entity;
 
-import com.its.gestionale.entity.enums.TipoResponsabile;
+import com.its.gestionale.entity.enums.TipoResponsabileITS;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,9 +54,9 @@ public class Responsabile {
     @Column(length = 20)
     private String telefono;
 
-    /** Tipologia del responsabile secondo l'enum {@link TipoResponsabile}. */
+    /** Tipologia del responsabile secondo l'enum {@link TipoResponsabileITS}. */
     @Enumerated(EnumType.STRING)
-    private TipoResponsabile tipo;
+    private TipoResponsabileITS tipo;
 
     /** Stato logico di attivazione del responsabile (default true). */
     @Column(columnDefinition = "BOOLEAN DEFAULT true")

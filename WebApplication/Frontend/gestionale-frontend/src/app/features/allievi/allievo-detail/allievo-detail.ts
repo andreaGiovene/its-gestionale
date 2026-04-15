@@ -8,6 +8,10 @@ import { AllievoService } from '@core/services/allievo.service';
 import { CorsoService } from '@core/services/corso.service';
 import { Allievo, Corso, UpdateAllievoRequest } from '@shared/models';
 
+/**
+ * Form di creazione/modifica dell'allievo.
+ * Carica in parallelo l'elenco corsi e il dettaglio record, poi salva il payload normalizzato.
+ */
 @Component({
   selector: 'app-allievo-detail',
   imports: [CommonModule, ReactiveFormsModule],
@@ -22,14 +26,37 @@ export class AllievoDetail implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
 
+  /** Form principale del dettaglio allievo. */
   form!: FormGroup;
+  /** Stato di caricamento dei dati iniziali. */
   isLoading = true;
+  /** Stato di invio del salvataggio. */
   isSubmitting = false;
+  /** Messaggio di errore mostrato nella UI. */
   error: string | null = null;
+  /** Indica se il componente sta creando un nuovo allievo. */
   isNew = false;
+  /** Entità caricata in modalità modifica. */
   allievo: Allievo | null = null;
+  /** Elenco corsi da usare nella select di associazione. */
   corsi: Corso[] = [];
 
+  /** Restituisce il corso selezionato nel form, se presente. */
+  get selectedCorso(): Corso | undefined {
+    const corsoId = Number(this.form?.get('corsoId')?.value);
+    if (!corsoId) {
+      return undefined;
+    }
+
+    return this.corsi.find((corso) => corso.id === corsoId);
+  }
+
+  /** Ritorna un'etichetta leggibile per il corso, includendo l'annualità. */
+  getCorsoLabel(corso: Corso): string {
+    return corso.annoAccademico ? `${corso.nome} - ${corso.annoAccademico}` : corso.nome;
+  }
+
+  /** Inizializza il form e reagisce ai cambi di parametro della route. */
   ngOnInit(): void {
     this.initForm();
 
@@ -40,22 +67,29 @@ export class AllievoDetail implements OnInit, OnDestroy {
     });
   }
 
+  /** Chiude tutte le subscription legate al ciclo vita del componente. */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  /** Definisce campi e validazioni del form allievo. */
   private initForm(): void {
     this.form = this.fb.group({
       nome: ['', [Validators.required, Validators.maxLength(100)]],
       cognome: ['', [Validators.required, Validators.maxLength(100)]],
       codiceFiscale: ['', [Validators.maxLength(32)]],
+      telefono: ['', [Validators.maxLength(20)]],
       dataDiNascita: [''],
       corsoId: [''],
       note: ['', [Validators.maxLength(2000)]],
     });
   }
 
+  /**
+   * Carica corsi e, se presente, allievo esistente; in modifica precompila la form.
+   * @param allievoId identificativo dell'allievo oppure null in creazione
+   */
   private loadInitialData(allievoId: number | null): void {
     this.isLoading = true;
     this.error = null;
@@ -77,6 +111,7 @@ export class AllievoDetail implements OnInit, OnDestroy {
               nome: allievo.nome,
               cognome: allievo.cognome,
               codiceFiscale: allievo.codiceFiscale,
+              telefono: allievo.telefono,
               dataDiNascita: allievo.dataDiNascita,
               corsoId: allievo.corsoId ?? '',
               note: allievo.note,
@@ -93,6 +128,7 @@ export class AllievoDetail implements OnInit, OnDestroy {
       });
   }
 
+  /** Valida, normalizza e invia i dati al servizio di persistenza. */
   save(): void {
     if (this.form.invalid) {
       alert('Form non valido: compila tutti i campi richiesti');
@@ -107,6 +143,7 @@ export class AllievoDetail implements OnInit, OnDestroy {
       nome: raw.nome,
       cognome: raw.cognome,
       codiceFiscale: raw.codiceFiscale || undefined,
+      telefono: raw.telefono || undefined,
       dataDiNascita: raw.dataDiNascita || undefined,
       note: raw.note || undefined,
       corsoId: raw.corsoId ? Number(raw.corsoId) : null,
@@ -129,6 +166,7 @@ export class AllievoDetail implements OnInit, OnDestroy {
     });
   }
 
+  /** Torna alla lista senza mantenere eventuali modifiche non salvate. */
   cancel(): void {
     this.router.navigate(['/allievi']);
   }

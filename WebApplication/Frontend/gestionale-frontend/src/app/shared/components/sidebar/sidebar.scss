@@ -1,0 +1,39 @@
+:host {
+  display: block;
+  color: white;
+  --mdc-list-list-item-label-text-color: white;
+  --mdc-list-list-item-hover-state-layer-color: rgba(255, 255, 255, 0.02);
+  --mdc-list-list-item-hover-state-layer-opacity: 0.06;
+  --mdc-list-list-item-focus-state-layer-color: rgba(255, 255, 255, 0.04);
+  --mdc-list-list-item-focus-state-layer-opacity: 0.08;
+}
+
+.sidenav-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 16px;
+  font-size: 18px;
+  font-weight: 500;
+  border-bottom: 1px solid rgb(255, 255, 255);
+}
+
+:host mat-icon,
+:host span,
+:host a {
+  color: white;
+}
+
+:host a.mat-mdc-list-item {
+  border-radius: 8px;
+  margin: 0 8px;
+}
+
+:host a.mat-mdc-list-item:hover {
+  background-color: rgb(2, 255, 192);
+}
+
+.active-link {
+  background-color: #00eeffa1;
+  border-radius: 8px;
+}

@@ -6,6 +6,29 @@ export interface Azienda {
   email?: string;
   indirizzo?: string;
   cap?: string;
+  citta?: string;
+  tipoAzienda?: 'MADRINA' | 'NON_MADRINA';
+}
+
+export type AziendaSearchTipo = 'MADRINA' | 'NON_MADRINA';
+
+export interface AziendaSearchFilters {
+  tipo?: AziendaSearchTipo | '';
+  ragioneSociale?: string;
+  corsoId?: number | null;
+  page?: number;
+  size?: number;
+  sortDirection?: 'asc' | 'desc';
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  first?: boolean;
+  last?: boolean;
 }
 
 export interface CreateAziendaRequest {
@@ -15,6 +38,8 @@ export interface CreateAziendaRequest {
   email?: string;
   indirizzo?: string;
   cap?: string;
+  citta?: string;
+  tipoAzienda?: 'MADRINA' | 'NON_MADRINA';
 }
 
 export interface UpdateAziendaRequest extends CreateAziendaRequest {}

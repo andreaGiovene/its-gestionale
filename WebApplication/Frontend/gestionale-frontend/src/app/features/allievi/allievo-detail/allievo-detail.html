@@ -1,3 +1,4 @@
+<!-- Form di dettaglio allievo con gestione dei due stati: creazione e modifica. -->
 <div class="allievo-detail-container">
   <div class="header">
     <button class="btn btn-outline-secondary" (click)="cancel()">← Indietro</button>
@@ -50,12 +51,31 @@
       </div>
 
       <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="telefono">Telefono</label>
+          <input
+            type="tel"
+            id="telefono"
+            class="form-control"
+            formControlName="telefono"
+            placeholder="Inserisci numero di telefono"
+          />
+          <small *ngIf="form.get('telefono')?.errors?.['maxlength']">Massimo 20 caratteri</small>
+        </div>
+      </div>
+
+      <div class="form-row">
         <div class="form-group col-md-12">
           <label for="corsoId">Corso</label>
           <select id="corsoId" class="form-control" formControlName="corsoId">
             <option value="">-- Nessun corso associato --</option>
-            <option *ngFor="let corso of corsi" [value]="corso.id">{{ corso.nome }}</option>
+            <option *ngFor="let corso of corsi" [value]="corso.id">
+              {{ getCorsoLabel(corso) }}
+            </option>
           </select>
+          <small class="form-text text-muted" *ngIf="selectedCorso">
+            Corso selezionato: {{ getCorsoLabel(selectedCorso) }}
+          </small>
         </div>
       </div>
 

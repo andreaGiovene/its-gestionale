@@ -1,0 +1,201 @@
+<!-- Pagina di dettaglio azienda con anagrafica e contatti. -->
+<div class="azienda-view-container">
+  <div class="header">
+    <button class="btn btn-outline-secondary" (click)="back()">← Torna alla lista</button>
+    <h1 *ngIf="azienda">{{ azienda.ragioneSociale }}</h1>
+    <div class="actions">
+      <button class="btn btn-primary" (click)="edit()" [disabled]="isLoading">Modifica</button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <ng-container *ngIf="isLoading">
+    <p class="loading">Caricamento in corso...</p>
+  </ng-container>
+
+  <!-- Error state -->
+  <ng-container *ngIf="error && !isLoading">
+    <div class="error-message alert alert-danger">
+      {{ error }}
+    </div>
+    <button class="btn btn-secondary mt-3" (click)="back()">Torna alla lista</button>
+  </ng-container>
+
+  <!-- Content -->
+  <ng-container *ngIf="!isLoading && !error && azienda">
+    <!-- Sezione Anagrafica -->
+    <div class="anagrafica-section card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Anagrafica Azienda</h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Ragione Sociale</label>
+            <p class="form-control-static">{{ azienda.ragioneSociale }}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Partita IVA</label>
+            <p class="form-control-static">{{ azienda.partitaIva }}</p>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Telefono</label>
+            <p class="form-control-static">
+              <ng-container *ngIf="azienda.telefono">
+                <a [href]="'tel:' + azienda.telefono">{{ azienda.telefono }}</a>
+              </ng-container>
+              <ng-container *ngIf="!azienda.telefono">
+                <span class="text-muted">-</span>
+              </ng-container>
+            </p>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Email</label>
+            <p class="form-control-static">
+              <ng-container *ngIf="azienda.email">
+                <a [href]="'mailto:' + azienda.email">{{ azienda.email }}</a>
+              </ng-container>
+              <ng-container *ngIf="!azienda.email">
+                <span class="text-muted">-</span>
+              </ng-container>
+            </p>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <label class="form-label fw-bold">Indirizzo</label>
+            <p class="form-control-static">
+              <ng-container *ngIf="azienda.indirizzo">
+                {{ azienda.indirizzo }}
+                <span *ngIf="azienda.cap" class="ms-2">{{ azienda.cap }}</span>
+                <span *ngIf="azienda.citta" class="ms-2">{{ azienda.citta }}</span>
+              </ng-container>
+              <ng-container *ngIf="!azienda.indirizzo">
+                <span class="text-muted">-</span>
+              </ng-container>
+            </p>
+          </div>
+        </div>
+
+        <div class="row mb-0">
+          <div class="col-md-12">
+            <label class="form-label fw-bold">Tipo</label>
+            <p class="form-control-static">
+              <span class="badge" [ngClass]="getTipoBadgeClass()">{{ getTipoLabel() }}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sezione Contatti -->
+    <div class="contatti-section card">
+      <div class="card-header">
+        <h5 class="mb-0">Contatti Aziendali</h5>
+      </div>
+      <div class="card-body">
+        <form class="contatto-form mb-4" [formGroup]="contattoForm" (ngSubmit)="submitContatto()">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label for="contattoNome" class="form-label">Nome *</label>
+              <input id="contattoNome" type="text" class="form-control" formControlName="nome" placeholder="Nome" />
+              <small class="text-danger" *ngIf="contattoForm.get('nome')?.touched && contattoForm.get('nome')?.errors?.['required']">
+                Il nome è obbligatorio
+              </small>
+            </div>
+
+            <div class="col-md-3">
+              <label for="contattoCognome" class="form-label">Cognome</label>
+              <input id="contattoCognome" type="text" class="form-control" formControlName="cognome" placeholder="Cognome" />
+            </div>
+
+            <div class="col-md-3">
+              <label for="contattoRuolo" class="form-label">Ruolo *</label>
+              <select id="contattoRuolo" class="form-select" formControlName="ruolo">
+                <option [ngValue]="null">Seleziona ruolo</option>
+                <option *ngFor="let ruolo of ruoliContatto" [ngValue]="ruolo">{{ getRuoloLabel(ruolo) }}</option>
+              </select>
+              <small class="text-danger" *ngIf="contattoForm.get('ruolo')?.touched && contattoForm.get('ruolo')?.errors?.['required']">
+                Il ruolo è obbligatorio
+              </small>
+            </div>
+
+            <div class="col-md-3">
+              <label for="contattoTelefono" class="form-label">Telefono</label>
+              <input id="contattoTelefono" type="tel" class="form-control" formControlName="telefono" placeholder="Telefono" />
+            </div>
+
+            <div class="col-md-6">
+              <label for="contattoEmail" class="form-label">Email</label>
+              <input id="contattoEmail" type="email" class="form-control" formControlName="email" placeholder="Email" />
+              <small class="text-danger" *ngIf="contattoForm.get('email')?.touched && contattoForm.get('email')?.errors?.['email']">
+                Inserire un'email valida
+              </small>
+            </div>
+
+            <div class="col-md-6 d-flex align-items-end justify-content-end">
+              <button type="submit" class="btn btn-primary" [disabled]="isSubmittingContatto || contattoForm.invalid">
+                {{ isSubmittingContatto ? 'Salvataggio...' : 'Aggiungi contatto' }}
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="contattoError" class="alert alert-danger mt-3 mb-0">
+            {{ contattoError }}
+          </div>
+        </form>
+
+        <ng-container *ngIf="contatti.length > 0; else noContatti">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Cognome</th>
+                  <th>Ruolo</th>
+                  <th>Telefono</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let contatto of contatti">
+                  <td>{{ contatto.nome || '-' }}</td>
+                  <td>{{ contatto.cognome || '-' }}</td>
+                  <td>
+                    <span class="badge bg-secondary">{{ getRuoloLabel(contatto.ruolo) }}</span>
+                  </td>
+                  <td>
+                    <ng-container *ngIf="contatto.telefono">
+                      <a [href]="'tel:' + contatto.telefono">{{ contatto.telefono }}</a>
+                    </ng-container>
+                    <ng-container *ngIf="!contatto.telefono">
+                      <span class="text-muted">-</span>
+                    </ng-container>
+                  </td>
+                  <td>
+                    <ng-container *ngIf="contatto.email">
+                      <a [href]="'mailto:' + contatto.email">{{ contatto.email }}</a>
+                    </ng-container>
+                    <ng-container *ngIf="!contatto.email">
+                      <span class="text-muted">-</span>
+                    </ng-container>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+
+        <ng-template #noContatti>
+          <div class="empty-state">
+            <p class="text-muted">Nessun contatto registrato per questa azienda.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </ng-container>
+</div>

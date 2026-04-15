@@ -22,6 +22,9 @@ public class CorsoDTO {
     @Size(max = 32, message = "Lo stato non puo superare 32 caratteri")
     private String stato;
 
+    private Integer aziendaMadrinaId;
+    private String aziendaMadrinaRagioneSociale;
+
     // Campo derivato per futura integrazione con gestione allievi.
     private Integer allieviCount;
 }

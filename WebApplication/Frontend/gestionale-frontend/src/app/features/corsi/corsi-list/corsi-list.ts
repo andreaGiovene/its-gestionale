@@ -2,12 +2,14 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { CorsoService } from '@core/services/corso.service';
 import { Corso } from '@shared/models';
 
 @Component({
   selector: 'app-corsi-list',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule],
   templateUrl: './corsi-list.html',
   styleUrl: './corsi-list.scss',
 })
@@ -31,6 +33,10 @@ export class CorsiList implements OnInit {
   selectedStato = '';
   /** Filtro anno accademico (match esatto). */
   selectedAnnoAccademico = '';
+  /** Direzione ordinamento per nome corso. */
+  nomeSortDirection: 'asc' | 'desc' = 'asc';
+  /** Direzione ordinamento per anno accademico. */
+  annoSortDirection: 'asc' | 'desc' = 'desc';
 
   /** Stato UI durante caricamento dati. */
   isLoading = true;
@@ -99,7 +105,8 @@ export class CorsiList implements OnInit {
   applyFilters(): void {
     const search = this.searchTerm.trim().toLowerCase();
 
-    this.filteredCorsi = this.allCorsi.filter((corso) => {
+    this.filteredCorsi = this.sortCorsi(
+      this.allCorsi.filter((corso) => {
       const matchNome =
         this.selectedNomeCorso.length === 0 || corso.nome === this.selectedNomeCorso;
       const matchNomeSearch = search.length === 0 || corso.nome.toLowerCase().includes(search);
@@ -109,7 +116,8 @@ export class CorsiList implements OnInit {
         corso.annoAccademico === this.selectedAnnoAccademico;
 
       return matchNome && matchNomeSearch && matchStato && matchAnno;
-    });
+      }),
+    );
   }
 
   /**
@@ -156,5 +164,43 @@ export class CorsiList implements OnInit {
         },
       });
     }
+  }
+
+  /** Alterna l'ordinamento per nome corso. */
+  toggleNomeSort(): void {
+    this.nomeSortDirection = this.nomeSortDirection === 'asc' ? 'desc' : 'asc';
+    this.filteredCorsi = this.sortCorsi(this.filteredCorsi);
+  }
+
+  /** Alterna l'ordinamento per anno accademico. */
+  toggleAnnoSort(): void {
+    this.annoSortDirection = this.annoSortDirection === 'asc' ? 'desc' : 'asc';
+    this.filteredCorsi = this.sortCorsi(this.filteredCorsi);
+  }
+
+  /** Ordina i corsi prima per nome, poi per anno accademico. */
+  private sortCorsi(corsi: Corso[]): Corso[] {
+    const nomeDirectionMultiplier = this.nomeSortDirection === 'asc' ? 1 : -1;
+    const annoDirectionMultiplier = this.annoSortDirection === 'asc' ? 1 : -1;
+
+    return [...corsi].sort((first, second) => {
+      const nomeComparison = (first.nome || '').localeCompare(second.nome || '', 'it', {
+        sensitivity: 'base',
+      });
+
+      if (nomeComparison !== 0) {
+        return nomeComparison * nomeDirectionMultiplier;
+      }
+
+      const annoComparison = (first.annoAccademico || '').localeCompare(second.annoAccademico || '', 'it', {
+        sensitivity: 'base',
+      });
+
+      if (annoComparison !== 0) {
+        return annoComparison * annoDirectionMultiplier;
+      }
+
+      return first.id - second.id;
+    });
   }
 }

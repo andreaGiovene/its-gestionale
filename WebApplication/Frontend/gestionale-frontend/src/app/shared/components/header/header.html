@@ -1,0 +1,14 @@
+<!-- Toolbar principale: titolo, toggle menu mobile e pulsante logout. -->
+<mat-toolbar color="primary" class="toolbar">
+  @if (showMenuButton) {
+    <button mat-icon-button type="button" aria-label="Apri menu" class="menu-button" (click)="onMenuToggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  }
+  <span>{{ title }}</span>
+  <span class="toolbar-spacer"></span>
+  <button mat-stroked-button type="button" class="logout-button" (click)="onLogout()">
+    <mat-icon>logout</mat-icon>
+    <span>Esci</span>
+  </button>
+</mat-toolbar>

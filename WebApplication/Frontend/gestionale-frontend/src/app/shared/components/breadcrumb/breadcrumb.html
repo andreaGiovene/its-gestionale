@@ -1,0 +1,17 @@
+<!-- Breadcrumb visibile solo quando esiste almeno un livello di navigazione significativo. -->
+@if (breadcrumbs.length > 0) {
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      @for (crumb of breadcrumbs; track crumb.url; let isLast = $last) {
+        <li>
+          @if (!isLast) {
+            <a [routerLink]="crumb.url">{{ crumb.label }}</a>
+            <span class="separator">/</span>
+          } @else {
+            <span class="current">{{ crumb.label }}</span>
+          }
+        </li>
+      }
+    </ol>
+  </nav>
+}

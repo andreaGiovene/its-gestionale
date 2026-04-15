@@ -1,12 +1,19 @@
+<!-- Form di dettaglio corso con validazione inline e due modalità operative. -->
 <div class="corso-detail-container">
   <div class="header">
-    <button class="btn btn-outline-secondary" (click)="cancel()">← Indietro</button>
-    <h1>{{ isNew ? 'Nuovo Corso' : 'Dettagli Corso' }}</h1>
+    <button mat-stroked-button color="primary" (click)="cancel()">
+      <mat-icon aria-hidden="true">arrow_back</mat-icon>
+      Indietro
+    </button>
+    <h1>{{ isNew ? 'Nuovo Corso' : (corso?.nome || 'Dettagli Corso') }}</h1>
     <span></span>
   </div>
 
   <ng-container *ngIf="isLoading">
-    <p class="loading">Caricamento in corso...</p>
+    <div class="loading-state">
+      <mat-spinner diameter="42"></mat-spinner>
+      <p class="loading">Caricamento in corso...</p>
+    </div>
   </ng-container>
 
   <ng-container *ngIf="error && !isLoading">
@@ -16,6 +23,27 @@
   </ng-container>
 
   <ng-container *ngIf="!isLoading">
+    <section *ngIf="!isNew && corso" class="course-summary">
+      <div class="summary-card">
+        <span class="summary-label">Corso</span>
+        <h2>{{ corso.nome }}</h2>
+        <div class="summary-grid">
+          <div>
+            <strong>Anno accademico</strong>
+            <p>{{ corso.annoAccademico || '-' }}</p>
+          </div>
+          <div>
+            <strong>Stato</strong>
+            <p>{{ corso.stato }}</p>
+          </div>
+          <div>
+            <strong>Azienda madrina</strong>
+            <p>{{ corso.aziendaMadrinaRagioneSociale || 'Nessuna azienda madrina' }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <form [formGroup]="form" class="form-container">
       <div class="form-group">
         <label for="nome">Nome Corso *</label>
@@ -62,12 +90,13 @@
       </div>
 
       <div class="actions">
-        <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="isSubmitting">
+        <button type="button" mat-button (click)="cancel()" [disabled]="isSubmitting">
           Annulla
         </button>
         <button
           type="button"
-          class="btn btn-primary"
+          mat-flat-button
+          color="primary"
           (click)="save()"
           [disabled]="form.invalid || isSubmitting"
         >
@@ -75,5 +104,58 @@
         </button>
       </div>
     </form>
+
+    <section *ngIf="!isNew" class="students-section">
+      <h2>Studenti del corso</h2>
+
+      <ng-container *ngIf="isAllieviLoading">
+        <div class="loading-state">
+          <mat-spinner diameter="32"></mat-spinner>
+          <p class="loading">Caricamento studenti in corso...</p>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="allieviError && !isAllieviLoading">
+        <div class="error-message alert alert-danger">
+          {{ allieviError }}
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!isAllieviLoading && !allieviError">
+        <ng-container *ngIf="allievi.length > 0; else emptyStudentsState">
+          <table class="table table-hover students-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>
+                  <button type="button" mat-button class="sort-button" (click)="toggleCognomeSort()">
+                    <span>Cognome</span>
+                    <mat-icon aria-hidden="true">
+                      {{ cognomeSortDirection === 'asc' ? 'south' : 'north' }}
+                    </mat-icon>
+                  </button>
+                </th>
+                <th>Codice Fiscale</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let allievo of allievi" class="cursor-pointer" (click)="openAllievoDetail(allievo.id)">
+                <td>{{ allievo.id }}</td>
+                <td>{{ allievo.nome }}</td>
+                <td>{{ allievo.cognome }}</td>
+                <td>{{ allievo.codiceFiscale || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+
+        <ng-template #emptyStudentsState>
+          <div class="empty-state">
+            <p>Nessun allievo iscritto a questo corso.</p>
+          </div>
+        </ng-template>
+      </ng-container>
+    </section>
   </ng-container>
 </div>

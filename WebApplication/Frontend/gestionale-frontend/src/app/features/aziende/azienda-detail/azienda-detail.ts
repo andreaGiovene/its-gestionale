@@ -7,6 +7,11 @@ import { Azienda, UpdateAziendaRequest } from '@shared/models';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+/**
+ * Form di creazione/modifica azienda.
+ * Gestisce sia la creazione di una nuova azienda (/aziende/new)
+ * che la modifica di una esistente (/aziende/:id/edit).
+ */
 @Component({
   selector: 'app-azienda-detail',
   imports: [CommonModule, ReactiveFormsModule],
@@ -20,13 +25,20 @@ export class AziendaDetail implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
 
+  /** Form principale dell'azienda. */
   form!: FormGroup;
+  /** Stato di caricamento iniziale. */
   isLoading = true;
+  /** Stato di invio del salvataggio. */
   isSubmitting = false;
+  /** Messaggio di errore esposto nella UI. */
   error: string | null = null;
+  /** Indica se la route corrente sta creando una nuova azienda. */
   isNew = false;
+  /** Azienda caricata in modalità modifica. */
   azienda: Azienda | null = null;
 
+  /** Prepara il form e carica il record eventualmente esistente. */
   ngOnInit(): void {
     this.initForm();
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
@@ -35,16 +47,19 @@ export class AziendaDetail implements OnInit, OnDestroy {
         this.isNew = true;
         this.isLoading = false;
       } else {
+        // Carica l'azienda per la modifica (sia da /aziende/:id/edit che da /aziende/:id legacy)
         this.loadAzienda(parseInt(id, 10));
       }
     });
   }
 
+  /** Chiude le subscription attive quando il componente viene distrutto. */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  /** Definisce i campi dell'azienda e le relative validazioni. */
   private initForm(): void {
     this.form = this.fb.group({
       ragioneSociale: ['', [Validators.required, Validators.maxLength(100)]],
@@ -53,9 +68,11 @@ export class AziendaDetail implements OnInit, OnDestroy {
       email: ['', [Validators.maxLength(100)]],
       indirizzo: ['', [Validators.maxLength(150)]],
       cap: ['', [Validators.maxLength(10)]],
+      citta: ['', [Validators.maxLength(100)]],
     });
   }
 
+  /** Carica l'azienda selezionata e popola il form in modalità edit. */
   private loadAzienda(id: number): void {
     this.isLoading = true;
     this.error = null;
@@ -73,6 +90,7 @@ export class AziendaDetail implements OnInit, OnDestroy {
             email: data.email,
             indirizzo: data.indirizzo,
             cap: data.cap,
+            citta: data.citta,
           });
           this.isLoading = false;
         },
@@ -84,6 +102,7 @@ export class AziendaDetail implements OnInit, OnDestroy {
       });
   }
 
+  /** Valida la form e invia il payload al servizio di persistenza. */
   save(): void {
     if (this.form.invalid) {
       alert('Form non valido: compila tutti i campi richiesti');
@@ -112,6 +131,7 @@ export class AziendaDetail implements OnInit, OnDestroy {
     });
   }
 
+  /** Torna alla lista delle aziende senza salvare. */
   cancel(): void {
     this.router.navigate(['/aziende']);
   }
