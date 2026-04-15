@@ -18,11 +18,11 @@ BEGIN
         -- Normalizzazione eventuali legacy values.
         UPDATE public.azienda
         SET tipo = 'NON_MADRINA'
-        WHERE UPPER(COALESCE(tipo, '')) = 'NORMALE';
+        WHERE tipo::text = 'NORMALE';
 
         UPDATE public.azienda
         SET tipo = 'NON_MADRINA'
-        WHERE UPPER(COALESCE(tipo, '')) = '';
+        WHERE tipo IS NULL;
 
         -- Vincolo aggiornato e univoco rispetto al dominio applicativo.
         IF EXISTS (
@@ -36,7 +36,7 @@ BEGIN
 
         ALTER TABLE public.azienda
             ADD CONSTRAINT azienda_tipo_check
-            CHECK (UPPER(tipo) IN ('MADRINA', 'NON_MADRINA'));
+            CHECK (tipo::text IN ('MADRINA', 'NON_MADRINA'));
 
         -- Contratto forte: campo obbligatorio con default sicuro.
         ALTER TABLE public.azienda

@@ -1,18 +1,18 @@
 <mat-sidenav-container class="sidenav-container">
 
-  <!-- ─── SIDEBAR ─────────────────────────────── -->
+  <!-- Sidebar laterale: resta fissa su desktop e diventa sovrapposta su mobile. -->
   <mat-sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile" class="sidenav">
     <app-sidebar [items]="menuItems" (navigate)="onMenuNavigate()" />
 
   </mat-sidenav>
 
-  <!-- ─── CONTENUTO PRINCIPALE ─────────────────── -->
+  <!-- Area principale: header, breadcrumb e contenuto della route attiva. -->
   <mat-sidenav-content class="main-content">
 
     <app-header [showMenuButton]="isMobile" (menuToggle)="toggleSidenav()" (logout)="onLogout()" />
     <app-breadcrumb />
 
-    <!-- Qui Angular inserisce il componente della route corrente -->
+    <!-- Angular inserisce qui il componente associato alla route corrente. -->
     <div class="content-area">
       <router-outlet />
     </div>

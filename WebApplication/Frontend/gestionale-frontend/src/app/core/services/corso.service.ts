@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Corso, CreateCorsoRequest, UpdateCorsoRequest } from '@shared/models';
+import { Allievo, Corso, CreateCorsoRequest, UpdateCorsoRequest } from '@shared/models';
 
 @Injectable({ providedIn: 'root' })
 export class CorsoService {
@@ -20,6 +20,11 @@ export class CorsoService {
    */
   findById(id: number): Observable<Corso> {
     return this.http.get<Corso>(`${this.apiBase}/${id}`);
+  }
+
+  /** Recupera gli allievi iscritti a un corso specifico. */
+  findAllieviByCorsoId(id: number): Observable<Allievo[]> {
+    return this.http.get<Allievo[]>(`${this.apiBase}/${id}/allievi`);
   }
 
   /**

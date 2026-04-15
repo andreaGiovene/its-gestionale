@@ -10,6 +10,10 @@ interface ColloquioDraft {
   esito?: string;
 }
 
+/**
+ * Placeholder operativo per il flusso colloqui.
+ * Permette di simulare inserimenti locali finché non è disponibile l'integrazione API.
+ */
 @Component({
   selector: 'app-colloqui-placeholder',
   imports: [CommonModule, ReactiveFormsModule],
@@ -19,6 +23,7 @@ interface ColloquioDraft {
 export class ColloquiPlaceholder {
   private readonly fb = inject(FormBuilder);
 
+  /** Form locale per raccogliere i dati minimi di un colloquio. */
   readonly form = this.fb.group({
     data: ['', Validators.required],
     ora: ['', Validators.required],
@@ -27,8 +32,10 @@ export class ColloquiPlaceholder {
     esito: ['', Validators.maxLength(300)],
   });
 
+  /** Elenco delle bozze inserite nella sessione corrente. */
   bozze: ColloquioDraft[] = [];
 
+  /** Valida la form e aggiunge una nuova bozza alla lista locale. */
   addBozza(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

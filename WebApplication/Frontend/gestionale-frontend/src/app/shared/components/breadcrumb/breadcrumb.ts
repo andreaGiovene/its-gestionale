@@ -7,6 +7,10 @@ interface BreadcrumbItem {
   url: string;
 }
 
+/**
+ * Genera dinamicamente il breadcrumb della route attiva.
+ * Legge i metadata `breadcrumb` dai child route e costruisce i link progressivi.
+ */
 @Component({
   selector: 'app-breadcrumb',
   standalone: true,
@@ -19,8 +23,10 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
   private readonly activatedRoute = inject(ActivatedRoute);
   private routeSub?: Subscription;
 
+  /** Elenco breadcrumb calcolato a partire dalla route corrente. */
   breadcrumbs: BreadcrumbItem[] = [];
 
+  /** Ricalcola i breadcrumb all'avvio e a ogni navigazione completata. */
   ngOnInit(): void {
     this.updateBreadcrumbs();
 
@@ -29,14 +35,20 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
       .subscribe(() => this.updateBreadcrumbs());
   }
 
+  /** Interrompe la subscription al router per evitare leak di memoria. */
   ngOnDestroy(): void {
     this.routeSub?.unsubscribe();
   }
 
+  /** Aggiorna il modello locale leggendo lo snapshot della route attiva. */
   private updateBreadcrumbs(): void {
     this.breadcrumbs = this.collectBreadcrumbs(this.activatedRoute.snapshot.root);
   }
 
+  /**
+   * Scorre ricorsivamente la gerarchia delle route per costruire il percorso completo.
+   * Gestisce anche segmenti dinamici come `:id` sostituendoli con i parametri reali.
+   */
   private collectBreadcrumbs(route: ActivatedRouteSnapshot, parentUrl = ''): BreadcrumbItem[] {
     const breadcrumbs: BreadcrumbItem[] = [];
 

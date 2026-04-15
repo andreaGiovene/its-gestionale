@@ -7,6 +7,10 @@ import { Azienda, UpdateAziendaRequest } from '@shared/models';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+/**
+ * Form di creazione/modifica azienda.
+ * Sincronizza la route con la modalità del componente e normalizza i dati prima del salvataggio.
+ */
 @Component({
   selector: 'app-azienda-detail',
   imports: [CommonModule, ReactiveFormsModule],
@@ -20,13 +24,20 @@ export class AziendaDetail implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
 
+  /** Form principale dell'azienda. */
   form!: FormGroup;
+  /** Stato di caricamento iniziale. */
   isLoading = true;
+  /** Stato di invio del salvataggio. */
   isSubmitting = false;
+  /** Messaggio di errore esposto nella UI. */
   error: string | null = null;
+  /** Indica se la route corrente sta creando una nuova azienda. */
   isNew = false;
+  /** Azienda caricata in modalità modifica. */
   azienda: Azienda | null = null;
 
+  /** Prepara il form e carica il record eventualmente esistente. */
   ngOnInit(): void {
     this.initForm();
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
@@ -40,11 +51,13 @@ export class AziendaDetail implements OnInit, OnDestroy {
     });
   }
 
+  /** Chiude le subscription attive quando il componente viene distrutto. */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  /** Definisce i campi dell'azienda e le relative validazioni. */
   private initForm(): void {
     this.form = this.fb.group({
       ragioneSociale: ['', [Validators.required, Validators.maxLength(100)]],
@@ -57,6 +70,7 @@ export class AziendaDetail implements OnInit, OnDestroy {
     });
   }
 
+  /** Carica l'azienda selezionata e popola il form in modalità edit. */
   private loadAzienda(id: number): void {
     this.isLoading = true;
     this.error = null;
@@ -86,6 +100,7 @@ export class AziendaDetail implements OnInit, OnDestroy {
       });
   }
 
+  /** Valida la form e invia il payload al servizio di persistenza. */
   save(): void {
     if (this.form.invalid) {
       alert('Form non valido: compila tutti i campi richiesti');
@@ -114,6 +129,7 @@ export class AziendaDetail implements OnInit, OnDestroy {
     });
   }
 
+  /** Torna alla lista delle aziende senza salvare. */
   cancel(): void {
     this.router.navigate(['/aziende']);
   }

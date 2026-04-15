@@ -10,6 +10,10 @@ import { BreadcrumbComponent } from '../breadcrumb/breadcrumb';
 import { HeaderComponent } from '../header/header';
 import { SidebarComponent, SidebarItem } from '../sidebar/sidebar';
 
+/**
+ * Layout autenticato dell'applicazione.
+ * Coordina sidebar, header, breadcrumb e contenuto delle route figlie.
+ */
 @Component({
   selector: 'app-layout',
   standalone: true,
@@ -29,12 +33,12 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private readonly breakpointObserver = inject(BreakpointObserver);
   private breakpointSub?: Subscription;
 
+  /** Riferimento al sidenav Material per aprire/chiudere il menu da codice. */
   @ViewChild(MatSidenav) sidenav?: MatSidenav;
+  /** Indica se il layout è in modalità mobile. */
   isMobile = false;
 
-  // Voci del menu laterale
-  // In futuro aggiungeremo qui la logica per nascondere voci
-  // in base al ruolo dell'utente (RBAC)
+  /** Voci della navigazione laterale disponibili nell'area autenticata. */
   menuItems: SidebarItem[] = [
     { label: 'Dashboard',  icon: 'dashboard',   route: '/dashboard' },
     { label: 'Corsi',      icon: 'school',       route: '/corsi' },
@@ -44,6 +48,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
     { label: 'Tirocini',   icon: 'work',         route: '/tirocini' },
   ];
 
+  /** Allinea l'apertura del sidenav alla breakpoint strategy del layout. */
   ngOnInit(): void {
     this.breakpointSub = this.breakpointObserver
       .observe('(max-width: 959px)')
@@ -60,22 +65,26 @@ export class LayoutComponent implements OnInit, OnDestroy {
       });
   }
 
+  /** Pulisce la subscription del breakpoint observer. */
   ngOnDestroy(): void {
     this.breakpointSub?.unsubscribe();
   }
 
+  /** Alterna il menu laterale solo quando il layout è in modalità mobile. */
   toggleSidenav(): void {
     if (this.isMobile) {
       this.sidenav?.toggle();
     }
   }
 
+  /** Chiude il menu mobile dopo la navigazione verso una voce laterale. */
   onMenuNavigate(): void {
     if (this.isMobile) {
       this.sidenav?.close();
     }
   }
 
+  /** Delega all'AuthService la procedura di logout. */
   onLogout(): void {
     this.authService.logout();
   }

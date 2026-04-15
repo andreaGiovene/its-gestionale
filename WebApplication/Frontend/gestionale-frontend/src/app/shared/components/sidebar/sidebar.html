@@ -1,8 +1,10 @@
+<!-- Intestazione del menu laterale con branding dell'applicazione. -->
 <div class="sidenav-header">
   <mat-icon>school</mat-icon>
   <span>ITS Gestionale</span>
 </div>
 
+<!-- Voci di navigazione principali mostrate nel layout autenticato. -->
 <mat-nav-list>
   @for (item of items; track item.route) {
     <a mat-list-item [routerLink]="item.route" routerLinkActive="active-link" (click)="onNavigate()">

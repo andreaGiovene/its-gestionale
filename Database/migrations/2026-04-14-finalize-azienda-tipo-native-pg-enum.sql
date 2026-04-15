@@ -26,7 +26,8 @@ BEGIN
         -- Allinea eventuali valori legacy prima della conversione tipo.
         UPDATE public.azienda
         SET tipo = 'NON_MADRINA'
-        WHERE UPPER(COALESCE(tipo, '')) IN ('', 'NORMALE');
+          WHERE tipo IS NULL
+              OR tipo::text = 'NORMALE';
 
         -- Rimuove il check legacy: da qui in poi il vincolo è l'enum nativo.
         IF EXISTS (
