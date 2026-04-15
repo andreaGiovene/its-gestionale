@@ -7,6 +7,7 @@ export interface Azienda {
   indirizzo?: string;
   cap?: string;
   citta?: string;
+  tipoAzienda?: 'MADRINA' | 'NON_MADRINA';
 }
 
 export type AziendaSearchTipo = 'MADRINA' | 'NON_MADRINA';
@@ -38,6 +39,7 @@ export interface CreateAziendaRequest {
   indirizzo?: string;
   cap?: string;
   citta?: string;
+  tipoAzienda?: 'MADRINA' | 'NON_MADRINA';
 }
 
 export interface UpdateAziendaRequest extends CreateAziendaRequest {}

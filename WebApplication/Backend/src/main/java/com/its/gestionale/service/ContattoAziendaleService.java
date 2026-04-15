@@ -3,6 +3,7 @@ package com.its.gestionale.service;
 import java.util.ArrayList;
 import java.util.List;
 
+<<<<<<< HEAD
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,10 +17,26 @@ import com.its.gestionale.repository.AziendaRepository;
 import com.its.gestionale.repository.ContattoAziendaleRepository;
 import com.its.gestionale.repository.UtenteRepository;
 
+=======
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.its.gestionale.dto.ContattoDTO;
+import com.its.gestionale.entity.ContattoAziendale;
+import com.its.gestionale.repository.ContattoAziendaleRepository;
+
+/**
+ * Service applicativo per la gestione dei contatti aziendali.
+ *
+ * Fornisce operazioni di lettura e scrittura sui contatti, mantenendo
+ * separata la logica di persistenza dal layer di controllo REST.
+ */
+>>>>>>> 1931d00 (feat: implementa pagina dettaglio azienda con contatti (BF-021, BF-016))
 @Service
 public class ContattoAziendaleService {
 
     private final ContattoAziendaleRepository contattoRepository;
+<<<<<<< HEAD
     private final AziendaRepository aziendaRepository;
     private final UtenteRepository utenteRepository;
 
@@ -78,11 +95,32 @@ public class ContattoAziendaleService {
 
         for (ContattoAziendale c : contatti) {
             result.add(ContattoAziendaleDTO.fromEntity(c));
+=======
+
+    public ContattoAziendaleService(ContattoAziendaleRepository contattoRepository) {
+        this.contattoRepository = contattoRepository;
+    }
+
+    /**
+     * Recupera tutti i contatti di un'azienda.
+     *
+     * @param aziendaId identificativo dell'azienda
+     * @return lista di {@link ContattoDTO} ordinati (senza garanzia di ordinamento specifico)
+     */
+    @Transactional(readOnly = true)
+    public List<ContattoDTO> findByAziendaId(Integer aziendaId) {
+        List<ContattoAziendale> contatti = contattoRepository.findByAziendaId(aziendaId);
+        List<ContattoDTO> result = new ArrayList<>();
+
+        for (ContattoAziendale contatto : contatti) {
+            result.add(ContattoDTO.fromEntity(contatto));
+>>>>>>> 1931d00 (feat: implementa pagina dettaglio azienda con contatti (BF-021, BF-016))
         }
 
         return result;
     }
 
+<<<<<<< HEAD
     // DELETE
 
     @Transactional
@@ -97,3 +135,23 @@ public class ContattoAziendaleService {
         contattoRepository.deleteById(id);
     }
 }
+=======
+    /**
+     * Recupera tutti i contatti di un utente.
+     *
+     * @param utenteId identificativo dell'utente
+     * @return lista di {@link ContattoDTO}
+     */
+    @Transactional(readOnly = true)
+    public List<ContattoDTO> findByUtenteId(Integer utenteId) {
+        List<ContattoAziendale> contatti = contattoRepository.findByUtenteIdUtente(utenteId);
+        List<ContattoDTO> result = new ArrayList<>();
+
+        for (ContattoAziendale contatto : contatti) {
+            result.add(ContattoDTO.fromEntity(contatto));
+        }
+
+        return result;
+    }
+}
+>>>>>>> 1931d00 (feat: implementa pagina dettaglio azienda con contatti (BF-021, BF-016))

@@ -9,7 +9,8 @@ import { takeUntil } from 'rxjs/operators';
 
 /**
  * Form di creazione/modifica azienda.
- * Sincronizza la route con la modalità del componente e normalizza i dati prima del salvataggio.
+ * Gestisce sia la creazione di una nuova azienda (/aziende/new)
+ * che la modifica di una esistente (/aziende/:id/edit).
  */
 @Component({
   selector: 'app-azienda-detail',
@@ -46,6 +47,7 @@ export class AziendaDetail implements OnInit, OnDestroy {
         this.isNew = true;
         this.isLoading = false;
       } else {
+        // Carica l'azienda per la modifica (sia da /aziende/:id/edit che da /aziende/:id legacy)
         this.loadAzienda(parseInt(id, 10));
       }
     });

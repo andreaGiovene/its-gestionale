@@ -6,6 +6,7 @@ import { CorsiList } from './features/corsi/corsi-list/corsi-list';
 import { CorsoDetail } from './features/corsi/corso-detail/corso-detail';
 import { AziendeList } from './features/aziende/aziende-list/aziende-list';
 import { AziendaDetail } from './features/aziende/azienda-detail/azienda-detail';
+import { AziendaView } from './features/aziende/azienda-view/azienda-view';
 import { AllieviList } from './features/allievi/allievi-list/allievi-list';
 import { AllievoDetail } from './features/allievi/allievo-detail/allievo-detail';
 import { ColloquiPlaceholder } from './features/colloqui/colloqui-placeholder/colloqui-placeholder';
@@ -29,7 +30,9 @@ export const routes: Routes = [
       
       // Aziende routes
       { path: 'aziende', component: AziendeList, data: { breadcrumb: 'Aziende' } },
-      { path: 'aziende/:id', component: AziendaDetail, data: { breadcrumb: 'Dettaglio Azienda' } },
+      { path: 'aziende/new', component: AziendaDetail, data: { breadcrumb: 'Nuova Azienda' } },
+      { path: 'aziende/:id/edit', component: AziendaDetail, data: { breadcrumb: 'Modifica Azienda' } },
+      { path: 'aziende/:id', component: AziendaView, data: { breadcrumb: 'Dettaglio Azienda' } },
 
       // Allievi routes
       { path: 'allievi', component: AllieviList, data: { breadcrumb: 'Allievi' } },

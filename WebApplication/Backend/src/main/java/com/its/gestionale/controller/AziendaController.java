@@ -1,5 +1,7 @@
 package com.its.gestionale.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -17,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.its.gestionale.dto.AziendaDTO;
+import com.its.gestionale.dto.ContattoDTO;
 import com.its.gestionale.entity.enums.TipoAzienda;
 import com.its.gestionale.service.AziendaService;
+import com.its.gestionale.service.ContattoAziendaleService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -33,6 +37,7 @@ import jakarta.validation.constraints.Size;
  * Endpoint disponibili:
  * - GET /api/aziende - ricerca paginata con filtri opzionali (tipo, ragioneSociale, corsoId)
  * - GET /api/aziende/{id} - recupero singolo per ID
+ * - GET /api/aziende/{id}/contatti - recupero contatti associati ad un'azienda
  * - POST /api/aziende - creazione nuova azienda
  * - PUT /api/aziende/{id} - aggiornamento azienda esistente
  * - DELETE /api/aziende/{id} - eliminazione azienda
@@ -50,6 +55,7 @@ import jakarta.validation.constraints.Size;
  * - 404 NOT_FOUND: risorsa non trovata
  *
  * @see AziendaService
+ * @see ContattoAziendaleService
  * @see AziendaDTO
  */
 @RestController
@@ -58,9 +64,11 @@ import jakarta.validation.constraints.Size;
 public class AziendaController {
 
     private final AziendaService aziendaService;
+    private final ContattoAziendaleService contattoAziendaleService;
 
-    public AziendaController(AziendaService aziendaService) {
+    public AziendaController(AziendaService aziendaService, ContattoAziendaleService contattoAziendaleService) {
         this.aziendaService = aziendaService;
+        this.contattoAziendaleService = contattoAziendaleService;
     }
 
     @GetMapping
@@ -75,6 +83,14 @@ public class AziendaController {
     @GetMapping("/{id}")
     public ResponseEntity<AziendaDTO> findById(@PathVariable Integer id) {
         return ResponseEntity.ok(aziendaService.findById(id));
+    }
+
+    @GetMapping("/{id}/contatti")
+    public ResponseEntity<List<ContattoDTO>> getContatti(@PathVariable @Positive Integer id) {
+        // Verifica che l'azienda esista prima di recuperare i contatti
+        aziendaService.findById(id);
+        List<ContattoDTO> contatti = contattoAziendaleService.findByAziendaIdAsDto(id);
+        return ResponseEntity.ok(contatti);
     }
 
     @PostMapping
