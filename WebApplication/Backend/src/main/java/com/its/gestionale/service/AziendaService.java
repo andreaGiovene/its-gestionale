@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,11 +71,19 @@ public class AziendaService {
      */
     @Transactional(readOnly = true)
     public Page<AziendaDTO> search(TipoAzienda tipo, String ragioneSociale, Integer corsoId, Pageable pageable) {
+        Pageable effectivePageable = pageable;
+        if (pageable.getSort().isUnsorted()) {
+            effectivePageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Order.asc("ragioneSociale").ignoreCase()).and(Sort.by("id")));
+        }
+
         Specification<Azienda> specification = AziendaSpecifications.ragioneSocialeContains(ragioneSociale)
                 .and(AziendaSpecifications.hasCorsoMadrina(corsoId))
                 .and(AziendaSpecifications.hasTipoAzienda(tipo));
 
-        return aziendaRepository.findAll(specification, pageable).map(AziendaDTO::fromEntity);
+        return aziendaRepository.findAll(specification, effectivePageable).map(AziendaDTO::fromEntity);
     }
 
     /**

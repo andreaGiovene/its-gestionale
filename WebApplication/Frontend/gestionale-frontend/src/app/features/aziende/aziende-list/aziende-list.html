@@ -62,7 +62,14 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Ragione Sociale</th>
+            <th>
+              <button type="button" mat-button class="sort-button" (click)="toggleRagioneSocialeSort()">
+                <span>Ragione Sociale</span>
+                <mat-icon aria-hidden="true">
+                  {{ ragioneSocialeSortDirection === 'asc' ? 'south' : 'north' }}
+                </mat-icon>
+              </button>
+            </th>
             <th>Partita IVA</th>
             <th>Telefono</th>
             <th>Email</th>

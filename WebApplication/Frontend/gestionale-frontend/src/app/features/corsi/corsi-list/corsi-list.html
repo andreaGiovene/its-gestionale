@@ -85,8 +85,18 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Nome</th>
-            <th>Anno Accademico</th>
+            <th>
+              <button type="button" mat-button class="sort-button" (click)="toggleNomeSort()">
+                <span>Nome</span>
+                <mat-icon aria-hidden="true">{{ nomeSortDirection === 'asc' ? 'south' : 'north' }}</mat-icon>
+              </button>
+            </th>
+            <th>
+              <button type="button" mat-button class="sort-button" (click)="toggleAnnoSort()">
+                <span>Anno Accademico</span>
+                <mat-icon aria-hidden="true">{{ annoSortDirection === 'asc' ? 'south' : 'north' }}</mat-icon>
+              </button>
+            </th>
             <th>Stato</th>
             <th>Allievi</th>
             <th>Azioni</th>

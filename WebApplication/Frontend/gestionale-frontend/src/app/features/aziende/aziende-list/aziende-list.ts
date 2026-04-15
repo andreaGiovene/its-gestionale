@@ -2,6 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { AziendaService } from '@core/services/azienda.service';
 import { CorsoService } from '@core/services/corso.service';
 import { Azienda, AziendaSearchTipo, Corso } from '@shared/models';
@@ -13,7 +15,7 @@ import { Azienda, AziendaSearchTipo, Corso } from '@shared/models';
 @Component({
   selector: 'app-aziende-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule],
   templateUrl: './aziende-list.html',
   styleUrl: './aziende-list.scss',
 })
@@ -41,6 +43,8 @@ export class AziendeList implements OnInit {
   currentPage = 0;
   /** Dimensione pagina usata nelle richieste. */
   pageSize = 10;
+  /** Direzione ordinamento per ragione sociale. */
+  ragioneSocialeSortDirection: 'asc' | 'desc' = 'asc';
 
   /** Form reattiva per i filtri di ricerca lato server. */
   readonly searchForm = this.fb.group({
@@ -85,7 +89,7 @@ export class AziendeList implements OnInit {
       size: this.pageSize,
     }).subscribe({
       next: (response) => {
-        this.aziende = response.content;
+        this.aziende = this.sortAziendeByRagioneSociale(response.content);
         this.currentPage = response.number;
         this.pageSize = response.size;
         this.totalElements = response.totalElements;
@@ -150,5 +154,28 @@ export class AziendeList implements OnInit {
         },
       });
     }
+  }
+
+  /** Alterna l'ordinamento locale per ragione sociale. */
+  toggleRagioneSocialeSort(): void {
+    this.ragioneSocialeSortDirection = this.ragioneSocialeSortDirection === 'asc' ? 'desc' : 'asc';
+    this.aziende = this.sortAziendeByRagioneSociale(this.aziende);
+  }
+
+  /** Ordina le aziende per ragione sociale, e a parità per ID. */
+  private sortAziendeByRagioneSociale(aziende: Azienda[]): Azienda[] {
+    const directionMultiplier = this.ragioneSocialeSortDirection === 'asc' ? 1 : -1;
+
+    return [...aziende].sort((first, second) => {
+      const comparison = (first.ragioneSociale || '').localeCompare(second.ragioneSociale || '', 'it', {
+        sensitivity: 'base',
+      });
+
+      if (comparison !== 0) {
+        return comparison * directionMultiplier;
+      }
+
+      return (first.id - second.id) * directionMultiplier;
+    });
   }
 }

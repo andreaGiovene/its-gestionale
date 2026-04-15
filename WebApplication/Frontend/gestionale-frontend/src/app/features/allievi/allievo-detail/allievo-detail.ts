@@ -41,6 +41,21 @@ export class AllievoDetail implements OnInit, OnDestroy {
   /** Elenco corsi da usare nella select di associazione. */
   corsi: Corso[] = [];
 
+  /** Restituisce il corso selezionato nel form, se presente. */
+  get selectedCorso(): Corso | undefined {
+    const corsoId = Number(this.form?.get('corsoId')?.value);
+    if (!corsoId) {
+      return undefined;
+    }
+
+    return this.corsi.find((corso) => corso.id === corsoId);
+  }
+
+  /** Ritorna un'etichetta leggibile per il corso, includendo l'annualità. */
+  getCorsoLabel(corso: Corso): string {
+    return corso.annoAccademico ? `${corso.nome} - ${corso.annoAccademico}` : corso.nome;
+  }
+
   /** Inizializza il form e reagisce ai cambi di parametro della route. */
   ngOnInit(): void {
     this.initForm();
