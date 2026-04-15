@@ -117,6 +117,7 @@ $migrationOrder = @(
     '2026-04-09-seed-corsi-realistici.sql',
     '2026-04-14-add-azienda-madrina-to-corso.sql',
     '2026-04-14-add-citta-to-azienda.sql',
+    '2026-04-14-add-tipo-to-azienda.sql',
     '2026-04-14-delete-aziende-fittizie.sql',
     '2026-04-14-seed-aziende-madrine-2025-2027.sql',
     '2026-04-14-finalize-azienda-tipo-native-pg-enum.sql',
