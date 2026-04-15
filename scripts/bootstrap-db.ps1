@@ -123,7 +123,8 @@ $migrationOrder = @(
     '2026-04-14-finalize-azienda-tipo-native-pg-enum.sql',
     '2026-04-14-normalize-tipo-azienda-madrina-non_madrina.sql',
     '2026-04-14-finalize-azienda-tipo-enum-contract.sql',
-    '2026-04-15-restore-original-ruolo-contatto-enum.sql'
+    '2026-04-15-restore-original-ruolo-contatto-enum.sql',
+    '2026-04-15-deduplicate-allievi-unique-cf.sql'
 )
 
 Write-Step "Applico migration SQL in ordine"
