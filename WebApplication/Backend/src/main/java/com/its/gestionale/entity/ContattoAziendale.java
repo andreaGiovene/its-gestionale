@@ -1,22 +1,17 @@
 package com.its.gestionale.entity;
 
-import com.its.gestionale.entity.enums.RuoloContattoAziendale;
+import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import com.its.gestionale.entity.enums.RuoloContatto;
+import jakarta.persistence.*;
+import lombok.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+/**
+ * Entity che rappresenta un contatto aziendale.
+ * Un contatto è una persona di riferimento all'interno di un'azienda
+ * (es. HR, tutor aziendale, referente).
+ */
 
 @Entity
 @Table(name = "contatto_aziendale")
@@ -29,10 +24,6 @@ public class ContattoAziendale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "azienda_id")
-    private Azienda azienda;
-
     @Column(length = 50)
     private String nome;
 
@@ -40,8 +31,11 @@ public class ContattoAziendale {
     private String cognome;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ruolo")
-    private RuoloContattoAziendale ruolo;
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "ruolo", columnDefinition = "ruolo_contatto_enum")
+    @ColumnTransformer(write = "?::ruolo_contatto_enum")
+    
+    private RuoloContatto ruolo;
 
     @Column(length = 20)
     private String telefono;
@@ -49,7 +43,19 @@ public class ContattoAziendale {
     @Column(length = 100)
     private String email;
 
+    // RELAZIONE → AZIENDA (ManysToOne)
+    // UN AZIENDA PUÒ AVERE PIÙ CONTATTI
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "azienda_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Azienda azienda;
+
+    // RELAZIONE → UTENTE (OneToOne)
+    //COLLEGAMENTO OPZIONALE CON UN UTENTE DEL SISTEMA (ES. REFERENTE CHE HA ACCESSO ALLA PIATTAFORMA)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_utente")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Utente utente;
 }
