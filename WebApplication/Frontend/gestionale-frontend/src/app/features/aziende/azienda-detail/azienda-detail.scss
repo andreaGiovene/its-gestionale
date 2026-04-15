@@ -1,87 +1,164 @@
 .azienda-detail-container {
-  padding: 20px;
-  max-width: 800px;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
 
   .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1rem;
 
-    h1 {
-      margin: 0;
+    .header-title {
       flex: 1;
       text-align: center;
+
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #212529;
+      }
+
+      .header-subtitle {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #6c757d;
+      }
     }
 
     button {
       width: auto;
+      white-space: nowrap;
     }
   }
 
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 3rem;
+    color: #6c757d;
+
+    .loading-spinner {
+      display: inline-block;
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid #dee2e6;
+      border-top-color: #007bff;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
   .error-message {
-    padding: 15px;
-    border-radius: 4px;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
-    margin-bottom: 20px;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
   }
 
   .form-container {
-    background-color: #f9f9f9;
-    padding: 25px;
-    border-radius: 6px;
-    border: 1px solid #ddd;
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    .form-section {
+      margin-bottom: 1.75rem;
+
+      & + .form-section {
+        padding-top: 1.5rem;
+        border-top: 1px solid #f0f0f0;
+      }
+    }
+
+    .form-section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #6c757d;
+      margin: 0 0 1rem;
+    }
 
     .form-row {
       display: flex;
-      gap: 15px;
-      margin-bottom: 20px;
+      gap: 16px;
+      margin-bottom: 0;
 
       .form-group {
         flex: 1;
       }
 
+      .col-md-3 {
+        flex: 0 0 calc(25% - 16px);
+      }
+
       .col-md-4 {
-        flex: 0 0 calc(33.333% - 15px);
+        flex: 0 0 calc(33.333% - 16px);
       }
 
       .col-md-6 {
-        flex: 0 0 calc(50% - 15px);
+        flex: 0 0 calc(50% - 16px);
       }
 
       .col-md-8 {
-        flex: 0 0 calc(66.666% - 15px);
+        flex: 0 0 calc(66.666% - 16px);
       }
     }
 
     .form-group {
       label {
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
+        font-size: 0.875rem;
         font-weight: 500;
-        color: #333;
+        color: #495057;
       }
 
       input {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        color: #212529;
+        background-color: #fff;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+        &::placeholder {
+          color: #adb5bd;
+        }
 
         &:focus {
           outline: none;
-          border-color: #007bff;
-          box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+          border-color: #86b7fe;
+          box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        &.is-invalid {
+          border-color: #dc3545;
+
+          &:focus {
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
+          }
         }
       }
 
       small {
         display: block;
-        margin-top: 5px;
-        color: #666;
+        margin-top: 4px;
+        font-size: 0.8rem;
+
+        &.text-danger {
+          color: #dc3545;
+        }
       }
     }
 
@@ -89,10 +166,13 @@
       display: flex;
       gap: 10px;
       justify-content: flex-end;
-      margin-top: 30px;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #f0f0f0;
 
       .btn {
-        min-width: 120px;
+        min-width: 140px;
+        font-weight: 500;
       }
     }
   }
