@@ -9,7 +9,7 @@ export interface Contatto {
 
 export interface CreateContattoRequest {
   nome: string;
-  cognome: string;
+  cognome?: string;
   ruolo: 'TITOLARE' | 'DIRETTORE' | 'RESPONSABILE_HR' | 'RESPONSABILE_TIROCINI' | 'TUTOR_AZIENDALE';
   telefono?: string;
   email?: string;

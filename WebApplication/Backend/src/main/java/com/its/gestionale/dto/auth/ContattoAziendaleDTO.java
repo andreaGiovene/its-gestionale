@@ -1,7 +1,7 @@
 package com.its.gestionale.dto.auth;
 
 import com.its.gestionale.entity.ContattoAziendale;
-import com.its.gestionale.entity.enums.RuoloContatto;
+import com.its.gestionale.entity.enums.RuoloContattoAziendale;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -41,7 +41,7 @@ public class ContattoAziendaleDTO {
     private String email;
 
     @NotNull(message = "Il ruolo è obbligatorio")
-    private RuoloContatto ruolo;
+    private RuoloContattoAziendale ruolo;
 
     @NotNull(message = "aziendaId obbligatorio")
     private Integer aziendaId;

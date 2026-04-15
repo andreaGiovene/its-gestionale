@@ -80,6 +80,15 @@
             </p>
           </div>
         </div>
+
+        <div class="row mb-0">
+          <div class="col-md-12">
+            <label class="form-label fw-bold">Tipo</label>
+            <p class="form-control-static">
+              <span class="badge" [ngClass]="getTipoBadgeClass()">{{ getTipoLabel() }}</span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -89,6 +98,57 @@
         <h5 class="mb-0">Contatti Aziendali</h5>
       </div>
       <div class="card-body">
+        <form class="contatto-form mb-4" [formGroup]="contattoForm" (ngSubmit)="submitContatto()">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label for="contattoNome" class="form-label">Nome *</label>
+              <input id="contattoNome" type="text" class="form-control" formControlName="nome" placeholder="Nome" />
+              <small class="text-danger" *ngIf="contattoForm.get('nome')?.touched && contattoForm.get('nome')?.errors?.['required']">
+                Il nome è obbligatorio
+              </small>
+            </div>
+
+            <div class="col-md-3">
+              <label for="contattoCognome" class="form-label">Cognome</label>
+              <input id="contattoCognome" type="text" class="form-control" formControlName="cognome" placeholder="Cognome" />
+            </div>
+
+            <div class="col-md-3">
+              <label for="contattoRuolo" class="form-label">Ruolo *</label>
+              <select id="contattoRuolo" class="form-select" formControlName="ruolo">
+                <option [ngValue]="null">Seleziona ruolo</option>
+                <option *ngFor="let ruolo of ruoliContatto" [ngValue]="ruolo">{{ getRuoloLabel(ruolo) }}</option>
+              </select>
+              <small class="text-danger" *ngIf="contattoForm.get('ruolo')?.touched && contattoForm.get('ruolo')?.errors?.['required']">
+                Il ruolo è obbligatorio
+              </small>
+            </div>
+
+            <div class="col-md-3">
+              <label for="contattoTelefono" class="form-label">Telefono</label>
+              <input id="contattoTelefono" type="tel" class="form-control" formControlName="telefono" placeholder="Telefono" />
+            </div>
+
+            <div class="col-md-6">
+              <label for="contattoEmail" class="form-label">Email</label>
+              <input id="contattoEmail" type="email" class="form-control" formControlName="email" placeholder="Email" />
+              <small class="text-danger" *ngIf="contattoForm.get('email')?.touched && contattoForm.get('email')?.errors?.['email']">
+                Inserire un'email valida
+              </small>
+            </div>
+
+            <div class="col-md-6 d-flex align-items-end justify-content-end">
+              <button type="submit" class="btn btn-primary" [disabled]="isSubmittingContatto || contattoForm.invalid">
+                {{ isSubmittingContatto ? 'Salvataggio...' : 'Aggiungi contatto' }}
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="contattoError" class="alert alert-danger mt-3 mb-0">
+            {{ contattoError }}
+          </div>
+        </form>
+
         <ng-container *ngIf="contatti.length > 0; else noContatti">
           <div class="table-responsive">
             <table class="table table-hover">
@@ -106,7 +166,7 @@
                   <td>{{ contatto.nome || '-' }}</td>
                   <td>{{ contatto.cognome || '-' }}</td>
                   <td>
-                    <span class="badge bg-secondary">{{ contatto.ruolo | titlecase }}</span>
+                    <span class="badge bg-secondary">{{ getRuoloLabel(contatto.ruolo) }}</span>
                   </td>
                   <td>
                     <ng-container *ngIf="contatto.telefono">

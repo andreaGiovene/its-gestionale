@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { Azienda, AziendaSearchFilters, CreateAziendaRequest, PageResponse, UpdateAziendaRequest, Contatto } from '@shared/models';
+import { Azienda, AziendaSearchFilters, CreateAziendaRequest, PageResponse, UpdateAziendaRequest, Contatto, CreateContattoRequest } from '@shared/models';
 import { HttpParams } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
@@ -78,5 +78,12 @@ export class AziendaService {
    */
   getContatti(aziendaId: number): Observable<Contatto[]> {
     return this.http.get<Contatto[]>(`${this.apiBase}/${aziendaId}/contatti`);
+  }
+
+  /**
+   * Inserisce un nuovo contatto aziendale.
+   */
+  createContatto(aziendaId: number, payload: CreateContattoRequest): Observable<Contatto> {
+    return this.http.post<Contatto>(`${this.apiBase}/${aziendaId}/contatti`, payload);
   }
 }

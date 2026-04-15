@@ -38,6 +38,7 @@ import jakarta.validation.constraints.Size;
  * - GET /api/aziende - ricerca paginata con filtri opzionali (tipo, ragioneSociale, corsoId)
  * - GET /api/aziende/{id} - recupero singolo per ID
  * - GET /api/aziende/{id}/contatti - recupero contatti associati ad un'azienda
+ * - POST /api/aziende/{id}/contatti - creazione di un contatto per un'azienda
  * - POST /api/aziende - creazione nuova azienda
  * - PUT /api/aziende/{id} - aggiornamento azienda esistente
  * - DELETE /api/aziende/{id} - eliminazione azienda
@@ -91,6 +92,14 @@ public class AziendaController {
         aziendaService.findById(id);
         List<ContattoDTO> contatti = contattoAziendaleService.findByAziendaIdAsDto(id);
         return ResponseEntity.ok(contatti);
+    }
+
+    @PostMapping("/{id}/contatti")
+    public ResponseEntity<ContattoDTO> createContatto(
+            @PathVariable @Positive Integer id,
+            @Valid @RequestBody ContattoDTO contattoDTO) {
+        ContattoDTO salvato = contattoAziendaleService.createForAzienda(id, contattoDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvato);
     }
 
     @PostMapping

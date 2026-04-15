@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AziendaService } from '@core/services/azienda.service';
-import { Azienda, Contatto } from '@shared/models';
+import { Azienda, Contatto, CreateContattoRequest } from '@shared/models';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
@@ -14,11 +15,12 @@ import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-azienda-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './azienda-view.html',
   styleUrl: './azienda-view.scss',
 })
 export class AziendaView implements OnInit, OnDestroy {
+  private readonly fb = inject(FormBuilder);
   private readonly aziendaService = inject(AziendaService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -32,6 +34,26 @@ export class AziendaView implements OnInit, OnDestroy {
   isLoading = true;
   /** Messaggio di errore. */
   error: string | null = null;
+  /** Stato invio form contatto. */
+  isSubmittingContatto = false;
+  /** Errore specifico inserimento contatto. */
+  contattoError: string | null = null;
+
+  readonly ruoliContatto: Contatto['ruolo'][] = [
+    'TITOLARE',
+    'DIRETTORE',
+    'RESPONSABILE_HR',
+    'RESPONSABILE_TIROCINI',
+    'TUTOR_AZIENDALE',
+  ];
+
+  readonly contattoForm = this.fb.group({
+    nome: ['', [Validators.required, Validators.maxLength(50)]],
+    cognome: ['', [Validators.maxLength(50)]],
+    ruolo: [null as Contatto['ruolo'] | null, [Validators.required]],
+    telefono: ['', [Validators.maxLength(20)]],
+    email: ['', [Validators.email, Validators.maxLength(100)]],
+  });
 
   /** Carica i dati dell'azienda e dei contatti. */
   ngOnInit(): void {
@@ -91,11 +113,60 @@ export class AziendaView implements OnInit, OnDestroy {
     this.router.navigate(['/aziende']);
   }
 
-  /** Restituisce il badge per il tipo di azienda. */
+  submitContatto(): void {
+    if (!this.azienda) {
+      return;
+    }
+
+    if (this.contattoForm.invalid) {
+      this.contattoForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmittingContatto = true;
+    this.contattoError = null;
+
+    const value = this.contattoForm.getRawValue();
+    const payload: CreateContattoRequest = {
+      nome: (value.nome ?? '').trim(),
+      cognome: value.cognome?.trim() || undefined,
+      ruolo: value.ruolo as Contatto['ruolo'],
+      telefono: value.telefono?.trim() || undefined,
+      email: value.email?.trim() || undefined,
+    };
+
+    this.aziendaService
+      .createContatto(this.azienda.id, payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (created) => {
+          this.contatti = [created, ...this.contatti];
+          this.contattoForm.reset({
+            nome: '',
+            cognome: '',
+            ruolo: null,
+            telefono: '',
+            email: '',
+          });
+          this.isSubmittingContatto = false;
+        },
+        error: (err) => {
+          console.error('Errore nel salvataggio contatto:', err);
+          this.contattoError = err?.error?.message || 'Errore nel salvataggio del contatto aziendale.';
+          this.isSubmittingContatto = false;
+        },
+      });
+  }
+
   getTipoBadgeClass(): string {
-    if (!this.azienda) return '';
-    // Assumiamo che il backend restituisca sempre il campo tipo
-    // Per ora usiamo una logica di default
-    return 'badge-info';
+    return this.azienda?.tipoAzienda === 'MADRINA' ? 'bg-primary' : 'bg-secondary';
+  }
+
+  getTipoLabel(): string {
+    return this.azienda?.tipoAzienda === 'MADRINA' ? 'Madrina' : 'Normale';
+  }
+
+  getRuoloLabel(ruolo: Contatto['ruolo']): string {
+    return ruolo.replaceAll('_', ' ').toLowerCase().replace(/(^|\s)\S/g, (char) => char.toUpperCase());
   }
 }
