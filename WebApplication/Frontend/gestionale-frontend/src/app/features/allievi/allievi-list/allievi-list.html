@@ -1,3 +1,4 @@
+<!-- Lista tabellare degli allievi con stati di caricamento, errore e vuoto. -->
 <div class="allievi-container">
   <div class="header">
     <h1>Allievi</h1>
@@ -21,9 +22,19 @@
           <tr>
             <th>ID</th>
             <th>Nome</th>
-            <th>Cognome</th>
+            <th>
+              <button type="button" mat-button class="sort-button" (click)="toggleCognomeSort()">
+                <span>Cognome</span>
+                <mat-icon aria-hidden="true">{{ cognomeSortDirection === 'asc' ? 'south' : 'north' }}</mat-icon>
+              </button>
+            </th>
             <th>Codice Fiscale</th>
-            <th>Corso</th>
+            <th>
+              <button type="button" mat-button class="sort-button" (click)="toggleCorsoSort()">
+                <span>Corso</span>
+                <mat-icon aria-hidden="true">{{ corsoSortDirection === 'asc' ? 'south' : 'north' }}</mat-icon>
+              </button>
+            </th>
             <th>Data Nascita</th>
             <th>Azioni</th>
           </tr>
@@ -34,7 +45,7 @@
             <td>{{ allievo.nome }}</td>
             <td>{{ allievo.cognome }}</td>
             <td>{{ allievo.codiceFiscale || '-' }}</td>
-            <td>{{ allievo.corsoNome || '-' }}</td>
+            <td>{{ getCorsoLabel(allievo) || '-' }}</td>
             <td>{{ allievo.dataDiNascita || '-' }}</td>
             <td>
               <button class="btn btn-sm btn-info" (click)="viewDetail(allievo.id)">Dettagli</button>

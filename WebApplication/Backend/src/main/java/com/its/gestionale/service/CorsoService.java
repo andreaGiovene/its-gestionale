@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.its.gestionale.dto.AllievoDTO;
 import com.its.gestionale.dto.CorsoDTO;
+import com.its.gestionale.entity.Azienda;
 import com.its.gestionale.entity.Corso;
 import com.its.gestionale.exception.CorsoNotFoundException;
 import com.its.gestionale.repository.CorsoRepository;
@@ -18,11 +20,13 @@ public class CorsoService {
     // DEPENDENCY INJECTION — Spring crea il Repository e ce lo "inietta"
     // Non dobbiamo fare "new CorsoRepository()" manualmente
     private final CorsoRepository corsoRepository;
+    private final AllievoService allievoService;
 
     // Costruttore — Spring vede un solo costruttore e capisce
     // automaticamente che deve iniettare il Repository
-    public CorsoService(CorsoRepository corsoRepository) {
+    public CorsoService(CorsoRepository corsoRepository, AllievoService allievoService) {
         this.corsoRepository = corsoRepository;
+        this.allievoService = allievoService;
     }
 
     // Restituisce tutti i corsi
@@ -45,6 +49,15 @@ public class CorsoService {
         Corso corso = corsoRepository.findById(id)
                 .orElseThrow(() -> new CorsoNotFoundException(id));
         return toDto(corso);
+    }
+
+    // Restituisce gli allievi iscritti a un corso specifico.
+    @Transactional(readOnly = true)
+    public List<AllievoDTO> findAllieviByCorsoId(Integer id) {
+        if (!corsoRepository.existsById(id)) {
+            throw new CorsoNotFoundException(id);
+        }
+        return allievoService.findByCorsoId(id);
     }
 
     // Crea un nuovo corso.
@@ -95,6 +108,11 @@ public class CorsoService {
         dto.setNome(corso.getNome());
         dto.setAnnoAccademico(corso.getAnnoAccademico());
         dto.setStato(corso.getStato());
+        Azienda aziendaMadrina = corso.getAziendaMadrina();
+        if (aziendaMadrina != null) {
+            dto.setAziendaMadrinaId(aziendaMadrina.getId());
+            dto.setAziendaMadrinaRagioneSociale(aziendaMadrina.getRagioneSociale());
+        }
         // Placeholder per futura integrazione con allievi senza esporre entita annidate.
         dto.setAllieviCount(corso.getAllievi() == null ? 0 : corso.getAllievi().size());
         return dto;

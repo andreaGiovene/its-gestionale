@@ -1,6 +1,6 @@
 package com.its.gestionale.entity.enums;
 
-public enum RuoloContatto {
+public enum RuoloContattoAziendale {
     TITOLARE,
     DIRETTORE,
     RESPONSABILE_HR,

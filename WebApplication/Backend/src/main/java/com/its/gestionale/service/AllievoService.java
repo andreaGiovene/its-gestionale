@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.its.gestionale.dto.AllievoDTO;
 import com.its.gestionale.entity.Allievo;
 import com.its.gestionale.entity.Corso;
+import com.its.gestionale.exception.AllievoNotFoundException;
 import com.its.gestionale.repository.AllievoRepository;
 import com.its.gestionale.repository.CorsoRepository;
 
@@ -60,10 +61,7 @@ public class AllievoService {
     @Transactional(readOnly = true)
     public AllievoDTO findById(Integer id) {
         Allievo allievo = allievoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Allievo con id " + id + " non trovato"
-                ));
+                .orElseThrow(() -> new AllievoNotFoundException(id));
         return AllievoDTO.fromEntity(allievo);
     }
 
@@ -92,10 +90,7 @@ public class AllievoService {
     // Aggiorna un allievo esistente
     public AllievoDTO update(Integer id, AllievoDTO dto) {
         Allievo allievo = allievoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Allievo con id " + id + " non trovato"
-                ));
+                .orElseThrow(() -> new AllievoNotFoundException(id));
 
         allievo.setNome(dto.getNome());
         allievo.setCognome(dto.getCognome());
@@ -123,10 +118,7 @@ public class AllievoService {
     // Elimina un allievo
     public void deleteById(Integer id) {
         if (!allievoRepository.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Allievo con id " + id + " non trovato"
-            );
+            throw new AllievoNotFoundException(id);
         }
         allievoRepository.deleteById(id);
     }

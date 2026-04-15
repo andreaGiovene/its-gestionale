@@ -3,6 +3,8 @@ export interface Corso {
   nome: string;
   annoAccademico: string;
   stato: string;
+  aziendaMadrinaId?: number;
+  aziendaMadrinaRagioneSociale?: string;
   allieviCount?: number;
 }
 

@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.its.gestionale.dto.UtenteDTO;
 import com.its.gestionale.entity.Ruolo;
 import com.its.gestionale.entity.Utente;
+import com.its.gestionale.exception.UtenteNotFoundException;
 import com.its.gestionale.repository.RuoloRepository;
 import com.its.gestionale.repository.UtenteRepository;
 
@@ -82,10 +83,7 @@ public class UtenteService {
     // Aggiorna un utente esistente
     public UtenteDTO update(Integer id, UtenteDTO dto) {
         Utente utente = utenteRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Utente con id " + id + " non trovato"
-                ));
+                .orElseThrow(() -> new UtenteNotFoundException(id));
 
         if (dto.getEmail() != null && !dto.getEmail().equalsIgnoreCase(utente.getEmail())
             && utenteRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -109,10 +107,7 @@ public class UtenteService {
     // Disattiva un utente (soft delete — non lo cancella, solo lo marca come inattivo)
     public void disattivaUtente(Integer id) {
         Utente utente = utenteRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Utente con id " + id + " non trovato"
-                ));
+                .orElseThrow(() -> new UtenteNotFoundException(id));
 
         utente.setAttivo(false);
         utente.setAggiornatoIl(LocalDateTime.now());

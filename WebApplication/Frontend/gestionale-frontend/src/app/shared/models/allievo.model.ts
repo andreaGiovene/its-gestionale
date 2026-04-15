@@ -9,6 +9,7 @@ export interface Allievo {
   note?: string;
   corsoId?: number;
   corsoNome?: string;
+  corsoAnnoAccademico?: string;
 }
 
 export interface CreateAllievoRequest {

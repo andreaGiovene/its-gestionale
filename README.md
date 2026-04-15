@@ -33,6 +33,7 @@ Il repository centralizza:
 - WebApplication/Frontend/gestionale-frontend/README.md: guida frontend aggiornata
 - Database/README.md: gestione dump e ripristino
 - docs/APPLICATION_LIFECYCLE.md: ciclo di vita completo dell'applicazione
+- docs/IMPLEMENTAZIONI_2026-04-14_REFACTOR-ENUM-CLEANUP.md: refactoring aziende e enum nativo PostgreSQL
 
 ## Avvio rapido locale
 
@@ -75,12 +76,15 @@ Per favorire leggerezza e velocita di sviluppo:
 - il token restituito e semplificato (valore identificativo utente)
 - /auth/me legge l'header Authorization in formato Bearer
 
+### Frontend authentication (Angular)
+
+Implementazione completa di autenticazione e autorizzazione:
+- **AuthService**: centralizza token (localStorage), currentUser state, metodi hasRole()
+- **authGuard**: CanActivateFn per protezione rotte con controllo ruoli via route.data['roles']
+- **App bootstrap**: ngOnInit ripristina currentUser se token persiste (scenario F5)
+- Login flow: login().pipe(switchMap(() => me())) per popolare currentUser post-login
+
 Nota: in produzione e consigliata una strategia token robusta (JWT o sessione server-side con rotazione e policy).
 
-## Note operative
-
-- Branch di lavoro principale: andrea-dev
-- Remoto condiviso: origin
-- Remoto personale: backup
 
 Per dettagli architetturali e processo operativo, consultare docs/APPLICATION_LIFECYCLE.md.

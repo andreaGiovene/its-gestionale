@@ -1,6 +1,6 @@
 .corso-detail-container {
   padding: 20px;
-  max-width: 600px;
+  max-width: 1100px;
 
   .header {
     display: flex;
@@ -19,6 +19,25 @@
     }
   }
 
+  .sort-button {
+    min-height: 32px;
+    padding: 0 0.25rem;
+    gap: 0.35rem;
+    font-weight: 600;
+    color: #3f51b5;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+    }
+  }
+
+  .sort-button:hover {
+    background-color: rgba(63, 81, 181, 0.08);
+  }
+
   .error-message {
     padding: 15px;
     border-radius: 4px;
@@ -29,10 +48,11 @@
   }
 
   .form-container {
-    background-color: #f9f9f9;
+    background-color: #ffffff;
     padding: 25px;
-    border-radius: 6px;
-    border: 1px solid #ddd;
+    border-radius: 12px;
+    border: 1px solid #dfe5ec;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
 
     .form-group {
       margin-bottom: 20px;
@@ -41,22 +61,7 @@
         display: block;
         margin-bottom: 8px;
         font-weight: 500;
-        color: #333;
-      }
-
-      input,
-      select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-
-        &:focus {
-          outline: none;
-          border-color: #007bff;
-          box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
+        color: #334155;
       }
 
       small {
@@ -72,35 +77,8 @@
       justify-content: flex-end;
       margin-top: 30px;
 
-      button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        font-weight: 500;
-        cursor: pointer;
-
-        &:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-      }
-
-      .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-
-        &:hover:not(:disabled) {
-          background-color: #5a6268;
-        }
-      }
-
-      .btn-primary {
-        background-color: #007bff;
-        color: white;
-
-        &:hover:not(:disabled) {
-          background-color: #0056b3;
-        }
+      .btn {
+        min-width: 120px;
       }
     }
   }

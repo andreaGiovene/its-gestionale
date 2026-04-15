@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Azienda, CreateAziendaRequest, UpdateAziendaRequest } from '@shared/models';
+import { map, Observable } from 'rxjs';
+import { Azienda, AziendaSearchFilters, CreateAziendaRequest, PageResponse, UpdateAziendaRequest } from '@shared/models';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class AziendaService {
@@ -9,10 +10,34 @@ export class AziendaService {
   private readonly apiBase = 'http://localhost:8080/api/aziende';
 
   /**
-   * Recupera tutte le aziende
+   * Recupera aziende filtrate con paginazione.
+   */
+  getCerca(filtri: AziendaSearchFilters): Observable<PageResponse<Azienda>> {
+    let params = new HttpParams();
+
+    if (filtri.tipo) {
+      params = params.set('tipo', filtri.tipo);
+    }
+
+    if (filtri.ragioneSociale?.trim()) {
+      params = params.set('ragioneSociale', filtri.ragioneSociale.trim());
+    }
+
+    if (filtri.corsoId !== null && filtri.corsoId !== undefined) {
+      params = params.set('corsoId', String(filtri.corsoId));
+    }
+
+    params = params.set('page', String(filtri.page ?? 0));
+    params = params.set('size', String(filtri.size ?? 10));
+
+    return this.http.get<PageResponse<Azienda>>(this.apiBase, { params });
+  }
+
+  /**
+   * Recupera tutte le aziende.
    */
   findAll(): Observable<Azienda[]> {
-    return this.http.get<Azienda[]>(this.apiBase);
+    return this.getCerca({ page: 0, size: 1000 }).pipe(map((response) => response.content));
   }
 
   /**

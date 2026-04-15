@@ -29,6 +29,16 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
+     * Traduce l'eccezione di allievo non trovato in HTTP 404.
+     */
+    @ExceptionHandler(AllievoNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleAllievoNotFound(
+            AllievoNotFoundException ex,
+            HttpServletRequest request) {
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI(), null);
+    }
+
+    /**
      * Traduce l'eccezione di corso non trovato in HTTP 404.
      */
     @ExceptionHandler(CorsoNotFoundException.class)
@@ -44,6 +54,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AziendaNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleAziendaNotFound(
             AziendaNotFoundException ex,
+            HttpServletRequest request) {
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI(), null);
+    }
+
+    /**
+     * Traduce l'eccezione di utente non trovato in HTTP 404.
+     */
+    @ExceptionHandler(UtenteNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleUtenteNotFound(
+            UtenteNotFoundException ex,
             HttpServletRequest request) {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI(), null);
     }

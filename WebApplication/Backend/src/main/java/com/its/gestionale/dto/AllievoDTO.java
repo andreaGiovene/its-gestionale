@@ -20,6 +20,7 @@ public class AllievoDTO {
     // Invece dell'oggetto Corso intero, solo le info utili
     private Integer corsoId;
     private String corsoNome;
+    private String corsoAnnoAccademico;
 
     // Metodo statico di conversione Entity → DTO
     // Centralizza la logica di mapping in un posto solo
@@ -39,6 +40,7 @@ public class AllievoDTO {
         if (allievo.getCorso() != null) {
             dto.setCorsoId(allievo.getCorso().getId());
             dto.setCorsoNome(allievo.getCorso().getNome());
+            dto.setCorsoAnnoAccademico(allievo.getCorso().getAnnoAccademico());
         }
 
         return dto;

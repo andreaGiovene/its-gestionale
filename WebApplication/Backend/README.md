@@ -27,12 +27,14 @@ Backend/
 │   │   │   │   └── SecurityConfig.java
 │   │   │   ├── controller/
 │   │   │   │   ├── AllievoController.java
+│   │   │   │   ├── AziendaController.java
 │   │   │   │   ├── AuthController.java
 │   │   │   │   ├── CorsoController.java
 │   │   │   │   ├── SystemController.java
 │   │   │   │   └── UtenteController.java
 │   │   │   ├── dto/
 │   │   │   │   ├── AllievoDTO.java
+│   │   │   │   ├── AziendaDTO.java
 │   │   │   │   ├── CorsoDTO.java
 │   │   │   │   ├── UtenteDTO.java
 │   │   │   │   └── auth/
@@ -41,6 +43,8 @@ Backend/
 │   │   │   │       └── MeResponse.java
 │   │   │   ├── exception/
 │   │   │   │   ├── ApiErrorResponse.java
+│   │   │   │   ├── ApiExceptionHandler.java
+│   │   │   │   ├── AziendaNotFoundException.java
 │   │   │   │   ├── CorsoNotFoundException.java
 │   │   │   │   └── GlobalExceptionHandler.java
 │   │   │   ├── entity/
@@ -57,10 +61,11 @@ Backend/
 │   │   │   │   ├── Tirocinio.java
 │   │   │   │   ├── Utente.java
 │   │   │   │   └── enums/
-│   │   │   │       ├── RuoloContatto.java
+│   │   │   │       ├── RuoloContattoAziendale.java
 │   │   │   │       ├── StatoEsito.java
+│   │   │   │       ├── TipoAzienda.java
 │   │   │   │       ├── TipoDocumento.java
-│   │   │   │       └── TipoResponsabile.java
+│   │   │   │       └── TipoResponsabileITS.java
 │   │   │   ├── repository/
 │   │   │   │   ├── AllievoRepository.java
 │   │   │   │   ├── AziendaRepository.java
@@ -74,9 +79,13 @@ Backend/
 │   │   │   │   ├── RuoloRepository.java
 │   │   │   │   ├── TirocinioRepository.java
 │   │   │   │   └── UtenteRepository.java
-│   │   │   |
+│   │   │   ├── repository/
+│   │   │   │   └── specification/
+│   │   │   │       └── AziendaSpecifications.java
+│   │   │   │
 │   │   │   └── service/
 │   │   │       ├── AllievoService.java
+│   │   │       ├── AziendaService.java
 │   │   │       ├── AuthService.java
 │   │   │       ├── CorsoService.java
 │   │   │       └── UtenteService.java
@@ -168,6 +177,77 @@ curl http://localhost:8080/health
 curl -X POST http://localhost:8080/auth/login -H "Content-Type: application/json" -d "{\"email\":\"admin@scuola.it\",\"password\":\"hash_secure_123\"}"
 ```
 
+## API REST aziende
+
+Endpoint implementati secondo naming REST standard con ricerca avanzata:
+
+- GET /api/aziende: lista paginata con filtri opzionali (tipo, ragioneSociale, corsoId)
+- GET /api/aziende/{id}: dettaglio azienda
+- POST /api/aziende: creazione azienda
+- PUT /api/aziende/{id}: aggiornamento azienda esistente
+- DELETE /api/aziende/{id}: eliminazione azienda
+
+### TipoAzienda enum
+
+Campo enum obbligatorio che classifica l'azienda nel tirocinio:
+- **MADRINA**: azienda partner principale (sede tirocinio)
+- **NON_MADRINA**: azienda partner secondaria/complementare
+
+Mapping tecnico:
+- Java entity: TipoAzienda enum con @Enumerated(EnumType.STRING)
+- PostgreSQL: enum nativo tipo_azienda_enum
+- JPA mapping: @JdbcTypeCode(SqlTypes.NAMED_ENUM) per compatibilita Hibernate
+
+### DTO e mapping
+
+Il controller non espone direttamente le entity JPA ma usa AziendaDTO.
+
+Campi AziendaDTO:
+- id
+- ragioneSociale (obbligatorio, max 100 char)
+- partitaIva (obbligatorio, max 20 char)
+- tipoAzienda (obbligatorio, enum MADRINA|NON_MADRINA)
+- telefono, email, indirizzo, cap, citta (facoltativi con vincoli lunghezza)
+
+Validazioni:
+- @NotBlank su campi obbligatori
+- @NotNull su tipoAzienda
+- @Size per vincoli lunghezza
+
+### AziendaSpecifications (ricerca avanzata)
+
+Pattern Criteria API per ricerca composabile:
+- ragioneSocialeContains(string): match parziale case-insensitive
+- hasCorsoMadrina(corsoId): aziende madrine per corso specifico
+- hasTipoAzienda(tipo): filtro per MADRINA|NON_MADRINA
+
+Tutti i filtri sono opzionali (null = nessun filtro applicato).
+
+Utilizzo in AziendaService.search():
+```java
+Specification<Azienda> specification = 
+  AziendaSpecifications.ragioneSocialeContains(ragioneSociale)
+    .and(AziendaSpecifications.hasCorsoMadrina(corsoId))
+    .and(AziendaSpecifications.hasTipoAzienda(tipo));
+
+return aziendaRepository.findAll(specification, pageable).map(AziendaDTO::fromEntity);
+```
+
+### Esempio payload POST/PUT
+
+```json
+{
+	"ragioneSociale": "Acme SpA - Italia",
+	"partitaIva": "12345678901",
+	"telefono": "+39 02 1234567",
+	"email": "hr@acme.it",
+	"indirizzo": "Via Roma 1",
+	"cap": "20100",
+	"citta": "Milano",
+	"tipoAzienda": "MADRINA"
+}
+```
+
 ## API REST corsi
 
 Endpoint implementati secondo naming REST standard:
@@ -250,9 +330,49 @@ Esempio 400 (validazione):
 }
 ```
 
+## Architettura Frontend - Autenticazione e Autorizzazione
+
+### Componenti core
+
+**AuthService** (centralizzato):
+- persistenza token JWT in localStorage
+- gestione stato currentUser (MeResponse)
+- metodi: login(), me(), logout(), isAuthenticated(), hasRole()
+
+**authGuard** (CanActivateFn):
+- protezione rotte: verifica authentication
+- controllo autorizzativo: route.data['roles'] vs currentUser.ruolo
+- redirect: /login se unauthenticated, /dashboard se unauthorized
+
+**App bootstrap** (ngOnInit):
+- al caricamento pagina, se token persiste → chiama me()
+- popola currentUser per accesso guard
+- fallback logout se token invalido
+
+### Pattern utilizzo
+
+Configurazione route con ruoli:
+```typescript
+{
+  path: 'aziende',
+  component: AziendeLis,
+  canActivate: [authGuard],
+  data: { roles: ['AMMINISTRATORE', 'JOB_PLACEMENT', 'DIDATTICA'] }
+}
+```
+
+Verifica permesso in componente:
+```typescript
+hasRole(role: string): boolean {
+  return this.authService.hasRole(role);
+}
+```
+
 ## Ambiti di miglioramento futuri
 
 - reintroduzione autenticazione robusta per produzione
 - centralizzazione error handling
 - test automatici su repository/service/controller
 - pipeline CI con quality gate
+- integrazione role-based authorization completa su tutte le rotte
+- completamento test smoke e e2e per API core

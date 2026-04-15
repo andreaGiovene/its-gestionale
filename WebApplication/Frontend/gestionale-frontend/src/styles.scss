@@ -1,6 +1,22 @@
 // Import Material prebuilt theme
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
+:root {
+  --action-primary: #3f51b5;
+  --action-primary-hover: #36449b;
+  --action-secondary: #6c757d;
+  --action-secondary-hover: #5d666f;
+  --action-info: #17a2b8;
+  --action-info-hover: #13889c;
+  --action-danger: #dc3545;
+  --action-danger-hover: #bb2d3b;
+  --action-outline-border: #6c757d;
+  --action-outline-hover: #f3f4f6;
+  --action-text-on-solid: #ffffff;
+  --action-radius: 8px;
+  --action-height: 40px;
+}
+
 // Reset base
 * {
   box-sizing: border-box;
@@ -12,4 +28,187 @@ html, body {
   height: 100%;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   background-color: #f5f5f5;
+}
+
+/* Tabelle uniformi su tutta l'app */
+.table {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #dfe5ec;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.table thead th {
+  background: #f6f8fb;
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #dfe5ec;
+  vertical-align: middle;
+}
+
+.table tbody td {
+  text-align: left;
+  padding: 0.9rem 1rem;
+  border-top: 1px solid #e8edf3;
+  color: #1f2937;
+  vertical-align: middle;
+}
+
+.table tbody tr:first-child td {
+  border-top: 0;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.table td .btn + .btn {
+  margin-left: 0.5rem;
+}
+
+.table thead th:last-child,
+.table td:last-child {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Base condivisa per pulsanti con classi Bootstrap-like */
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-info,
+.btn-danger,
+.btn-outline-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: var(--action-height);
+  padding: 0.5rem 1rem;
+  border-radius: var(--action-radius);
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.btn:disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-info:disabled,
+.btn-danger:disabled,
+.btn-outline-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--action-primary);
+  border-color: var(--action-primary);
+  color: var(--action-text-on-solid);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--action-primary-hover);
+  border-color: var(--action-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--action-secondary);
+  border-color: var(--action-secondary);
+  color: var(--action-text-on-solid);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--action-secondary-hover);
+  border-color: var(--action-secondary-hover);
+}
+
+.btn-info {
+  background-color: var(--action-info);
+  border-color: var(--action-info);
+  color: var(--action-text-on-solid);
+}
+
+.btn-info:hover:not(:disabled) {
+  background-color: var(--action-info-hover);
+  border-color: var(--action-info-hover);
+}
+
+.btn-danger {
+  background-color: var(--action-danger);
+  border-color: var(--action-danger);
+  color: var(--action-text-on-solid);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--action-danger-hover);
+  border-color: var(--action-danger-hover);
+}
+
+.btn-outline-secondary {
+  background-color: transparent;
+  border-color: var(--action-outline-border);
+  color: var(--action-outline-border);
+}
+
+.btn-outline-secondary:hover:not(:disabled) {
+  background-color: var(--action-outline-hover);
+}
+
+.btn-sm {
+  min-height: 32px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.82rem;
+}
+
+.btn-group-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Adattamento Material ai medesimi token visivi */
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button {
+  min-height: var(--action-height);
+  border-radius: var(--action-radius);
+  font-weight: 600;
+}
+
+.mat-mdc-unelevated-button.mat-primary,
+.mat-mdc-raised-button.mat-primary {
+  background-color: var(--action-primary) !important;
+  color: var(--action-text-on-solid) !important;
+}
+
+.mat-mdc-unelevated-button.mat-primary:hover:not([disabled]),
+.mat-mdc-raised-button.mat-primary:hover:not([disabled]) {
+  background-color: var(--action-primary-hover) !important;
+}
+
+.btn:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-info:focus-visible,
+.btn-danger:focus-visible,
+.btn-outline-secondary:focus-visible,
+.mat-mdc-button-base:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.25);
 }

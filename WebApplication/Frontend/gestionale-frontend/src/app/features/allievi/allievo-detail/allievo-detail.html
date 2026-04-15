@@ -1,3 +1,4 @@
+<!-- Form di dettaglio allievo con gestione dei due stati: creazione e modifica. -->
 <div class="allievo-detail-container">
   <div class="header">
     <button class="btn btn-outline-secondary" (click)="cancel()">← Indietro</button>
@@ -54,8 +55,13 @@
           <label for="corsoId">Corso</label>
           <select id="corsoId" class="form-control" formControlName="corsoId">
             <option value="">-- Nessun corso associato --</option>
-            <option *ngFor="let corso of corsi" [value]="corso.id">{{ corso.nome }}</option>
+            <option *ngFor="let corso of corsi" [value]="corso.id">
+              {{ getCorsoLabel(corso) }}
+            </option>
           </select>
+          <small class="form-text text-muted" *ngIf="selectedCorso">
+            Corso selezionato: {{ getCorsoLabel(selectedCorso) }}
+          </small>
         </div>
       </div>
 

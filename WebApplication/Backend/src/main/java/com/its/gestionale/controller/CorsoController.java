@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.its.gestionale.dto.AllievoDTO;
 import com.its.gestionale.dto.CorsoDTO;
 import com.its.gestionale.service.CorsoService;
 
@@ -51,6 +52,15 @@ public class CorsoController {
     // ↑ {id} è una variabile nel percorso URL
     public ResponseEntity<CorsoDTO> findById(@PathVariable Integer id) {
         return ResponseEntity.ok(corsoService.findById(id));
+    }
+
+    // ─────────────────────────────────────────
+    // GET /api/corsi/1/allievi
+    // Restituisce gli allievi iscritti al corso con id=1
+    // ─────────────────────────────────────────
+    @GetMapping("/{id}/allievi")
+    public ResponseEntity<List<AllievoDTO>> findAllieviByCorso(@PathVariable Integer id) {
+        return ResponseEntity.ok(corsoService.findAllieviByCorsoId(id));
     }
 
     // ─────────────────────────────────────────

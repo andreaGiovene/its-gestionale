@@ -11,6 +11,10 @@ interface TirocinioDraft {
   stato: string;
 }
 
+/**
+ * Placeholder operativo per il flusso tirocini.
+ * Modella una raccolta locale di bozze in attesa del backend definitivo.
+ */
 @Component({
   selector: 'app-tirocini-placeholder',
   imports: [CommonModule, ReactiveFormsModule],
@@ -20,6 +24,7 @@ interface TirocinioDraft {
 export class TirociniPlaceholder {
   private readonly fb = inject(FormBuilder);
 
+  /** Form locale per l'inserimento di una bozza di tirocinio. */
   readonly form = this.fb.group({
     allievo: ['', [Validators.required, Validators.maxLength(100)]],
     azienda: ['', [Validators.required, Validators.maxLength(100)]],
@@ -29,8 +34,10 @@ export class TirociniPlaceholder {
     stato: ['PIANIFICATO', Validators.required],
   });
 
+  /** Elenco delle bozze salvate solo lato client. */
   bozze: TirocinioDraft[] = [];
 
+  /** Valida la form e aggiunge la bozza in testa alla lista locale. */
   addBozza(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
