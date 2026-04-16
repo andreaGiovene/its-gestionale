@@ -19,6 +19,19 @@ import com.its.gestionale.repository.ContattoAziendaleRepository;
 import com.its.gestionale.repository.UtenteRepository;
 
 @Service
+/**
+ * Service applicativo per la gestione dei contatti aziendali.
+ *
+ * <p>La complessita principale di questa classe e mantenere compatibili due
+ * flussi DTO diversi:
+ * <ul>
+ *   <li>{@link ContattoAziendaleDTO}: flusso storico usato dalle API legacy;</li>
+ *   <li>{@link ContattoDTO}: flusso semplificato usato dalle API piu recenti.</li>
+ * </ul>
+ *
+ * <p>Entrambi i flussi mappano sulla stessa entity ({@link ContattoAziendale})
+ * ma hanno regole di validazione e gestione errori leggermente diverse.
+ */
 public class ContattoAziendaleService {
 
     private final ContattoAziendaleRepository contattoRepository;
@@ -34,6 +47,16 @@ public class ContattoAziendaleService {
         this.utenteRepository = utenteRepository;
     }
 
+    /**
+     * Crea un contatto usando il contratto DTO legacy.
+     *
+     * <p>Punti delicati:
+     * <ul>
+     *   <li>{@code aziendaId} e obbligatorio e genera 400 se assente;</li>
+     *   <li>se {@code utenteId} e presente viene verificata l'esistenza dell'utente;</li>
+     *   <li>tutti gli errori di validazione applicativa vengono esposti come 400.</li>
+     * </ul>
+     */
     @Transactional
     public ContattoAziendaleDTO create(ContattoAziendaleDTO dto) {
         ContattoAziendale contatto = new ContattoAziendale();
@@ -61,6 +84,12 @@ public class ContattoAziendaleService {
         return ContattoAziendaleDTO.fromEntity(contattoRepository.save(contatto));
     }
 
+    /**
+     * Restituisce i contatti di un'azienda nel formato DTO legacy.
+     *
+     * <p>La trasformazione e esplicita per mantenere il mapping centralizzato su
+     * {@code fromEntity} ed evitare dipendenze da framework di mapping automatico.
+     */
     @Transactional(readOnly = true)
     public List<ContattoAziendaleDTO> findByAziendaId(Integer aziendaId) {
         List<ContattoAziendale> contatti = contattoRepository.findByAziendaId(aziendaId);
@@ -73,6 +102,12 @@ public class ContattoAziendaleService {
         return result;
     }
 
+    /**
+     * Restituisce i contatti di un'azienda nel formato DTO usato dal frontend recente.
+     *
+     * <p>Il metodo coesiste con {@link #findByAziendaId(Integer)} per supportare
+     * controller diversi durante la fase di transizione tra i due contratti API.
+     */
     @Transactional(readOnly = true)
     public List<ContattoDTO> findByAziendaIdAsDto(Integer aziendaId) {
         List<ContattoAziendale> contatti = contattoRepository.findByAziendaId(aziendaId);
@@ -85,6 +120,12 @@ public class ContattoAziendaleService {
         return result;
     }
 
+    /**
+     * Crea un contatto agganciandolo a una specifica azienda gia nota dall'endpoint.
+     *
+     * <p>Qui la semantica errori e diversa dal flusso legacy: azienda assente
+     * genera {@link AziendaNotFoundException}, gestita dal layer globale.
+     */
     @Transactional
     public ContattoDTO createForAzienda(Integer aziendaId, ContattoDTO dto) {
         Azienda azienda = aziendaRepository.findById(aziendaId)
@@ -101,6 +142,9 @@ public class ContattoAziendaleService {
         return ContattoDTO.fromEntity(contattoRepository.save(contatto));
     }
 
+    /**
+     * Elimina un contatto validando prima l'esistenza per restituire 404 esplicito.
+     */
     @Transactional
     public void deleteById(Integer id) {
         if (!contattoRepository.existsById(id)) {
