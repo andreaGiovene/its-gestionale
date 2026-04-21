@@ -67,6 +67,13 @@ public class AllievoService {
 
     // Crea un nuovo allievo
     public AllievoDTO save(AllievoDTO dto) {
+
+        if (allievoRepository.existsByCodiceFiscale(dto.getCodiceFiscale())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Allievo con questo codice fiscale esiste già"
+            );
+        }
         Allievo allievo = new Allievo();
         allievo.setNome(dto.getNome());
         allievo.setCognome(dto.getCognome());
@@ -114,6 +121,19 @@ public class AllievoService {
     private void extracted(AllievoDTO dto, Allievo allievo) {
         allievo.setTelefono(dto.getTelefono());
     }
+
+    // Restituisce tutti gli allievi senza tirocinio associato
+    @Transactional(readOnly = true)
+    public List<AllievoDTO> getAllieviSenzaStage() {
+        List<Allievo> allievi = allievoRepository.findByTirociniIsEmpty();
+        List<AllievoDTO> dtos = new ArrayList<>();
+
+        for (Allievo allievo : allievi) {
+            dtos.add(AllievoDTO.fromEntity(allievo));
+        }
+
+        return dtos;
+}
 
     // Elimina un allievo
     public void deleteById(Integer id) {
