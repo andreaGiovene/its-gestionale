@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.its.gestionale.entity.Corso;
 
 @Repository 
-public interface CorsoRepository extends JpaRepository<Corso, Integer> {
-    
+public interface CorsoRepository extends JpaRepository<Corso, Integer> {    
     
     List<Corso> findByStato(String stato);
 
