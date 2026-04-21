@@ -45,14 +45,7 @@ public class ColloquioTirocinioService {
     /** Restituisce tutti i colloqui presenti a sistema. */
     @Transactional(readOnly = true)
     public List<ColloquioTirocinioDTO> findAll() {
-        List<ColloquioTirocinio> colloqui = colloquioRepository.findAll();
-        List<ColloquioTirocinioDTO> dtos = new ArrayList<>();
-
-        for (ColloquioTirocinio colloquio : colloqui) {
-            dtos.add(ColloquioTirocinioDTO.fromEntity(colloquio));
-        }
-
-        return dtos;
+        return toDtoList(colloquioRepository.findAll());
     }
 
     /** Recupera un colloquio per identificativo. */
@@ -62,33 +55,19 @@ public class ColloquioTirocinioService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Colloquio con id " + id + " non trovato"));
-        return ColloquioTirocinioDTO.fromEntity(colloquio);
+        return toDto(colloquio);
     }
 
     /** Restituisce i colloqui associati a uno specifico allievo. */
     @Transactional(readOnly = true)
     public List<ColloquioTirocinioDTO> findByAllievoId(Integer allievoId) {
-        List<ColloquioTirocinio> colloqui = colloquioRepository.findByAllievoId(allievoId);
-        List<ColloquioTirocinioDTO> dtos = new ArrayList<>();
-
-        for (ColloquioTirocinio colloquio : colloqui) {
-            dtos.add(ColloquioTirocinioDTO.fromEntity(colloquio));
-        }
-
-        return dtos;
+        return toDtoList(colloquioRepository.findByAllievoId(allievoId));
     }
 
     /** Restituisce i colloqui associati a una specifica azienda. */
     @Transactional(readOnly = true)
     public List<ColloquioTirocinioDTO> findByAziendaId(Integer aziendaId) {
-        List<ColloquioTirocinio> colloqui = colloquioRepository.findByAziendaId(aziendaId);
-        List<ColloquioTirocinioDTO> dtos = new ArrayList<>();
-
-        for (ColloquioTirocinio colloquio : colloqui) {
-            dtos.add(ColloquioTirocinioDTO.fromEntity(colloquio));
-        }
-
-        return dtos;
+        return toDtoList(colloquioRepository.findByAziendaId(aziendaId));
     }
 
     /**
@@ -106,14 +85,7 @@ public class ColloquioTirocinioService {
             throw new IllegalArgumentException("La data fine non puo essere precedente alla data inizio");
         }
 
-        List<ColloquioTirocinio> colloqui = colloquioRepository.findByDataColloquioBetween(start, end);
-        List<ColloquioTirocinioDTO> dtos = new ArrayList<>();
-
-        for (ColloquioTirocinio colloquio : colloqui) {
-            dtos.add(ColloquioTirocinioDTO.fromEntity(colloquio));
-        }
-
-        return dtos;
+        return toDtoList(colloquioRepository.findByDataColloquioBetween(start, end));
     }
 
     /**
@@ -140,7 +112,7 @@ public class ColloquioTirocinioService {
         colloquio.setEsito(request.getEsito() != null ? request.getEsito() : StatoEsitoColloquio.IN_ATTESA);
         colloquio.setNoteFeedback(request.getNoteFeedback());
 
-        return ColloquioTirocinioDTO.fromEntity(colloquioRepository.save(colloquio));
+        return toDto(colloquioRepository.save(colloquio));
     }
 
     /**
@@ -162,7 +134,7 @@ public class ColloquioTirocinioService {
         colloquio.setEsito(request.getEsito() != null ? request.getEsito() : StatoEsitoColloquio.IN_ATTESA);
         colloquio.setNoteFeedback(request.getNoteFeedback());
 
-        return ColloquioTirocinioDTO.fromEntity(colloquioRepository.save(colloquio));
+        return toDto(colloquioRepository.save(colloquio));
     }
 
     /** Elimina un colloquio se esistente. */
@@ -183,5 +155,19 @@ public class ColloquioTirocinioService {
         if (request.getDataColloquio() == null) {
             throw new IllegalArgumentException("La data colloquio e obbligatoria");
         }
+    }
+
+    private ColloquioTirocinioDTO toDto(ColloquioTirocinio colloquio) {
+        return ColloquioTirocinioDTO.fromEntity(colloquio);
+    }
+
+    private List<ColloquioTirocinioDTO> toDtoList(List<ColloquioTirocinio> colloqui) {
+        List<ColloquioTirocinioDTO> dtos = new ArrayList<>();
+
+        for (ColloquioTirocinio colloquio : colloqui) {
+            dtos.add(toDto(colloquio));
+        }
+
+        return dtos;
     }
 }
