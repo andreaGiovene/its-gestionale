@@ -1,9 +1,5 @@
 package com.its.gestionale.entity;
 
-import org.hibernate.annotations.ColumnTransformer;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import com.its.gestionale.entity.enums.RuoloContattoAziendale;
 
 import jakarta.persistence.Column;
@@ -48,9 +44,7 @@ public class ContattoAziendale {
     private String cognome;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "ruolo", columnDefinition = "ruolo_contatto_enum")
-    @ColumnTransformer(write = "?::ruolo_contatto_enum")
     private RuoloContattoAziendale ruolo;
 
     @Column(length = 20)

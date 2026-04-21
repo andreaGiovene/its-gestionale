@@ -48,7 +48,9 @@ public final class AziendaSpecifications {
                 return criteriaBuilder.conjunction();
             }
 
-            query.distinct(true);
+            if (query != null) {
+                query.distinct(true); // Evita duplicati se un'azienda è madrina di più corsi
+            }
             return criteriaBuilder.equal(root.join("corsiConAziendaMadrina", JoinType.INNER).get("id"), corsoId);
         };
     }

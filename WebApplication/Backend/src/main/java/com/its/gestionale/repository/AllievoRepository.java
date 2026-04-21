@@ -18,4 +18,6 @@ public interface AllievoRepository extends JpaRepository<Allievo, Integer> {
 
     // Cerca per codice fiscale (univoco → Optional)
     java.util.Optional<Allievo> findByCodiceFiscale(String codiceFiscale);
+
+    boolean existsByCodiceFiscale(String codiceFiscale);
 }
