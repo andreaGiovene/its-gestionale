@@ -12,6 +12,9 @@ public interface AllievoRepository extends JpaRepository<Allievo, Integer> {
 
     // Tutti gli allievi di un corso specifico
     List<Allievo> findByCorsoId(Integer corsoId);
+    
+    // Allievi senza tirocinio associato
+    List<Allievo> findByTirociniIsEmpty();
 
     // Ricerca per cognome (case insensitive)
     List<Allievo> findByCognomeContainingIgnoreCase(String cognome);
