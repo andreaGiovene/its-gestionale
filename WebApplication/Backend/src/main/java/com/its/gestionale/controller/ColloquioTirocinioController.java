@@ -57,11 +57,7 @@ public class ColloquioTirocinioController {
      */
     @GetMapping
     public ResponseEntity<List<ColloquioTirocinioDTO>> findAll() {
-        List<ColloquioTirocinio> colloqui = colloquioService.findAll();
-        List<ColloquioTirocinioDTO> dtos = colloqui.stream()
-                .map(ColloquioTirocinioDTO::fromEntity)
-                .toList();
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(colloquioService.findAll());
     }
 
     /**
@@ -69,8 +65,7 @@ public class ColloquioTirocinioController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ColloquioTirocinioDTO> findById(@PathVariable Integer id) {
-        ColloquioTirocinio colloquio = colloquioService.findById(id);
-        return ResponseEntity.ok(ColloquioTirocinioDTO.fromEntity(colloquio));
+        return ResponseEntity.ok(colloquioService.findById(id));
     }
 
     /**
@@ -79,11 +74,7 @@ public class ColloquioTirocinioController {
     @GetMapping(params = "allievoId")
     public ResponseEntity<List<ColloquioTirocinioDTO>> findByAllievoId(
             @RequestParam Integer allievoId) {
-        List<ColloquioTirocinio> colloqui = colloquioService.findByAllievoId(allievoId);
-        List<ColloquioTirocinioDTO> dtos = colloqui.stream()
-                .map(ColloquioTirocinioDTO::fromEntity)
-                .toList();
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(colloquioService.findByAllievoId(allievoId));
     }
 
     /**
@@ -92,11 +83,7 @@ public class ColloquioTirocinioController {
     @GetMapping(params = "aziendaId")
     public ResponseEntity<List<ColloquioTirocinioDTO>> findByAziendaId(
             @RequestParam Integer aziendaId) {
-        List<ColloquioTirocinio> colloqui = colloquioService.findByAziendaId(aziendaId);
-        List<ColloquioTirocinioDTO> dtos = colloqui.stream()
-                .map(ColloquioTirocinioDTO::fromEntity)
-                .toList();
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(colloquioService.findByAziendaId(aziendaId));
     }
 
     /**
@@ -109,11 +96,7 @@ public class ColloquioTirocinioController {
     public ResponseEntity<List<ColloquioTirocinioDTO>> findByPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
-        List<ColloquioTirocinio> colloqui = colloquioService.findByPeriodo(start, end);
-        List<ColloquioTirocinioDTO> dtos = colloqui.stream()
-                .map(ColloquioTirocinioDTO::fromEntity)
-                .toList();
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(colloquioService.findByPeriodo(start, end));
     }
 
     /**
@@ -128,17 +111,16 @@ public class ColloquioTirocinioController {
             @RequestParam Integer allievoId,
             @RequestParam Integer aziendaId,
             @Valid @RequestBody ColloquioTirocinioDTO body) {
-        // Converte il DTO in entity per il service
         ColloquioTirocinio request = new ColloquioTirocinio();
         request.setDataColloquio(body.getDataColloquio());
         request.setTipoEvento(body.getTipoEvento());
         request.setEsito(body.getEsito());
         request.setNoteFeedback(body.getNoteFeedback());
 
-        ColloquioTirocinio creato = colloquioService.create(allievoId, aziendaId, request);
+        ColloquioTirocinioDTO creato = colloquioService.create(allievoId, aziendaId, request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ColloquioTirocinioDTO.fromEntity(creato));
+            .body(creato);
     }
 
     /**
@@ -148,15 +130,13 @@ public class ColloquioTirocinioController {
     public ResponseEntity<ColloquioTirocinioDTO> update(
             @PathVariable Integer id,
             @Valid @RequestBody ColloquioTirocinioDTO body) {
-        // Converte il DTO in entity per il service
         ColloquioTirocinio request = new ColloquioTirocinio();
         request.setDataColloquio(body.getDataColloquio());
         request.setTipoEvento(body.getTipoEvento());
         request.setEsito(body.getEsito());
         request.setNoteFeedback(body.getNoteFeedback());
 
-        ColloquioTirocinio aggiornato = colloquioService.update(id, request);
-        return ResponseEntity.ok(ColloquioTirocinioDTO.fromEntity(aggiornato));
+        return ResponseEntity.ok(colloquioService.update(id, request));
     }
 
     /**

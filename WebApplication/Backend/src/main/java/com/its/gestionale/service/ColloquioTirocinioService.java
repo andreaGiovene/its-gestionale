@@ -1,6 +1,7 @@
 package com.its.gestionale.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.its.gestionale.dto.ColloquioTirocinioDTO;
 import com.its.gestionale.entity.Allievo;
 import com.its.gestionale.entity.Azienda;
 import com.its.gestionale.entity.ColloquioTirocinio;
@@ -42,29 +44,51 @@ public class ColloquioTirocinioService {
 
     /** Restituisce tutti i colloqui presenti a sistema. */
     @Transactional(readOnly = true)
-    public List<ColloquioTirocinio> findAll() {
-        return colloquioRepository.findAll();
+    public List<ColloquioTirocinioDTO> findAll() {
+        List<ColloquioTirocinio> colloqui = colloquioRepository.findAll();
+        List<ColloquioTirocinioDTO> dtos = new ArrayList<>();
+
+        for (ColloquioTirocinio colloquio : colloqui) {
+            dtos.add(ColloquioTirocinioDTO.fromEntity(colloquio));
+        }
+
+        return dtos;
     }
 
     /** Recupera un colloquio per identificativo. */
     @Transactional(readOnly = true)
-    public ColloquioTirocinio findById(Integer id) {
-        return colloquioRepository.findById(id)
+    public ColloquioTirocinioDTO findById(Integer id) {
+        ColloquioTirocinio colloquio = colloquioRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Colloquio con id " + id + " non trovato"));
+        return ColloquioTirocinioDTO.fromEntity(colloquio);
     }
 
     /** Restituisce i colloqui associati a uno specifico allievo. */
     @Transactional(readOnly = true)
-    public List<ColloquioTirocinio> findByAllievoId(Integer allievoId) {
-        return colloquioRepository.findByAllievoId(allievoId);
+    public List<ColloquioTirocinioDTO> findByAllievoId(Integer allievoId) {
+        List<ColloquioTirocinio> colloqui = colloquioRepository.findByAllievoId(allievoId);
+        List<ColloquioTirocinioDTO> dtos = new ArrayList<>();
+
+        for (ColloquioTirocinio colloquio : colloqui) {
+            dtos.add(ColloquioTirocinioDTO.fromEntity(colloquio));
+        }
+
+        return dtos;
     }
 
     /** Restituisce i colloqui associati a una specifica azienda. */
     @Transactional(readOnly = true)
-    public List<ColloquioTirocinio> findByAziendaId(Integer aziendaId) {
-        return colloquioRepository.findByAziendaId(aziendaId);
+    public List<ColloquioTirocinioDTO> findByAziendaId(Integer aziendaId) {
+        List<ColloquioTirocinio> colloqui = colloquioRepository.findByAziendaId(aziendaId);
+        List<ColloquioTirocinioDTO> dtos = new ArrayList<>();
+
+        for (ColloquioTirocinio colloquio : colloqui) {
+            dtos.add(ColloquioTirocinioDTO.fromEntity(colloquio));
+        }
+
+        return dtos;
     }
 
     /**
@@ -73,7 +97,7 @@ public class ColloquioTirocinioService {
      * @throws IllegalArgumentException se una delle date e nulla o se l'intervallo e invertito
      */
     @Transactional(readOnly = true)
-    public List<ColloquioTirocinio> findByPeriodo(LocalDate start, LocalDate end) {
+    public List<ColloquioTirocinioDTO> findByPeriodo(LocalDate start, LocalDate end) {
         if (start == null || end == null) {
             throw new IllegalArgumentException("Le date di inizio/fine sono obbligatorie");
         }
@@ -82,7 +106,14 @@ public class ColloquioTirocinioService {
             throw new IllegalArgumentException("La data fine non puo essere precedente alla data inizio");
         }
 
-        return colloquioRepository.findByDataColloquioBetween(start, end);
+        List<ColloquioTirocinio> colloqui = colloquioRepository.findByDataColloquioBetween(start, end);
+        List<ColloquioTirocinioDTO> dtos = new ArrayList<>();
+
+        for (ColloquioTirocinio colloquio : colloqui) {
+            dtos.add(ColloquioTirocinioDTO.fromEntity(colloquio));
+        }
+
+        return dtos;
     }
 
     /**
@@ -92,7 +123,7 @@ public class ColloquioTirocinioService {
     * automaticamente {@link StatoEsitoColloquio#IN_ATTESA}.
      */
     @Transactional
-    public ColloquioTirocinio create(Integer allievoId, Integer aziendaId, ColloquioTirocinio request) {
+    public ColloquioTirocinioDTO create(Integer allievoId, Integer aziendaId, ColloquioTirocinio request) {
         validateRichiesta(request);
 
         Allievo allievo = allievoRepository.findById(allievoId)
@@ -109,7 +140,7 @@ public class ColloquioTirocinioService {
         colloquio.setEsito(request.getEsito() != null ? request.getEsito() : StatoEsitoColloquio.IN_ATTESA);
         colloquio.setNoteFeedback(request.getNoteFeedback());
 
-        return colloquioRepository.save(colloquio);
+        return ColloquioTirocinioDTO.fromEntity(colloquioRepository.save(colloquio));
     }
 
     /**
@@ -119,16 +150,19 @@ public class ColloquioTirocinioService {
      * del service; l'update copre i campi gestionali del colloquio.
      */
     @Transactional
-    public ColloquioTirocinio update(Integer id, ColloquioTirocinio request) {
+    public ColloquioTirocinioDTO update(Integer id, ColloquioTirocinio request) {
         validateRichiesta(request);
 
-        ColloquioTirocinio colloquio = findById(id);
+        ColloquioTirocinio colloquio = colloquioRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Colloquio con id " + id + " non trovato"));
         colloquio.setDataColloquio(request.getDataColloquio());
         colloquio.setTipoEvento(request.getTipoEvento());
         colloquio.setEsito(request.getEsito() != null ? request.getEsito() : StatoEsitoColloquio.IN_ATTESA);
         colloquio.setNoteFeedback(request.getNoteFeedback());
 
-        return colloquioRepository.save(colloquio);
+        return ColloquioTirocinioDTO.fromEntity(colloquioRepository.save(colloquio));
     }
 
     /** Elimina un colloquio se esistente. */
