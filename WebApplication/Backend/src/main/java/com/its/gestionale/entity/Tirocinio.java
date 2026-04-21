@@ -3,7 +3,10 @@ package com.its.gestionale.entity;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.its.gestionale.entity.enums.StatoEsito;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import com.its.gestionale.entity.enums.StatoTirocinio;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -68,9 +71,11 @@ public class Tirocinio {
     @Column(length = 50)
     private String tipo;
 
-    /** Stato/esito del tirocinio secondo l'enum {@link StatoEsito}. */
+    /** Stato del tirocinio secondo l'enum {@link StatoTirocinio}. */
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Enumerated(EnumType.STRING)
-    private StatoEsito esito;
+    @Column(name = "esito", nullable = false, columnDefinition = "stato_tirocinio_enum")
+    private StatoTirocinio esito;
 
     /** Frequenza prevista o registrata (es. full-time, part-time). */
     @Column(length = 50)

@@ -1,8 +1,9 @@
 package com.its.gestionale.entity.enums;
 
-public enum StatoEsito {
+public enum StatoEsitoColloquio {
     IN_ATTESA,
     POSITIVO,
     NEGATIVO,
-    RITIRATO
+    RITIRATO,
+    NON_PRESENTATO
 }

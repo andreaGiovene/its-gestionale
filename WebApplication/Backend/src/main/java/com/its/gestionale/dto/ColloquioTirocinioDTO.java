@@ -3,7 +3,8 @@ package com.its.gestionale.dto;
 import java.time.LocalDate;
 
 import com.its.gestionale.entity.ColloquioTirocinio;
-import com.its.gestionale.entity.enums.StatoEsito;
+import com.its.gestionale.entity.enums.StatoEsitoColloquio;
+import com.its.gestionale.entity.enums.TipoEventoColloquio;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,8 +21,8 @@ public class ColloquioTirocinioDTO {
 
     private Integer id;
     private LocalDate dataColloquio;
-    private String tipoEvento;
-    private StatoEsito esito;
+    private TipoEventoColloquio tipoEvento;
+    private StatoEsitoColloquio esito;
     private String noteFeedback;
 
     // Informazioni allievo (essenziali)

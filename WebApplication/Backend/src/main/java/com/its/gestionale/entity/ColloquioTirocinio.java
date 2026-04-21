@@ -2,7 +2,11 @@ package com.its.gestionale.entity;
 
 import java.time.LocalDate;
 
-import com.its.gestionale.entity.enums.StatoEsito;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import com.its.gestionale.entity.enums.StatoEsitoColloquio;
+import com.its.gestionale.entity.enums.TipoEventoColloquio;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -70,8 +74,10 @@ public class ColloquioTirocinio {
      * Tipologia dell'evento (es. colloquio conoscitivo, tecnico, finale).
      * Campo opzionale, usato per dettagliare il processo di selezione.
      */
-    @Column(name = "tipo_evento", length = 100)
-    private String tipoEvento;
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_evento", columnDefinition = "tipo_evento_colloquio_enum")
+    private TipoEventoColloquio tipoEvento;
 
     /**
      * Stato/esito del colloquio.
@@ -79,9 +85,10 @@ public class ColloquioTirocinio {
      * <p>Persistito come stringa per mantenere leggibilita a DB; default previsto:
      * {@code IN_ATTESA}.
      */
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(50) DEFAULT 'IN_ATTESA'")
-    private StatoEsito esito;
+    @Column(name = "esito", nullable = false, columnDefinition = "stato_esito_colloquio_enum")
+    private StatoEsitoColloquio esito;
 
     /** Note qualitative o feedback raccolti durante/dopo il colloquio. */
     @Column(name = "note_feedback", columnDefinition = "TEXT")

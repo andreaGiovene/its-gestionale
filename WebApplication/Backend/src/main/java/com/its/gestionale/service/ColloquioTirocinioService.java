@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.its.gestionale.entity.Allievo;
 import com.its.gestionale.entity.Azienda;
 import com.its.gestionale.entity.ColloquioTirocinio;
-import com.its.gestionale.entity.enums.StatoEsito;
+import com.its.gestionale.entity.enums.StatoEsitoColloquio;
 import com.its.gestionale.exception.AllievoNotFoundException;
 import com.its.gestionale.exception.AziendaNotFoundException;
 import com.its.gestionale.repository.AllievoRepository;
@@ -89,7 +89,7 @@ public class ColloquioTirocinioService {
      * Crea un nuovo colloquio collegandolo ad allievo e azienda esistenti.
      *
      * <p>Se l'esito non viene valorizzato in input, viene applicato
-     * automaticamente {@link StatoEsito#IN_ATTESA}.
+    * automaticamente {@link StatoEsitoColloquio#IN_ATTESA}.
      */
     @Transactional
     public ColloquioTirocinio create(Integer allievoId, Integer aziendaId, ColloquioTirocinio request) {
@@ -106,7 +106,7 @@ public class ColloquioTirocinioService {
         colloquio.setAzienda(azienda);
         colloquio.setDataColloquio(request.getDataColloquio());
         colloquio.setTipoEvento(request.getTipoEvento());
-        colloquio.setEsito(request.getEsito() != null ? request.getEsito() : StatoEsito.IN_ATTESA);
+        colloquio.setEsito(request.getEsito() != null ? request.getEsito() : StatoEsitoColloquio.IN_ATTESA);
         colloquio.setNoteFeedback(request.getNoteFeedback());
 
         return colloquioRepository.save(colloquio);
@@ -125,7 +125,7 @@ public class ColloquioTirocinioService {
         ColloquioTirocinio colloquio = findById(id);
         colloquio.setDataColloquio(request.getDataColloquio());
         colloquio.setTipoEvento(request.getTipoEvento());
-        colloquio.setEsito(request.getEsito() != null ? request.getEsito() : StatoEsito.IN_ATTESA);
+        colloquio.setEsito(request.getEsito() != null ? request.getEsito() : StatoEsitoColloquio.IN_ATTESA);
         colloquio.setNoteFeedback(request.getNoteFeedback());
 
         return colloquioRepository.save(colloquio);
