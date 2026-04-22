@@ -1,7 +1,7 @@
--- Allinea il campo public.azienda.tipo alle relazioni reali con i corsi madrini.
+-- Allinea il campo public.azienda.tipo alle relazioni reali con i corsi.
 -- Regola:
 --   - tipo = 'MADRINA' se l'azienda e associata ad almeno un corso tramite corso.id_azienda_madrina
---   - tipo = 'NORMALE' negli altri casi
+--   - tipo = 'NON_MADRINA' negli altri casi
 -- Script idempotente e rieseguibile.
 
 DO $$
@@ -31,13 +31,13 @@ BEGIN
           AND UPPER(COALESCE(a.tipo, '')) <> 'MADRINA';
 
         UPDATE public.azienda a
-        SET tipo = 'NORMALE'
+        SET tipo = 'NON_MADRINA'
         WHERE NOT EXISTS (
             SELECT 1
             FROM public.corso c
             WHERE c.id_azienda_madrina = a.id
         )
-          AND UPPER(COALESCE(a.tipo, '')) <> 'NORMALE';
+          AND UPPER(COALESCE(a.tipo, '')) <> 'NON_MADRINA';
 
     END IF;
 END $$;

@@ -59,7 +59,7 @@ public class AziendaService {
      * Esegue la ricerca paginata delle aziende combinando filtri opzionali.
      *
      * Filtri supportati:
-     * - tipo azienda (madrina/non madrina)
+    * - tipo azienda (madrina/non madrina)
      * - ragione sociale (match parziale case-insensitive)
      * - corso specifico in cui l'azienda è madrina
      *

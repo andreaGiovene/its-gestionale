@@ -131,7 +131,7 @@ public class ColloquioTirocinioService {
         );
         colloquio.setNoteFeedback(request.getNoteFeedback());
 
-        return ColloquioTirocinioDTO.fromEntity(colloquioRepository.save(colloquio));
+        return toDto(colloquioRepository.save(colloquio));
     }
 
     // 🔹 UPDATE
@@ -154,7 +154,7 @@ public class ColloquioTirocinioService {
         );
         colloquio.setNoteFeedback(request.getNoteFeedback());
 
-        return ColloquioTirocinioDTO.fromEntity(colloquioRepository.save(colloquio));
+        return toDto(colloquioRepository.save(colloquio));
     }
 
     // 🔹 DELETE
@@ -180,5 +180,19 @@ public class ColloquioTirocinioService {
         if (request.getDataColloquio() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data colloquio obbligatoria");
         }
+    }
+
+    private ColloquioTirocinioDTO toDto(ColloquioTirocinio colloquio) {
+        return ColloquioTirocinioDTO.fromEntity(colloquio);
+    }
+
+    private List<ColloquioTirocinioDTO> toDtoList(List<ColloquioTirocinio> colloqui) {
+        List<ColloquioTirocinioDTO> dtos = new ArrayList<>();
+
+        for (ColloquioTirocinio colloquio : colloqui) {
+            dtos.add(toDto(colloquio));
+        }
+
+        return dtos;
     }
 }

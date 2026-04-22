@@ -3,6 +3,8 @@ package com.its.gestionale.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,13 +30,15 @@ public class AllievoService {
     }
 
     // Restituisce tutti gli allievi convertiti in DTO.
+    // Usa la query custom findAllWithCorso() per pre-caricare il Corso e
+    // evitare query aggiuntive durante il mapping Entity -> DTO.
     // Complessita' temporale: O(n), dove n = numero di record letti dal DB.
     // Complessita' spaziale: O(n), per la nuova lista di DTO creata in output.
     // Costo nascosto: findAll() carica tutto in memoria; su tabelle grandi e' meglio paginare.
 
     @Transactional(readOnly = true)  // Apre una transazione di sola lettura: evita flush/modifiche non volute e puo ottimizzare le query lato JPA/DB.
     public List<AllievoDTO> findAll() {
-        List<Allievo> allievi = allievoRepository.findAll();
+        List<Allievo> allievi = allievoRepository.findAllWithCorso();
         List<AllievoDTO> dtos = new ArrayList<>();
 
         for (Allievo allievo : allievi) {
@@ -44,7 +48,27 @@ public class AllievoService {
         return dtos;
     }
 
-    // Restituisce gli allievi di un corso specifico
+    // Restituisce gli allievi filtrati dal testo digitato dall'utente.
+    // Se la stringa e' vuota, mantiene il fallback sull'elenco completo.
+    // La logica SQL di match parziale resta nel repository, non nel service.
+    @Transactional(readOnly = true)
+    public List<AllievoDTO> search(String search) {
+        if (!StringUtils.hasText(search)) {
+            return findAll();
+        }
+
+        List<Allievo> allievi = allievoRepository.searchByText(search.trim());
+        List<AllievoDTO> dtos = new ArrayList<>();
+
+        for (Allievo allievo : allievi) {
+            dtos.add(AllievoDTO.fromEntity(allievo));
+        }
+
+        return dtos;
+    }
+
+    // Restituisce gli allievi di un corso specifico.
+    // Rimane un filtro dedicato separato dalla ricerca testuale trasversale.
     @Transactional(readOnly = true)
     public List<AllievoDTO> findByCorsoId(Integer corsoId) {
         List<Allievo> allievi = allievoRepository.findByCorsoId(corsoId);
@@ -133,7 +157,7 @@ public class AllievoService {
         }
 
         return dtos;
-}
+    }
 
     // Elimina un allievo
     public void deleteById(Integer id) {

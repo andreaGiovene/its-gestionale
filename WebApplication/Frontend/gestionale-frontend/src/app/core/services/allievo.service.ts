@@ -1,4 +1,5 @@
 import { HttpClient } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Allievo, CreateAllievoRequest, UpdateAllievoRequest } from '@shared/models';
@@ -16,6 +17,15 @@ export class AllievoService {
   /** Recupera l'elenco completo degli allievi. */
   findAll(): Observable<Allievo[]> {
     return this.http.get<Allievo[]>(this.apiBase);
+  }
+
+  /**
+   * Esegue la ricerca trasversale per nome, cognome o codice fiscale.
+   * Il backend applica il filtro testuale sulla query custom GET /api/allievi.
+   */
+  search(search: string): Observable<Allievo[]> {
+    const params = new HttpParams().set('search', search);
+    return this.http.get<Allievo[]>(this.apiBase, { params });
   }
 
   /** Recupera gli allievi associati a uno specifico corso. */
