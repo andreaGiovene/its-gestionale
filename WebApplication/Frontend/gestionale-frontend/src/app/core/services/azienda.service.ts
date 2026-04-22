@@ -8,6 +8,7 @@ import { HttpParams } from '@angular/common/http';
 export class AziendaService {
   private readonly http = inject(HttpClient);
   private readonly apiBase = 'http://localhost:8080/api/aziende';
+  private readonly importBase = 'http://localhost:8080/api/import';
 
   /**
    * Recupera aziende filtrate con paginazione e ordinamento server-side.
@@ -85,5 +86,17 @@ export class AziendaService {
    */
   createContatto(aziendaId: number, payload: CreateContattoRequest): Observable<Contatto> {
     return this.http.post<Contatto>(`${this.apiBase}/${aziendaId}/contatti`, payload);
+  }
+
+  /**
+   * Importa aziende da un file Excel .xlsx.
+   */
+  importAziende(file: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post(`${this.importBase}/aziende`, formData, {
+      responseType: 'text',
+    });
   }
 }

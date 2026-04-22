@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, forkJoin, of } from 'rxjs';
+import { Subject, combineLatest, forkJoin, of } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AllievoService } from '@core/services/allievo.service';
 import { CorsoService } from '@core/services/corso.service';
@@ -36,10 +36,17 @@ export class AllievoDetail implements OnInit, OnDestroy {
   error: string | null = null;
   /** Indica se il componente sta creando un nuovo allievo. */
   isNew = false;
+  /** Indica se il componente è in modalità modifica (create/edit). */
+  isEditMode = false;
   /** Entità caricata in modalità modifica. */
   allievo: Allievo | null = null;
   /** Elenco corsi da usare nella select di associazione. */
   corsi: Corso[] = [];
+
+  /** Indica se la vista corrente è in sola lettura. */
+  get isReadOnly(): boolean {
+    return !this.isNew && !this.isEditMode;
+  }
 
   /** Restituisce il corso selezionato nel form, se presente. */
   get selectedCorso(): Corso | undefined {
@@ -60,11 +67,29 @@ export class AllievoDetail implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
 
-    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      const id = params['id'];
-      this.isNew = id === 'new';
-      this.loadInitialData(this.isNew ? null : parseInt(id, 10));
-    });
+    combineLatest([this.route.url, this.route.paramMap])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([segments, paramMap]) => {
+        const routePath = this.route.snapshot.routeConfig?.path ?? '';
+        const idParam = paramMap.get('id');
+
+        this.isNew = routePath === 'allievi/new' || idParam === 'new';
+        this.isEditMode = this.isNew || routePath === 'allievi/:id/edit' || segments.some((segment) => segment.path === 'edit');
+
+        if (this.isNew) {
+          this.loadInitialData(null);
+          return;
+        }
+
+        const allievoId = idParam ? Number(idParam) : NaN;
+        if (Number.isNaN(allievoId)) {
+          this.error = 'Identificativo allievo non valido.';
+          this.isLoading = false;
+          return;
+        }
+
+        this.loadInitialData(allievoId);
+      });
   }
 
   /** Chiude tutte le subscription legate al ciclo vita del componente. */
@@ -118,6 +143,12 @@ export class AllievoDetail implements OnInit, OnDestroy {
             });
           }
 
+          if (this.isReadOnly) {
+            this.form.disable({ emitEvent: false });
+          } else {
+            this.form.enable({ emitEvent: false });
+          }
+
           this.isLoading = false;
         },
         error: (err) => {
@@ -130,6 +161,10 @@ export class AllievoDetail implements OnInit, OnDestroy {
 
   /** Valida, normalizza e invia i dati al servizio di persistenza. */
   save(): void {
+    if (this.isReadOnly) {
+      return;
+    }
+
     if (this.form.invalid) {
       alert('Form non valido: compila tutti i campi richiesti');
       return;
@@ -169,5 +204,14 @@ export class AllievoDetail implements OnInit, OnDestroy {
   /** Torna alla lista senza mantenere eventuali modifiche non salvate. */
   cancel(): void {
     this.router.navigate(['/allievi']);
+  }
+
+  /** Passa dalla vista dettaglio alla modalità modifica. */
+  goToEdit(): void {
+    if (!this.allievo?.id) {
+      return;
+    }
+
+    this.router.navigate(['/allievi', this.allievo.id, 'edit']);
   }
 }

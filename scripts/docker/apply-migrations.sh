@@ -11,7 +11,7 @@ migrations=(
   "/docker-entrypoint-migrations/2026-04-14-add-azienda-madrina-to-corso.sql"
   "/docker-entrypoint-migrations/2026-04-14-add-citta-to-azienda.sql"
   "/docker-entrypoint-migrations/2026-04-14-add-tipo-to-azienda.sql"
-  "/docker-entrypoint-migrations/2026-04-14-align-tipo-azienda-with-corsi-madrini.sql"
+  "/docker-entrypoint-migrations/2026-04-14-align-tipo-azienda-with-corsi.sql"
   "/docker-entrypoint-migrations/2026-04-14-delete-aziende-fittizie.sql"
   "/docker-entrypoint-migrations/2026-04-14-seed-aziende-madrine-2025-2027.sql"
   "/docker-entrypoint-migrations/2026-04-14-finalize-azienda-tipo-native-pg-enum.sql"

@@ -13,6 +13,7 @@ export class AllievoService {
   private readonly http = inject(HttpClient);
   /** Base URL dell'API allievi esposta dal backend. */
   private readonly apiBase = 'http://localhost:8080/api/allievi';
+  private readonly importBase = 'http://localhost:8080/api/import';
 
   /** Recupera l'elenco completo degli allievi. */
   findAll(): Observable<Allievo[]> {
@@ -51,5 +52,15 @@ export class AllievoService {
   /** Elimina un allievo in modo definitivo. */
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiBase}/${id}`);
+  }
+
+  /** Importa allievi da un file Excel .xlsx. */
+  importAllievi(file: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post(`${this.importBase}/allievi`, formData, {
+      responseType: 'text',
+    });
   }
 }

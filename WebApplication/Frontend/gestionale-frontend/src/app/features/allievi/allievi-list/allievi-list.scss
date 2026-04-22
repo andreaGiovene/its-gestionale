@@ -8,6 +8,12 @@
     align-items: center;
     justify-content: space-between;
 
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
     h1 {
       margin: 0;
     }
@@ -131,6 +137,13 @@
 
     tbody tr:hover {
       background-color: #f9fafb;
+    }
+
+    .actions-cell {
+      white-space: nowrap;
+      display: flex;
+      gap: 6px;
+      align-items: center;
     }
   }
 

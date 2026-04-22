@@ -2,8 +2,9 @@
 <div class="allievo-detail-container">
   <div class="header">
     <button class="btn btn-outline-secondary" (click)="cancel()">← Indietro</button>
-    <h1>{{ isNew ? 'Nuovo Allievo' : 'Dettagli Allievo' }}</h1>
-    <span></span>
+    <h1>{{ isNew ? 'Nuovo Allievo' : (isEditMode ? 'Modifica Allievo' : 'Dettagli Allievo') }}</h1>
+    <button *ngIf="isReadOnly" type="button" class="btn btn-primary" (click)="goToEdit()">Modifica</button>
+    <span *ngIf="!isReadOnly"></span>
   </div>
 
   <ng-container *ngIf="isLoading">
@@ -92,7 +93,7 @@
         </div>
       </div>
 
-      <div class="actions">
+      <div class="actions" *ngIf="!isReadOnly">
         <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="isSubmitting">
           Annulla
         </button>

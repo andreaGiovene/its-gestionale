@@ -5,7 +5,21 @@
       <h1>Aziende</h1>
       <p class="subtitle">Ricerca aziende madrine e non madrine con filtri dinamici.</p>
     </div>
-    <button class="btn btn-primary" (click)="createNew()">Nuova Azienda</button>
+    <div class="header-actions">
+      <input #aziendaImportInput type="file" accept=".xlsx" hidden (change)="importFromExcel($event)" />
+      <button class="btn btn-secondary" type="button" [disabled]="isImporting" (click)="aziendaImportInput.click()">
+        {{ isImporting ? 'Importazione...' : 'Importa Excel' }}
+      </button>
+      <button class="btn btn-primary" (click)="createNew()">Nuova Azienda</button>
+    </div>
+  </div>
+
+  <div *ngIf="importSuccess" class="alert alert-success" role="status">
+    {{ importSuccess }}
+  </div>
+
+  <div *ngIf="importError" class="alert alert-danger" role="alert">
+    {{ importError }}
   </div>
 
   <form class="search-panel" [formGroup]="searchForm" (ngSubmit)="search(0)">

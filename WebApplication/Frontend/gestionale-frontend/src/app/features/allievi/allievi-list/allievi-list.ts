@@ -49,6 +49,7 @@ export class AllieviList implements OnInit, OnDestroy {
   private readonly corsoService = inject(CorsoService);
   private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
+  private readonly refresh$ = new Subject<void>();
 
   /** Campo di ricerca reattivo per nome, cognome o codice fiscale. */
   readonly searchControl = new FormControl('', { nonNullable: true });
@@ -67,33 +68,29 @@ export class AllieviList implements OnInit, OnDestroy {
   isLoading = true;
   /** Messaggio di errore visibile all'utente in caso di fallimento della richiesta. */
   error: string | null = null;
-  /** Stato iniziale prima che l'utente inizi a cercare. */
-  isInitialState = true;
   /** Colonna attualmente usata per l'ordinamento locale. */
   sortColumn: SortableColumn = 'cognome';
   /** Direzione corrente dell'ordinamento locale. */
   sortDirection: SortDirection = 'asc';
+  /** Stato dell'import Excel. */
+  isImporting = false;
+  /** Messaggio di successo dell'import Excel. */
+  importSuccess: string | null = null;
+  /** Messaggio di errore dell'import Excel. */
+  importError: string | null = null;
 
   /** Avvia il listener reattivo della ricerca all'apertura della pagina. */
   ngOnInit(): void {
     this.loadCorsi();
     this.setupAnnoFilterSync();
     this.setupSearchStream();
-    this.setInitialState();
   }
 
   /** Pulisce le subscription della pagina. */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  /** Prepara lo stato iniziale, senza risultati e senza chiamate al backend. */
-  private setInitialState(): void {
-    this.allievi = [];
-    this.error = null;
-    this.isLoading = false;
-    this.isInitialState = true;
+    this.refresh$.complete();
   }
 
   /** Carica i corsi per popolare i filtri di annualita e corso. */
@@ -163,19 +160,12 @@ export class AllieviList implements OnInit, OnDestroy {
       distinctUntilChanged(),
     );
 
-    combineLatest([search$, annoAccademico$, corsoId$])
+    const refreshTrigger$ = this.refresh$.pipe(startWith(void 0));
+
+    combineLatest([search$, annoAccademico$, corsoId$, refreshTrigger$])
       .pipe(
         tap(([searchTerm, annoAccademico, corsoId]) => {
           this.error = null;
-
-          const hasAnyFilter = Boolean(searchTerm) || Boolean(annoAccademico) || Boolean(corsoId);
-
-          if (!hasAnyFilter) {
-            this.setInitialState();
-            return;
-          }
-
-          this.isInitialState = false;
           this.isLoading = true;
           this.allievi = [];
         }),
@@ -183,7 +173,13 @@ export class AllieviList implements OnInit, OnDestroy {
           const hasAnyFilter = Boolean(searchTerm) || Boolean(annoAccademico) || Boolean(corsoId);
 
           if (!hasAnyFilter) {
-            return of([] as Allievo[]);
+            return this.allievoService.findAll().pipe(
+              catchError((err) => {
+                console.error('Errore nel caricamento allievi:', err);
+                this.error = 'Errore nel caricamento degli allievi. Riprovare più tardi.';
+                return of([] as Allievo[]);
+              }),
+            );
           }
 
           if (corsoId && !searchTerm) {
@@ -219,14 +215,45 @@ export class AllieviList implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
       )
       .subscribe((data) => {
-        if (this.isInitialState) {
-          this.allievi = [];
-          return;
-        }
-
         this.allievi = this.sortAllievi(data);
         this.isLoading = false;
       });
+  }
+
+  /** Gestisce l'upload del file Excel per l'import allievi. */
+  importFromExcel(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.importSuccess = null;
+    this.importError = null;
+
+    if (!file.name.toLowerCase().endsWith('.xlsx')) {
+      this.importError = 'Carica un file .xlsx valido.';
+      input.value = '';
+      return;
+    }
+
+    this.isImporting = true;
+
+    this.allievoService.importAllievi(file).subscribe({
+      next: (message) => {
+        this.importSuccess = message || 'Import allievi completato con successo.';
+        this.isImporting = false;
+        input.value = '';
+        this.refresh$.next();
+      },
+      error: (err) => {
+        console.error('Errore durante l\'import degli allievi:', err);
+        this.importError = err?.error || 'Errore durante l\'import degli allievi.';
+        this.isImporting = false;
+        input.value = '';
+      },
+    });
   }
 
   /** Applica i filtri client-side su annualita e corso ai risultati ricevuti dal backend. */
@@ -269,6 +296,36 @@ export class AllieviList implements OnInit, OnDestroy {
   /** Apre la pagina di dettaglio dell'allievo selezionato. */
   viewDetail(id: number): void {
     this.router.navigate(['/allievi', id]);
+  }
+
+  /** Porta alla schermata di creazione di un nuovo allievo. */
+  createNew(): void {
+    this.router.navigate(['/allievi', 'new']);
+  }
+
+  /** Porta alla schermata di modifica dell'allievo selezionato. */
+  edit(id: number, event: Event): void {
+    event.stopPropagation();
+    this.router.navigate(['/allievi', id, 'edit']);
+  }
+
+  /** Elimina un allievo dopo conferma esplicita e aggiorna la lista. */
+  delete(id: number, event: Event): void {
+    event.stopPropagation();
+
+    if (!confirm('Sei sicuro di voler eliminare questo allievo?')) {
+      return;
+    }
+
+    this.allievoService.delete(id).subscribe({
+      next: () => {
+        this.refresh$.next();
+      },
+      error: (err) => {
+        console.error('Errore nell\'eliminazione allievo:', err);
+        this.error = 'Errore durante l\'eliminazione dell\'allievo.';
+      },
+    });
   }
 
   /** Apre il dettaglio del corso associato all'allievo selezionato. */

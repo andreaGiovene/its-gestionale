@@ -45,6 +45,12 @@ export class AziendeList implements OnInit {
   pageSize = 10;
   /** Direzione ordinamento per ragione sociale. */
   ragioneSocialeSortDirection: 'asc' | 'desc' = 'asc';
+  /** Stato dell'import Excel. */
+  isImporting = false;
+  /** Messaggio di successo dell'import Excel. */
+  importSuccess: string | null = null;
+  /** Messaggio di errore dell'import Excel. */
+  importError: string | null = null;
 
   /** Form reattiva per i filtri di ricerca lato server. */
   readonly searchForm = this.fb.group({
@@ -103,6 +109,42 @@ export class AziendeList implements OnInit {
         this.error = 'Errore nel caricamento delle aziende. Riprovare più tardi.';
         this.isLoading = false;
         this.isSearching = false;
+      },
+    });
+  }
+
+  /** Gestisce l'upload del file Excel per l'import aziende. */
+  importFromExcel(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.importSuccess = null;
+    this.importError = null;
+
+    if (!file.name.toLowerCase().endsWith('.xlsx')) {
+      this.importError = 'Carica un file .xlsx valido.';
+      input.value = '';
+      return;
+    }
+
+    this.isImporting = true;
+
+    this.aziendaService.importAziende(file).subscribe({
+      next: (message) => {
+        this.importSuccess = message || 'Import aziende completato con successo.';
+        this.isImporting = false;
+        input.value = '';
+        this.search(this.currentPage);
+      },
+      error: (err) => {
+        console.error('Errore durante l\'import delle aziende:', err);
+        this.importError = err?.error || 'Errore durante l\'import delle aziende.';
+        this.isImporting = false;
+        input.value = '';
       },
     });
   }

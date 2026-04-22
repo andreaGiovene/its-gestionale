@@ -36,6 +36,8 @@ export const routes: Routes = [
 
       // Allievi routes
       { path: 'allievi', component: AllieviList, data: { breadcrumb: 'Allievi' } },
+      { path: 'allievi/new', component: AllievoDetail, data: { breadcrumb: 'Nuovo Allievo' } },
+      { path: 'allievi/:id/edit', component: AllievoDetail, data: { breadcrumb: 'Modifica Allievo' } },
       { path: 'allievi/:id', component: AllievoDetail, data: { breadcrumb: 'Dettaglio Allievo' } },
 
       // Placeholder routes

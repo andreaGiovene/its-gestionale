@@ -2,8 +2,23 @@
   <div class="header">
     <div>
       <h1>Allievi</h1>
-      <p class="subtitle">Ricerca trasversale su tutti i corsi per nome, cognome o codice fiscale.</p>
+      <p class="subtitle">Gestisci gli allievi con ricerca, filtri e operazioni CRUD complete.</p>
     </div>
+    <div class="header-actions">
+      <input #allievoImportInput type="file" accept=".xlsx" hidden (change)="importFromExcel($event)" />
+      <button class="btn btn-secondary" type="button" [disabled]="isImporting" (click)="allievoImportInput.click()">
+        {{ isImporting ? 'Importazione...' : 'Importa Excel' }}
+      </button>
+      <button class="btn btn-primary" type="button" (click)="createNew()">Nuovo Allievo</button>
+    </div>
+  </div>
+
+  <div *ngIf="importSuccess" class="alert alert-success" role="status">
+    {{ importSuccess }}
+  </div>
+
+  <div *ngIf="importError" class="alert alert-danger" role="alert">
+    {{ importError }}
   </div>
 
   <div class="search-panel">
@@ -46,17 +61,10 @@
     <p class="search-hint">La ricerca si aggiorna automaticamente dopo 0,5 secondi.</p>
   </div>
 
-  <ng-container *ngIf="isInitialState">
-    <div class="state-card initial-state">
-      <h2>Inizia una ricerca</h2>
-      <p>Digita un nome, un cognome o un codice fiscale per cercare un allievo su tutti i corsi.</p>
-    </div>
-  </ng-container>
-
   <ng-container *ngIf="isLoading">
     <div class="state-card loading-state">
       <mat-progress-spinner diameter="36" mode="indeterminate"></mat-progress-spinner>
-      <p>Ricerca in corso...</p>
+      <p>Caricamento in corso...</p>
     </div>
   </ng-container>
 
@@ -66,7 +74,7 @@
     </div>
   </ng-container>
 
-  <ng-container *ngIf="!isInitialState && !isLoading && !error">
+  <ng-container *ngIf="!isLoading && !error">
     <ng-container *ngIf="allievi.length > 0; else emptyState">
       <div class="table-responsive">
         <table class="table table-hover allievi-table">
@@ -96,6 +104,7 @@
                 <mat-icon aria-hidden="true">{{ getSortIcon('corso') }}</mat-icon>
               </button>
             </th>
+            <th>Azioni</th>
           </tr>
         </thead>
         <tbody>
@@ -110,6 +119,11 @@
                 (click)="openCorso(allievo.corsoId, $event)">
                 {{ getCorsoLabel(allievo) || '-' }}
               </button>
+            </td>
+            <td class="actions-cell">
+              <button class="btn btn-sm btn-info" type="button" (click)="viewDetail(allievo.id); $event.stopPropagation()">Dettagli</button>
+              <button class="btn btn-sm btn-secondary" type="button" (click)="edit(allievo.id, $event)">Modifica</button>
+              <button class="btn btn-sm btn-danger" type="button" (click)="delete(allievo.id, $event)">Elimina</button>
             </td>
           </tr>
         </tbody>
