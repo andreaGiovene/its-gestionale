@@ -10,7 +10,7 @@ import com.its.gestionale.entity.Tirocinio;
 
 @Repository
 public interface TirocinioRepository extends JpaRepository<Tirocinio, Integer> {
-    List<Tirocinio> findByAllievoId(Integer allievoId);
-    List<Tirocinio> findByAziendaId(Integer aziendaId);
+    List<Tirocinio> findByAllievo_Id(Integer allievoId);
+    List<Tirocinio> findByAzienda_Id(Integer aziendaId);
     List<Tirocinio> findByDataInizioGreaterThanEqualAndDataFineLessThanEqual(LocalDate start, LocalDate end);
 }
