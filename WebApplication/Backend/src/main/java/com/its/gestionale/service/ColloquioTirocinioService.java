@@ -1,7 +1,6 @@
 package com.its.gestionale.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -42,60 +41,76 @@ public class ColloquioTirocinioService {
         this.aziendaRepository = aziendaRepository;
     }
 
-    /** Restituisce tutti i colloqui presenti a sistema. */
+    // 🔹 GET ALL
     @Transactional(readOnly = true)
     public List<ColloquioTirocinioDTO> findAll() {
-        return toDtoList(colloquioRepository.findAll());
+        return colloquioRepository.findAll()
+                .stream()
+                .map(ColloquioTirocinioDTO::fromEntity)
+                .toList();
     }
 
-    /** Recupera un colloquio per identificativo. */
+    // 🔹 GET BY ID
     @Transactional(readOnly = true)
     public ColloquioTirocinioDTO findById(Integer id) {
         ColloquioTirocinio colloquio = colloquioRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Colloquio con id " + id + " non trovato"));
-        return toDto(colloquio);
+
+        return ColloquioTirocinioDTO.fromEntity(colloquio);
     }
 
-    /** Restituisce i colloqui associati a uno specifico allievo. */
+    // 🔹 GET BY ALLIEVO
     @Transactional(readOnly = true)
     public List<ColloquioTirocinioDTO> findByAllievoId(Integer allievoId) {
-        return toDtoList(colloquioRepository.findByAllievoId(allievoId));
+
+        if (!allievoRepository.existsById(allievoId)) {
+            throw new AllievoNotFoundException(allievoId);
+        }
+
+        return colloquioRepository.findByAllievoId(allievoId)
+                .stream()
+                .map(ColloquioTirocinioDTO::fromEntity)
+                .toList();
     }
 
-    /** Restituisce i colloqui associati a una specifica azienda. */
+    // 🔹 GET BY AZIENDA
     @Transactional(readOnly = true)
     public List<ColloquioTirocinioDTO> findByAziendaId(Integer aziendaId) {
-        return toDtoList(colloquioRepository.findByAziendaId(aziendaId));
+
+        if (!aziendaRepository.existsById(aziendaId)) {
+            throw new AziendaNotFoundException(aziendaId);
+        }
+
+        return colloquioRepository.findByAziendaId(aziendaId)
+                .stream()
+                .map(ColloquioTirocinioDTO::fromEntity)
+                .toList();
     }
 
-    /**
-     * Ricerca colloqui in un intervallo di date inclusivo.
-     *
-     * @throws IllegalArgumentException se una delle date e nulla o se l'intervallo e invertito
-     */
+    // 🔹 GET BY PERIODO
     @Transactional(readOnly = true)
     public List<ColloquioTirocinioDTO> findByPeriodo(LocalDate start, LocalDate end) {
+
         if (start == null || end == null) {
-            throw new IllegalArgumentException("Le date di inizio/fine sono obbligatorie");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le date sono obbligatorie");
         }
 
         if (end.isBefore(start)) {
-            throw new IllegalArgumentException("La data fine non puo essere precedente alla data inizio");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Intervallo date non valido");
         }
 
-        return toDtoList(colloquioRepository.findByDataColloquioBetween(start, end));
+        return colloquioRepository.findByDataColloquioBetween(start, end)
+                .stream()
+                .map(ColloquioTirocinioDTO::fromEntity)
+                .toList();
     }
 
-    /**
-     * Crea un nuovo colloquio collegandolo ad allievo e azienda esistenti.
-     *
-     * <p>Se l'esito non viene valorizzato in input, viene applicato
-    * automaticamente {@link StatoEsitoColloquio#IN_ATTESA}.
-     */
+    // 🔹 CREATE
     @Transactional
     public ColloquioTirocinioDTO create(Integer allievoId, Integer aziendaId, ColloquioTirocinio request) {
+
         validateRichiesta(request);
 
         Allievo allievo = allievoRepository.findById(allievoId)
@@ -109,51 +124,61 @@ public class ColloquioTirocinioService {
         colloquio.setAzienda(azienda);
         colloquio.setDataColloquio(request.getDataColloquio());
         colloquio.setTipoEvento(request.getTipoEvento());
-        colloquio.setEsito(request.getEsito() != null ? request.getEsito() : StatoEsitoColloquio.IN_ATTESA);
+        colloquio.setEsito(
+                request.getEsito() != null
+                        ? request.getEsito()
+                        : StatoEsitoColloquio.IN_ATTESA
+        );
         colloquio.setNoteFeedback(request.getNoteFeedback());
 
         return toDto(colloquioRepository.save(colloquio));
     }
 
-    /**
-     * Aggiorna un colloquio esistente.
-     *
-     * <p>Le relazioni con allievo e azienda restano invariate in questa prima versione
-     * del service; l'update copre i campi gestionali del colloquio.
-     */
+    // 🔹 UPDATE
     @Transactional
     public ColloquioTirocinioDTO update(Integer id, ColloquioTirocinio request) {
+
         validateRichiesta(request);
 
         ColloquioTirocinio colloquio = colloquioRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
-                "Colloquio con id " + id + " non trovato"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Colloquio con id " + id + " non trovato"));
+
         colloquio.setDataColloquio(request.getDataColloquio());
         colloquio.setTipoEvento(request.getTipoEvento());
-        colloquio.setEsito(request.getEsito() != null ? request.getEsito() : StatoEsitoColloquio.IN_ATTESA);
+        colloquio.setEsito(
+                request.getEsito() != null
+                        ? request.getEsito()
+                        : StatoEsitoColloquio.IN_ATTESA
+        );
         colloquio.setNoteFeedback(request.getNoteFeedback());
 
         return toDto(colloquioRepository.save(colloquio));
     }
 
-    /** Elimina un colloquio se esistente. */
+    // 🔹 DELETE
     @Transactional
     public void deleteById(Integer id) {
+
         if (!colloquioRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colloquio con id " + id + " non trovato");
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Colloquio con id " + id + " non trovato");
         }
 
         colloquioRepository.deleteById(id);
     }
 
+    // 🔹 VALIDAZIONE
     private void validateRichiesta(ColloquioTirocinio request) {
+
         if (request == null) {
-            throw new IllegalArgumentException("Il payload colloquio e obbligatorio");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload obbligatorio");
         }
 
         if (request.getDataColloquio() == null) {
-            throw new IllegalArgumentException("La data colloquio e obbligatoria");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data colloquio obbligatoria");
         }
     }
 

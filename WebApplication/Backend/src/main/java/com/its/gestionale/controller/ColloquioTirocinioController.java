@@ -56,9 +56,21 @@ public class ColloquioTirocinioController {
      * GET /api/colloqui - Restituisce tutti i colloqui.
      */
     @GetMapping
-    public ResponseEntity<List<ColloquioTirocinioDTO>> findAll() {
+    public ResponseEntity<List<ColloquioTirocinioDTO>> getColloqui(
+            @RequestParam(required = false) Integer allievoId,
+            @RequestParam(required = false) Integer aziendaId) {
+
+        if (allievoId != null) {
+            return ResponseEntity.ok(colloquioService.findByAllievoId(allievoId));
+        }
+
+        if (aziendaId != null) {
+            return ResponseEntity.ok(colloquioService.findByAziendaId(aziendaId));
+        }
+
         return ResponseEntity.ok(colloquioService.findAll());
     }
+    
 
     /**
      * GET /api/colloqui/{id} - Recupera un colloquio per ID.
@@ -66,24 +78,6 @@ public class ColloquioTirocinioController {
     @GetMapping("/{id}")
     public ResponseEntity<ColloquioTirocinioDTO> findById(@PathVariable Integer id) {
         return ResponseEntity.ok(colloquioService.findById(id));
-    }
-
-    /**
-     * GET /api/colloqui?allievoId=X - Filtra colloqui per allievo.
-     */
-    @GetMapping(params = "allievoId")
-    public ResponseEntity<List<ColloquioTirocinioDTO>> findByAllievoId(
-            @RequestParam Integer allievoId) {
-        return ResponseEntity.ok(colloquioService.findByAllievoId(allievoId));
-    }
-
-    /**
-     * GET /api/colloqui?aziendaId=X - Filtra colloqui per azienda.
-     */
-    @GetMapping(params = "aziendaId")
-    public ResponseEntity<List<ColloquioTirocinioDTO>> findByAziendaId(
-            @RequestParam Integer aziendaId) {
-        return ResponseEntity.ok(colloquioService.findByAziendaId(aziendaId));
     }
 
     /**
