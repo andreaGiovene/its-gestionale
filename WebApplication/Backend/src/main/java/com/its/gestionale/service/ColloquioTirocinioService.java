@@ -187,13 +187,4 @@ public class ColloquioTirocinioService {
         return ColloquioTirocinioDTO.fromEntity(colloquio);
     }
 
-    private List<ColloquioTirocinioDTO> toDtoList(List<ColloquioTirocinio> colloqui) {
-        List<ColloquioTirocinioDTO> dtos = new ArrayList<>();
-
-        for (ColloquioTirocinio colloquio : colloqui) {
-            dtos.add(toDto(colloquio));
-        }
-
-        return dtos;
-    }
 }
