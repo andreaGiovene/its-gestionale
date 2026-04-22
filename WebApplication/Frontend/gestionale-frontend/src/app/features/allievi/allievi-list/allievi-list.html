@@ -1,65 +1,104 @@
-<!-- Lista tabellare degli allievi con stati di caricamento, errore e vuoto. -->
 <div class="allievi-container">
   <div class="header">
-    <h1>Allievi</h1>
-    <button class="btn btn-primary" (click)="createNew()">Nuovo Allievo</button>
+    <div>
+      <h1>Allievi</h1>
+      <p class="subtitle">Ricerca trasversale su tutti i corsi per nome, cognome o codice fiscale.</p>
+    </div>
   </div>
 
+  <div class="search-panel">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Cerca allievo</mat-label>
+      <input matInput [formControl]="searchControl" placeholder="Nome, cognome o codice fiscale" />
+      <button
+        *ngIf="searchControl.value"
+        matSuffix
+        mat-icon-button
+        type="button"
+        aria-label="Cancella ricerca"
+        (click)="clearSearch($event)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <p class="search-hint">La ricerca si aggiorna automaticamente dopo 300 ms.</p>
+  </div>
+
+  <ng-container *ngIf="isInitialState">
+    <div class="state-card initial-state">
+      <h2>Inizia una ricerca</h2>
+      <p>Digita un nome, un cognome o un codice fiscale per cercare un allievo su tutti i corsi.</p>
+    </div>
+  </ng-container>
+
   <ng-container *ngIf="isLoading">
-    <p class="loading">Caricamento in corso...</p>
+    <div class="state-card loading-state">
+      <mat-progress-spinner diameter="36" mode="indeterminate"></mat-progress-spinner>
+      <p>Ricerca in corso...</p>
+    </div>
   </ng-container>
 
   <ng-container *ngIf="error && !isLoading">
-    <div class="error-message alert alert-danger">
+    <div class="state-card error-message alert alert-danger">
       {{ error }}
     </div>
   </ng-container>
 
-  <ng-container *ngIf="!isLoading && !error">
+  <ng-container *ngIf="!isInitialState && !isLoading && !error">
     <ng-container *ngIf="allievi.length > 0; else emptyState">
-      <table class="table table-hover">
+      <div class="table-responsive">
+        <table class="table table-hover allievi-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Nome</th>
             <th>
-              <button type="button" mat-button class="sort-button" (click)="toggleCognomeSort()">
+              <button type="button" mat-button class="sort-button" (click)="toggleSort('nome')" [attr.aria-label]="getSortAriaLabel('nome')">
+                <span>Nome</span>
+                <mat-icon aria-hidden="true">{{ getSortIcon('nome') }}</mat-icon>
+              </button>
+            </th>
+            <th>
+              <button type="button" mat-button class="sort-button" (click)="toggleSort('cognome')" [attr.aria-label]="getSortAriaLabel('cognome')">
                 <span>Cognome</span>
-                <mat-icon aria-hidden="true">{{ cognomeSortDirection === 'asc' ? 'south' : 'north' }}</mat-icon>
+                <mat-icon aria-hidden="true">{{ getSortIcon('cognome') }}</mat-icon>
               </button>
             </th>
-            <th>Codice Fiscale</th>
             <th>
-              <button type="button" mat-button class="sort-button" (click)="toggleCorsoSort()">
-                <span>Corso</span>
-                <mat-icon aria-hidden="true">{{ corsoSortDirection === 'asc' ? 'south' : 'north' }}</mat-icon>
+              <button type="button" mat-button class="sort-button" (click)="toggleSort('codiceFiscale')" [attr.aria-label]="getSortAriaLabel('codiceFiscale')">
+                <span>Codice Fiscale</span>
+                <mat-icon aria-hidden="true">{{ getSortIcon('codiceFiscale') }}</mat-icon>
               </button>
             </th>
-            <th>Data Nascita</th>
-            <th>Azioni</th>
+            <th>
+              <button type="button" mat-button class="sort-button" (click)="toggleSort('corso')" [attr.aria-label]="getSortAriaLabel('corso')">
+                <span>Corso</span>
+                <mat-icon aria-hidden="true">{{ getSortIcon('corso') }}</mat-icon>
+              </button>
+            </th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let allievo of allievi" (click)="viewDetail(allievo.id)" class="cursor-pointer">
-            <td>{{ allievo.id }}</td>
             <td>{{ allievo.nome }}</td>
             <td>{{ allievo.cognome }}</td>
             <td>{{ allievo.codiceFiscale || '-' }}</td>
-            <td>{{ getCorsoLabel(allievo) || '-' }}</td>
-            <td>{{ allievo.dataDiNascita || '-' }}</td>
             <td>
-              <button class="btn btn-sm btn-info" (click)="viewDetail(allievo.id)">Dettagli</button>
-              <button class="btn btn-sm btn-danger" (click)="delete(allievo.id, $event)">Elimina</button>
+              <button
+                type="button"
+                class="link-button"
+                (click)="openCorso(allievo.corsoId, $event)">
+                {{ getCorsoLabel(allievo) || '-' }}
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
+      </div>
     </ng-container>
 
     <ng-template #emptyState>
-      <div class="empty-state">
-        <p>Nessun allievo disponibile.</p>
-        <button class="btn btn-primary" (click)="createNew()">Crea il primo allievo</button>
+      <div class="state-card empty-state">
+        <h2>Nessun allievo trovato</h2>
+        <p>Nessun risultato corrisponde alla ricerca corrente.</p>
       </div>
     </ng-template>
   </ng-container>
