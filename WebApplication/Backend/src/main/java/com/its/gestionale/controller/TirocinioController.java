@@ -13,8 +13,6 @@ import com.its.gestionale.dto.TirocinioDTO;
 import com.its.gestionale.entity.Tirocinio;
 import com.its.gestionale.service.TirocinioService;
 
-import jakarta.validation.Valid;
-
 @RestController
 @RequestMapping("/api/tirocini")
 @Validated
