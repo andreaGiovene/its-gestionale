@@ -21,6 +21,28 @@
       </button>
     </mat-form-field>
 
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="annoAccademicoFilter">Annualita</label>
+        <select id="annoAccademicoFilter" class="form-control" [formControl]="annoAccademicoControl" [disabled]="isFiltersLoading">
+          <option value="">Tutte le annualita</option>
+          <option *ngFor="let anno of annualitaDisponibili" [value]="anno">{{ anno }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="corsoFilter">Corso</label>
+        <select id="corsoFilter" class="form-control" [formControl]="corsoIdControl" [disabled]="isFiltersLoading">
+          <option [ngValue]="null">Tutti i corsi</option>
+          <option *ngFor="let corso of filteredCorsi" [ngValue]="corso.id">{{ getCorsoFilterLabel(corso) }}</option>
+        </select>
+      </div>
+
+      <div class="filters-actions" *ngIf="hasActiveFilters">
+        <button type="button" class="btn btn-outline-secondary" (click)="clearAllFilters($event)">Reset filtri</button>
+      </div>
+    </div>
+
     <p class="search-hint">La ricerca si aggiorna automaticamente dopo 300 ms.</p>
   </div>
 

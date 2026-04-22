@@ -24,6 +24,42 @@
     gap: 8px;
   }
 
+  .filters-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    align-items: end;
+  }
+
+  .filter-group {
+    display: grid;
+    gap: 6px;
+
+    label {
+      font-size: 13px;
+      color: #475467;
+      font-weight: 600;
+    }
+
+    .form-control {
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid #d0d5dd;
+      background: #fff;
+
+      &:focus {
+        border-color: #98a2b3;
+        box-shadow: 0 0 0 2px rgba(152, 162, 179, 0.2);
+      }
+    }
+  }
+
+  .filters-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
   .search-field {
     width: min(720px, 100%);
   }

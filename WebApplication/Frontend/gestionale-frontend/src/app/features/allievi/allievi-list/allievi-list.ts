@@ -8,8 +8,22 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AllievoService } from '@core/services/allievo.service';
-import { Allievo } from '@shared/models';
-import { catchError, debounceTime, distinctUntilChanged, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { CorsoService } from '@core/services/corso.service';
+import { Allievo, Corso } from '@shared/models';
+import {
+  catchError,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  forkJoin,
+  map,
+  of,
+  startWith,
+  Subject,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs';
 
 /**
  * Vista di ricerca trasversale degli allievi.
@@ -32,14 +46,23 @@ import { catchError, debounceTime, distinctUntilChanged, map, of, Subject, switc
 })
 export class AllieviList implements OnInit, OnDestroy {
   private readonly allievoService = inject(AllievoService);
+  private readonly corsoService = inject(CorsoService);
   private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
 
   /** Campo di ricerca reattivo per nome, cognome o codice fiscale. */
   readonly searchControl = new FormControl('', { nonNullable: true });
+  /** Filtro per annualita accademica. */
+  readonly annoAccademicoControl = new FormControl('', { nonNullable: true });
+  /** Filtro per corso specifico. */
+  readonly corsoIdControl = new FormControl<number | null>(null);
 
   /** Dati caricati dal backend e mostrati in tabella. */
   allievi: Allievo[] = [];
+  /** Corsi disponibili per i filtri. */
+  corsi: Corso[] = [];
+  /** Flag di caricamento filtri corso/annualita. */
+  isFiltersLoading = true;
   /** Stato di caricamento della ricerca corrente. */
   isLoading = true;
   /** Messaggio di errore visibile all'utente in caso di fallimento della richiesta. */
@@ -53,6 +76,8 @@ export class AllieviList implements OnInit, OnDestroy {
 
   /** Avvia il listener reattivo della ricerca all'apertura della pagina. */
   ngOnInit(): void {
+    this.loadCorsi();
+    this.setupAnnoFilterSync();
     this.setupSearchStream();
     this.setInitialState();
   }
@@ -71,17 +96,81 @@ export class AllieviList implements OnInit, OnDestroy {
     this.isInitialState = true;
   }
 
+  /** Carica i corsi per popolare i filtri di annualita e corso. */
+  private loadCorsi(): void {
+    this.isFiltersLoading = true;
+
+    this.corsoService.findAll()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.corsi = [...data].sort((first, second) => {
+            const annoComparison = (first.annoAccademico || '').localeCompare(second.annoAccademico || '', 'it', {
+              sensitivity: 'base',
+            });
+
+            if (annoComparison !== 0) {
+              return annoComparison;
+            }
+
+            return (first.nome || '').localeCompare(second.nome || '', 'it', {
+              sensitivity: 'base',
+            });
+          });
+          this.isFiltersLoading = false;
+        },
+        error: (err) => {
+          console.error('Errore nel caricamento corsi per i filtri:', err);
+          this.error = 'Errore nel caricamento dei filtri corso. Riprovare più tardi.';
+          this.isFiltersLoading = false;
+        },
+      });
+  }
+
+  /** Mantiene coerente il filtro corso quando cambia l'annualita selezionata. */
+  private setupAnnoFilterSync(): void {
+    this.annoAccademicoControl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((annoAccademico) => {
+        const selectedCorsoId = this.corsoIdControl.value;
+        if (!selectedCorsoId || !annoAccademico) {
+          return;
+        }
+
+        const isCorsoCompatible = this.filteredCorsi.some((corso) => corso.id === selectedCorsoId);
+        if (!isCorsoCompatible) {
+          this.corsoIdControl.setValue(null);
+        }
+      });
+  }
+
   /** Ascolta il campo di ricerca e lancia le query in modo reattivo con debounce. */
   private setupSearchStream(): void {
-    this.searchControl.valueChanges
+    const search$ = this.searchControl.valueChanges.pipe(
+      startWith(this.searchControl.value),
+      map((value) => value.trim()),
+      debounceTime(300),
+      distinctUntilChanged(),
+    );
+
+    const annoAccademico$ = this.annoAccademicoControl.valueChanges.pipe(
+      startWith(this.annoAccademicoControl.value),
+      distinctUntilChanged(),
+    );
+
+    const corsoId$ = this.corsoIdControl.valueChanges.pipe(
+      startWith(this.corsoIdControl.value),
+      distinctUntilChanged(),
+    );
+
+    combineLatest([search$, annoAccademico$, corsoId$])
       .pipe(
-        map((value) => value.trim()),
-        debounceTime(300),
-        distinctUntilChanged(),
-        tap((searchTerm) => {
+        tap(([searchTerm, annoAccademico, corsoId]) => {
           this.error = null;
 
-          if (!searchTerm) {
+          const hasAnyFilter = Boolean(searchTerm) || Boolean(annoAccademico) || Boolean(corsoId);
+
+          if (!hasAnyFilter) {
             this.setInitialState();
             return;
           }
@@ -90,12 +179,36 @@ export class AllieviList implements OnInit, OnDestroy {
           this.isLoading = true;
           this.allievi = [];
         }),
-        switchMap((searchTerm) => {
-          if (!searchTerm) {
+        switchMap(([searchTerm, annoAccademico, corsoId]) => {
+          const hasAnyFilter = Boolean(searchTerm) || Boolean(annoAccademico) || Boolean(corsoId);
+
+          if (!hasAnyFilter) {
             return of([] as Allievo[]);
           }
 
+          if (corsoId && !searchTerm) {
+            return this.allievoService.findByCorso(corsoId).pipe(
+              map((allievi) => this.applyClientFilters(allievi, annoAccademico, corsoId)),
+              catchError((err) => {
+                console.error('Errore nella ricerca per corso:', err);
+                this.error = 'Errore nella ricerca degli allievi. Riprovare più tardi.';
+                return of([] as Allievo[]);
+              }),
+            );
+          }
+
+          if (!searchTerm && annoAccademico) {
+            return this.searchByAnnoAccademico(annoAccademico).pipe(
+              catchError((err) => {
+                console.error('Errore nella ricerca per annualita:', err);
+                this.error = 'Errore nella ricerca degli allievi. Riprovare più tardi.';
+                return of([] as Allievo[]);
+              }),
+            );
+          }
+
           return this.allievoService.search(searchTerm).pipe(
+            map((allievi) => this.applyClientFilters(allievi, annoAccademico, corsoId)),
             catchError((err) => {
               console.error('Errore nella ricerca allievi:', err);
               this.error = 'Errore nella ricerca degli allievi. Riprovare più tardi.';
@@ -114,6 +227,43 @@ export class AllieviList implements OnInit, OnDestroy {
         this.allievi = this.sortAllievi(data);
         this.isLoading = false;
       });
+  }
+
+  /** Applica i filtri client-side su annualita e corso ai risultati ricevuti dal backend. */
+  private applyClientFilters(
+    allievi: Allievo[],
+    annoAccademico: string,
+    corsoId: number | null,
+  ): Allievo[] {
+    return allievi.filter((allievo) => {
+      const matchesAnno = !annoAccademico || allievo.corsoAnnoAccademico === annoAccademico;
+      const matchesCorso = !corsoId || allievo.corsoId === corsoId;
+      return matchesAnno && matchesCorso;
+    });
+  }
+
+  /** Ricerca allievi per sola annualita interrogando i corsi dell'anno selezionato. */
+  private searchByAnnoAccademico(annoAccademico: string) {
+    const courseIds = this.corsi
+      .filter((corso) => corso.annoAccademico === annoAccademico)
+      .map((corso) => corso.id);
+
+    if (courseIds.length === 0) {
+      return of([] as Allievo[]);
+    }
+
+    return forkJoin(courseIds.map((id) => this.allievoService.findByCorso(id))).pipe(
+      map((responses) => {
+        const uniqueById = new Map<number, Allievo>();
+
+        responses.flat().forEach((allievo) => {
+          uniqueById.set(allievo.id, allievo);
+        });
+
+        return Array.from(uniqueById.values());
+      }),
+      map((allievi) => this.applyClientFilters(allievi, annoAccademico, null)),
+    );
   }
 
   /** Apre la pagina di dettaglio dell'allievo selezionato. */
@@ -136,6 +286,43 @@ export class AllieviList implements OnInit, OnDestroy {
   clearSearch(event: Event): void {
     event.stopPropagation();
     this.searchControl.setValue('');
+  }
+
+  /** Svuota tutti i filtri e riporta la vista allo stato iniziale. */
+  clearAllFilters(event: Event): void {
+    event.stopPropagation();
+    this.searchControl.setValue('');
+    this.annoAccademicoControl.setValue('');
+    this.corsoIdControl.setValue(null);
+  }
+
+  /** Restituisce true quando e' presente almeno un filtro valorizzato. */
+  get hasActiveFilters(): boolean {
+    return Boolean(this.searchControl.value.trim())
+      || Boolean(this.annoAccademicoControl.value)
+      || Boolean(this.corsoIdControl.value);
+  }
+
+  /** Elenco annualita disponibili, ordinate in modo decrescente. */
+  get annualitaDisponibili(): string[] {
+    return [...new Set(this.corsi.map((corso) => corso.annoAccademico).filter(Boolean))]
+      .sort((first, second) => second.localeCompare(first, 'it', { sensitivity: 'base' }));
+  }
+
+  /** Corsi disponibili in base all'annualita selezionata. */
+  get filteredCorsi(): Corso[] {
+    const annoAccademico = this.annoAccademicoControl.value;
+
+    if (!annoAccademico) {
+      return this.corsi;
+    }
+
+    return this.corsi.filter((corso) => corso.annoAccademico === annoAccademico);
+  }
+
+  /** Etichetta leggibile per il filtro corso. */
+  getCorsoFilterLabel(corso: Corso): string {
+    return `${corso.nome} - ${corso.annoAccademico}`;
   }
 
   /** Alterna l'ordinamento locale sulla colonna richiesta. */
