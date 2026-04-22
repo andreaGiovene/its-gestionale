@@ -12,6 +12,8 @@ import com.its.gestionale.entity.Allievo;
 @Repository
 public interface AllievoRepository extends JpaRepository<Allievo, Integer> {
 
+    // Query custom con fetch join per caricare il Corso insieme agli Allievi.
+    // Evita il problema N+1 quando il service converte ogni entity in DTO.
     @Query("""
         select distinct a
         from Allievo a
@@ -19,6 +21,9 @@ public interface AllievoRepository extends JpaRepository<Allievo, Integer> {
         """)
     List<Allievo> findAllWithCorso();
 
+    // Query custom di ricerca testuale trasversale.
+    // Usa LIKE con concat('%', :search, '%') per il match "contiene"
+    // e lower(...) per rendere il confronto case-insensitive.
     @Query("""
         select distinct a
         from Allievo a

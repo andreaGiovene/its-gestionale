@@ -28,7 +28,8 @@ public class AllievoController {
      * GET /api/allievi
      *
      * Restituisce tutti gli allievi.
-     * Se viene passato il parametro search, filtra per nome, cognome o codice fiscale.
+        * Se viene passato il parametro search, applica la ricerca trasversale
+        * per nome, cognome o codice fiscale.
      * Se viene passato il parametro stageAssegnato=false,
      * restituisce solo gli allievi senza tirocinio.
      *
@@ -42,7 +43,8 @@ public class AllievoController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean stageAssegnato) {
 
-        // Se viene fornita una stringa di ricerca, applica il filtro trasversale.
+        // La ricerca testuale ha priorita' sul fallback: una stringa valorizzata
+        // innesca la query custom, mentre il resto delle richieste segue i filtri esistenti.
         if (search != null && !search.isBlank()) {
             return ResponseEntity.ok(allievoService.search(search));
         }
