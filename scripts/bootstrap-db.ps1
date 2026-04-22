@@ -118,6 +118,7 @@ $migrationOrder = @(
     '2026-04-14-add-azienda-madrina-to-corso.sql',
     '2026-04-14-add-citta-to-azienda.sql',
     '2026-04-14-add-tipo-to-azienda.sql',
+    '2026-04-14-align-tipo-azienda-with-corsi-madrini.sql',
     '2026-04-14-delete-aziende-fittizie.sql',
     '2026-04-14-seed-aziende-madrine-2025-2027.sql',
     '2026-04-14-finalize-azienda-tipo-native-pg-enum.sql',
@@ -125,7 +126,8 @@ $migrationOrder = @(
     '2026-04-14-finalize-azienda-tipo-enum-contract.sql',
     '2026-04-15-restore-original-ruolo-contatto-enum.sql',
     '2026-04-15-deduplicate-allievi-unique-cf.sql',
-    '2026-04-17-add-id-utente-to-contatto-aziendale.sql'
+    '2026-04-17-add-id-utente-to-contatto-aziendale.sql',
+    '2026-04-21-split-stato-esito-colloquio-tirocinio.sql'
 )
 
 Write-Step "Applico migration SQL in ordine"

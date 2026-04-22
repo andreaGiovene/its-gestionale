@@ -1,12 +1,3 @@
--- Normalizza i valori di public.azienda.tipo al dominio binario:
--- MADRINA | NON_MADRINA
---
--- Regola:
--- - MADRINA: azienda associata ad almeno un corso tramite corso.id_azienda_madrina
--- - NON_MADRINA: azienda non associata a corsi madrini
---
--- Script idempotente e rieseguibile.
-
 DO $$
 BEGIN
     IF EXISTS (

@@ -39,11 +39,17 @@ Il repository centralizza:
 
 ### 1. Database
 
-```bash
-docker compose up -d
+```powershell
+./scripts/bootstrap-db.ps1
 ```
 
-Al primo avvio viene importato automaticamente `Database/dump.sql`.
+Il bootstrap applica in ordine:
+- dump iniziale (`Database/dump-its.sql`)
+- migration SQL (`Database/migrations/*.sql`)
+
+Nota operativa:
+- `docker compose up -d` avvia solo il container; con volume gia esistente non riallinea automaticamente lo schema.
+- Se devi forzare un reset completo del DB locale: `./scripts/bootstrap-db.ps1 -ResetVolume`.
 
 ### 2. Backend
 
