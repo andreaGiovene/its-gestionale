@@ -149,7 +149,7 @@ export class AllieviList implements OnInit, OnDestroy {
     const search$ = this.searchControl.valueChanges.pipe(
       startWith(this.searchControl.value),
       map((value) => value.trim()),
-      debounceTime(300),
+      debounceTime(500),
       distinctUntilChanged(),
     );
 
