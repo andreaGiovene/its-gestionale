@@ -28,16 +28,24 @@ public class AllievoController {
      * GET /api/allievi
      *
      * Restituisce tutti gli allievi.
+     * Se viene passato il parametro search, filtra per nome, cognome o codice fiscale.
      * Se viene passato il parametro stageAssegnato=false,
      * restituisce solo gli allievi senza tirocinio.
      *
      * Esempi:
      * - /api/allievi → tutti
+     * - /api/allievi?search=mario → ricerca testuale
      * - /api/allievi?stageAssegnato=false → solo senza stage
      */
     @GetMapping
     public ResponseEntity<List<AllievoDTO>> findAll(
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean stageAssegnato) {
+
+        // Se viene fornita una stringa di ricerca, applica il filtro trasversale.
+        if (search != null && !search.isBlank()) {
+            return ResponseEntity.ok(allievoService.search(search));
+        }
 
         // Se viene richiesto esplicitamente stageAssegnato=false
         if (stageAssegnato != null && !stageAssegnato) {
