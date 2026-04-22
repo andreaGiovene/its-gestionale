@@ -1,5 +1,9 @@
 package com.its.gestionale.controller;
 
+import java.util.List;
+import com.its.gestionale.entity.EmailLog;
+import com.its.gestionale.repository.EmailLogRepository;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +15,12 @@ import com.its.gestionale.service.EmailService;
 public class EmailController {
 
     private final EmailService emailService;
+    private final EmailLogRepository emailLogRepository;
 
-    public EmailController(EmailService emailService) {
+    public EmailController(EmailService emailService,
+                       EmailLogRepository emailLogRepository) {
         this.emailService = emailService;
+        this.emailLogRepository = emailLogRepository;
     }
 
     /**
@@ -45,5 +52,12 @@ public class EmailController {
         );
 
         return ResponseEntity.ok("Email inviata con successo");
+    }
+    /**
+ * Restituisce lo storico delle email inviate.
+ */
+    @GetMapping("/storico")
+    public ResponseEntity<List<EmailLog>> getStorico() {
+        return ResponseEntity.ok(emailLogRepository.findAll());
     }
 }
