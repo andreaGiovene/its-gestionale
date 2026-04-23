@@ -4,6 +4,9 @@
     <button class="btn btn-outline-secondary" (click)="back()">← Torna alla lista</button>
     <h1 *ngIf="azienda">{{ azienda.ragioneSociale }}</h1>
     <div class="actions">
+      <button class="btn btn-outline-primary" (click)="goToColloquiAzienda()" [disabled]="isLoading || !azienda">
+        Colloqui azienda
+      </button>
       <button class="btn btn-primary" (click)="edit()" [disabled]="isLoading">Modifica</button>
     </div>
   </div>

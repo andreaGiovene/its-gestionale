@@ -3,8 +3,12 @@
   <div class="header">
     <button class="btn btn-outline-secondary" (click)="cancel()">← Indietro</button>
     <h1>{{ isNew ? 'Nuovo Allievo' : (isEditMode ? 'Modifica Allievo' : 'Dettagli Allievo') }}</h1>
-    <button *ngIf="isReadOnly" type="button" class="btn btn-primary" (click)="goToEdit()">Modifica</button>
-    <span *ngIf="!isReadOnly"></span>
+    <div class="actions">
+      <button *ngIf="allievo?.id" type="button" class="btn btn-outline-primary" (click)="goToColloquiStorico()">
+        Storico colloqui
+      </button>
+      <button *ngIf="isReadOnly" type="button" class="btn btn-primary" (click)="goToEdit()">Modifica</button>
+    </div>
   </div>
 
   <ng-container *ngIf="isLoading">

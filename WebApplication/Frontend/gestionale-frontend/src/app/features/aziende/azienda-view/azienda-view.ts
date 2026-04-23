@@ -108,6 +108,14 @@ export class AziendaView implements OnInit, OnDestroy {
     this.router.navigate(['/aziende', this.azienda!.id, 'edit']);
   }
 
+  goToColloquiAzienda(): void {
+    if (!this.azienda?.id) {
+      return;
+    }
+
+    this.router.navigate(['/colloqui/azienda', this.azienda.id]);
+  }
+
   /** Naviga verso la lista aziende. */
   back(): void {
     this.router.navigate(['/aziende']);

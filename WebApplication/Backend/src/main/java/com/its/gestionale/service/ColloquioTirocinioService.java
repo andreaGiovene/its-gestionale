@@ -145,7 +145,7 @@ public class ColloquioTirocinioService {
         colloquio.setTipoEvento(
             request.getTipoEvento() != null
                 ? request.getTipoEvento()
-                : TipoEventoColloquio.MATCHING_DAY
+                : TipoEventoColloquio.FUORI_MATCHING_DAY
         );
         colloquio.setEsito(
                 request.getEsito() != null
@@ -172,7 +172,7 @@ public class ColloquioTirocinioService {
         colloquio.setTipoEvento(
             request.getTipoEvento() != null
                 ? request.getTipoEvento()
-                : TipoEventoColloquio.MATCHING_DAY
+                : TipoEventoColloquio.FUORI_MATCHING_DAY
         );
         colloquio.setEsito(
                 request.getEsito() != null

@@ -1,0 +1,46 @@
+<div class="page">
+  <header class="header">
+    <button type="button" class="btn-secondary" (click)="goBack()">← Torna alle aziende</button>
+    <div>
+      <h1>Colloqui per Azienda</h1>
+      <p *ngIf="azienda; else loadingTitle">
+        {{ azienda.ragioneSociale }}
+      </p>
+      <ng-template #loadingTitle>
+        <p>Caricamento dati azienda...</p>
+      </ng-template>
+    </div>
+  </header>
+
+  <div *ngIf="isLoading" class="state">Caricamento colloqui azienda...</div>
+  <div *ngIf="error && !isLoading" class="state error">{{ error }}</div>
+
+  <section *ngIf="!isLoading && !error">
+    <p class="summary">Totale colloqui: {{ colloqui.length }}</p>
+
+    <p *ngIf="colloqui.length === 0" class="empty">Nessun colloquio registrato per questa azienda.</p>
+
+    <div *ngIf="colloqui.length > 0" class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Allievo</th>
+            <th>Tipo evento</th>
+            <th>Esito</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let colloquio of sortedColloqui; trackBy: trackByColloquioId">
+            <td>{{ colloquio.dataColloquio }}</td>
+            <td>{{ colloquio.allievoNome }} {{ colloquio.allievano }}</td>
+            <td>{{ getTipoEventoLabel(colloquio.tipoEvento) }}</td>
+            <td>{{ getEsitoLabel(colloquio.esito) }}</td>
+            <td>{{ colloquio.noteFeedback || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

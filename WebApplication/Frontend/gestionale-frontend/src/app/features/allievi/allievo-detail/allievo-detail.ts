@@ -214,4 +214,12 @@ export class AllievoDetail implements OnInit, OnDestroy {
 
     this.router.navigate(['/allievi', this.allievo.id, 'edit']);
   }
+
+  goToColloquiStorico(): void {
+    if (!this.allievo?.id) {
+      return;
+    }
+
+    this.router.navigate(['/colloqui/allievo', this.allievo.id]);
+  }
 }
