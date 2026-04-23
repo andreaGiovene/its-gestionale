@@ -1,0 +1,170 @@
+<section class="tirocini-page">
+  <header class="hero-card">
+    <div>
+      <p class="eyebrow">Gestione tirocinio</p>
+      <h1>Tirocini</h1>
+      <p class="intro">
+        Registra e aggiorna i tirocini con i dati anagrafici del percorso, il tipo, lo stato e il riferimento al contratto/frequenza.
+      </p>
+    </div>
+    <div class="hero-actions">
+      <button type="button" class="ghost-button" (click)="resetFilters()">Reset filtri</button>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>{{ isEditing ? 'Modifica tirocinio' : 'Nuovo tirocinio' }}</h2>
+      <span class="badge">gestione tirocini</span>
+    </div>
+
+    <form class="form-grid" [formGroup]="form" (ngSubmit)="saveTirocinio()">
+      <label>
+        Allievo *
+        <select formControlName="allievoId">
+          <option [ngValue]="null">Seleziona allievo</option>
+          <option *ngFor="let allievo of allievi" [ngValue]="allievo.id">
+            {{ getAllievoLabel(allievo) }}
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Azienda *
+        <select formControlName="aziendaId">
+          <option [ngValue]="null">Seleziona azienda</option>
+          <option *ngFor="let azienda of aziende" [ngValue]="azienda.id">
+            {{ azienda.ragioneSociale }}
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Data inizio *
+        <input type="date" formControlName="dataInizio" />
+      </label>
+
+      <label>
+        Data fine
+        <input type="date" formControlName="dataFine" />
+      </label>
+
+      <label>
+        Tipo
+        <input type="text" formControlName="tipo" maxlength="50" placeholder="Stage, apprendistato..." />
+      </label>
+
+      <label>
+        Contratto / frequenza
+        <input type="text" formControlName="frequenza" maxlength="50" placeholder="Es. full time, part time" />
+      </label>
+
+      <label class="full-width">
+        Stato *
+        <select formControlName="esito">
+          <option *ngFor="let option of statoOptions" [ngValue]="option.value">{{ option.label }}</option>
+        </select>
+      </label>
+
+      <div class="actions full-width">
+        <button type="button" class="secondary-button" *ngIf="isEditing" (click)="cancelEdit()">
+          Annulla
+        </button>
+        <button type="submit" class="primary-button" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Salvataggio...' : (isEditing ? 'Aggiorna tirocinio' : 'Registra tirocinio') }}
+        </button>
+      </div>
+    </form>
+
+    <div class="feedback feedback-success" *ngIf="successMessage">{{ successMessage }}</div>
+    <div class="feedback feedback-error" *ngIf="error">{{ error }}</div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Filtri elenco</h2>
+        <p class="subtle">Il backend supporta il filtro combinato per allievo e azienda, oltre all'intervallo date.</p>
+      </div>
+      <button type="button" class="ghost-button" (click)="applyFilters()">Applica</button>
+    </div>
+
+    <form class="filters-grid" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+      <label>
+        Allievo
+        <select formControlName="allievoId">
+          <option [ngValue]="null">Tutti</option>
+          <option *ngFor="let allievo of allievi" [ngValue]="allievo.id">
+            {{ getAllievoLabel(allievo) }}
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Azienda
+        <select formControlName="aziendaId">
+          <option [ngValue]="null">Tutte</option>
+          <option *ngFor="let azienda of aziende" [ngValue]="azienda.id">
+            {{ azienda.ragioneSociale }}
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Dal
+        <input type="date" formControlName="start" />
+      </label>
+
+      <label>
+        Al
+        <input type="date" formControlName="end" />
+      </label>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Elenco tirocini</h2>
+      <span class="badge">{{ tirocini.length }} record</span>
+    </div>
+
+    <div class="feedback feedback-error" *ngIf="listError">{{ listError }}</div>
+    <div class="feedback feedback-neutral" *ngIf="isLoadingList">Caricamento elenco in corso...</div>
+
+    <div class="table-wrapper" *ngIf="!isLoadingList">
+      <table class="data-table" *ngIf="tirocini.length > 0; else emptyState">
+        <thead>
+          <tr>
+            <th>Allievo</th>
+            <th>Azienda</th>
+            <th>Inizio</th>
+            <th>Fine</th>
+            <th>Tipo</th>
+            <th>Contratto</th>
+            <th>Stato</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tirocinio of tirocini; trackBy: trackByTirocinioId">
+            <td>{{ getTirocinioAllievo(tirocinio) }}</td>
+            <td>{{ getTirocinioAzienda(tirocinio) }}</td>
+            <td>{{ tirocinio.dataInizio }}</td>
+            <td>{{ tirocinio.dataFine || '-' }}</td>
+            <td>{{ tirocinio.tipo || '-' }}</td>
+            <td>{{ tirocinio.frequenza || '-' }}</td>
+            <td>{{ getStatoLabel(tirocinio.esito) }}</td>
+            <td class="row-actions">
+              <button type="button" class="text-button" (click)="startEdit(tirocinio)">Modifica</button>
+              <button type="button" class="text-button danger" (click)="deleteTirocinio(tirocinio)">Elimina</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #emptyState>
+      <p class="empty-state">Nessun tirocinio trovato con i filtri correnti.</p>
+    </ng-template>
+  </section>
+</section>

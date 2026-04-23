@@ -149,9 +149,12 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
 
         String message = "Formato JSON non valido";
+        String rawMessage = ex.getMessage();
 
-        if (ex.getMessage() != null && ex.getMessage().contains("RuoloContatto")) {
+        if (rawMessage != null && rawMessage.contains("RuoloContatto")) {
             message = "Valore non valido per il campo 'ruolo'";
+        } else if (rawMessage != null && rawMessage.contains("StatoTirocinio")) {
+            message = "Valore non valido per il campo 'esito'. Valori ammessi: IN_CORSO, CONCLUSO, INTERROTTO";
         }
 
         return buildError(

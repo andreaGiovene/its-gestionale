@@ -12,7 +12,7 @@ import { AllievoDetail } from './features/allievi/allievo-detail/allievo-detail'
 import { Colloqui } from './features/colloqui/colloqui/colloqui';
 import { ColloquiStoricoAllievo } from './features/colloqui/colloqui-storico-allievo/colloqui-storico-allievo';
 import { ColloquiPerAzienda } from './features/colloqui/colloqui-per-azienda/colloqui-per-azienda';
-import { TirociniPlaceholder } from './features/tirocini/tirocini-placeholder/tirocini-placeholder';
+import { Tirocini } from './features/tirocini/tirocini/tirocini';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -46,7 +46,7 @@ export const routes: Routes = [
       { path: 'colloqui', component: Colloqui, data: { breadcrumb: 'Colloqui' } },
       { path: 'colloqui/allievo/:id', component: ColloquiStoricoAllievo, data: { breadcrumb: 'Storico Colloqui Allievo' } },
       { path: 'colloqui/azienda/:id', component: ColloquiPerAzienda, data: { breadcrumb: 'Colloqui Azienda' } },
-      { path: 'tirocini', component: TirociniPlaceholder, data: { breadcrumb: 'Tirocini' } },
+      { path: 'tirocini', component: Tirocini, data: { breadcrumb: 'Tirocini' } },
     ]
   },
   { path: '**', redirectTo: '' }
