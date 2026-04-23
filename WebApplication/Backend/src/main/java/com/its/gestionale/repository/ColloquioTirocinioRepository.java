@@ -12,6 +12,7 @@ import java.util.List;
 public interface ColloquioTirocinioRepository extends JpaRepository<ColloquioTirocinio, Integer> {
     List<ColloquioTirocinio> findByAllievoId(Integer allievoId);
     List<ColloquioTirocinio> findByAziendaId(Integer aziendaId);
+    List<ColloquioTirocinio> findByAllievoIdAndAziendaId(Integer allievoId, Integer aziendaId);
     List<ColloquioTirocinio> findByDataColloquioBetween(LocalDate start, LocalDate end);
     List<ColloquioTirocinio> findByEsito(StatoEsitoColloquio esito);
     long countByAllievoIdAndEsito(Integer allievoId, StatoEsitoColloquio esito);

@@ -9,7 +9,7 @@ import { AziendaDetail } from './features/aziende/azienda-detail/azienda-detail'
 import { AziendaView } from './features/aziende/azienda-view/azienda-view';
 import { AllieviList } from './features/allievi/allievi-list/allievi-list';
 import { AllievoDetail } from './features/allievi/allievo-detail/allievo-detail';
-import { ColloquiPlaceholder } from './features/colloqui/colloqui-placeholder/colloqui-placeholder';
+import { Colloqui } from './features/colloqui/colloqui/colloqui';
 import { TirociniPlaceholder } from './features/tirocini/tirocini-placeholder/tirocini-placeholder';
 import { authGuard } from './core/guards/auth.guard';
 
@@ -41,7 +41,7 @@ export const routes: Routes = [
       { path: 'allievi/:id', component: AllievoDetail, data: { breadcrumb: 'Dettaglio Allievo' } },
 
       // Placeholder routes
-      { path: 'colloqui', component: ColloquiPlaceholder, data: { breadcrumb: 'Colloqui' } },
+      { path: 'colloqui', component: Colloqui, data: { breadcrumb: 'Colloqui' } },
       { path: 'tirocini', component: TirociniPlaceholder, data: { breadcrumb: 'Tirocini' } },
     ]
   },

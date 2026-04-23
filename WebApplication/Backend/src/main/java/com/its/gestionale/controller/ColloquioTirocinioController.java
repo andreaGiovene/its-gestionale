@@ -33,6 +33,7 @@ import jakarta.validation.Valid;
  * - GET /api/colloqui/{id} - dettaglio singolo
  * - GET /api/colloqui?allievoId=X - colloqui di un allievo
  * - GET /api/colloqui?aziendaId=X - colloqui con un'azienda
+ * - GET /api/colloqui?allievoId=X&aziendaId=Y - colloqui di un allievo presso un'azienda
  * - GET /api/colloqui?start=YYYY-MM-DD&end=YYYY-MM-DD - colloqui in un periodo
  * - POST /api/colloqui?allievoId=X&aziendaId=Y - creazione
  * - PUT /api/colloqui/{id} - aggiornamento
@@ -59,6 +60,10 @@ public class ColloquioTirocinioController {
     public ResponseEntity<List<ColloquioTirocinioDTO>> getColloqui(
             @RequestParam(required = false) Integer allievoId,
             @RequestParam(required = false) Integer aziendaId) {
+
+        if (allievoId != null && aziendaId != null) {
+            return ResponseEntity.ok(colloquioService.findByAllievoIdAndAziendaId(allievoId, aziendaId));
+        }
 
         if (allievoId != null) {
             return ResponseEntity.ok(colloquioService.findByAllievoId(allievoId));

@@ -13,6 +13,7 @@ import com.its.gestionale.entity.Allievo;
 import com.its.gestionale.entity.Azienda;
 import com.its.gestionale.entity.ColloquioTirocinio;
 import com.its.gestionale.entity.enums.StatoEsitoColloquio;
+import com.its.gestionale.entity.enums.TipoEventoColloquio;
 import com.its.gestionale.exception.AllievoNotFoundException;
 import com.its.gestionale.exception.AziendaNotFoundException;
 import com.its.gestionale.repository.AllievoRepository;
@@ -89,6 +90,24 @@ public class ColloquioTirocinioService {
                 .toList();
     }
 
+    // 🔹 GET BY ALLIEVO + AZIENDA
+    @Transactional(readOnly = true)
+    public List<ColloquioTirocinioDTO> findByAllievoIdAndAziendaId(Integer allievoId, Integer aziendaId) {
+
+        if (!allievoRepository.existsById(allievoId)) {
+            throw new AllievoNotFoundException(allievoId);
+        }
+
+        if (!aziendaRepository.existsById(aziendaId)) {
+            throw new AziendaNotFoundException(aziendaId);
+        }
+
+        return colloquioRepository.findByAllievoIdAndAziendaId(allievoId, aziendaId)
+                .stream()
+                .map(ColloquioTirocinioDTO::fromEntity)
+                .toList();
+    }
+
     // 🔹 GET BY PERIODO
     @Transactional(readOnly = true)
     public List<ColloquioTirocinioDTO> findByPeriodo(LocalDate start, LocalDate end) {
@@ -123,7 +142,11 @@ public class ColloquioTirocinioService {
         colloquio.setAllievo(allievo);
         colloquio.setAzienda(azienda);
         colloquio.setDataColloquio(request.getDataColloquio());
-        colloquio.setTipoEvento(request.getTipoEvento());
+        colloquio.setTipoEvento(
+            request.getTipoEvento() != null
+                ? request.getTipoEvento()
+                : TipoEventoColloquio.MATCHING_DAY
+        );
         colloquio.setEsito(
                 request.getEsito() != null
                         ? request.getEsito()
@@ -146,7 +169,11 @@ public class ColloquioTirocinioService {
                         "Colloquio con id " + id + " non trovato"));
 
         colloquio.setDataColloquio(request.getDataColloquio());
-        colloquio.setTipoEvento(request.getTipoEvento());
+        colloquio.setTipoEvento(
+            request.getTipoEvento() != null
+                ? request.getTipoEvento()
+                : TipoEventoColloquio.MATCHING_DAY
+        );
         colloquio.setEsito(
                 request.getEsito() != null
                         ? request.getEsito()

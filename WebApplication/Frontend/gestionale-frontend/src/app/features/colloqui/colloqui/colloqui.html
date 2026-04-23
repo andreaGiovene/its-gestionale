@@ -1,0 +1,160 @@
+<div class="colloqui-page">
+  <header class="header">
+    <h1>Registrazione Colloquio</h1>
+    <p>Inserisci un nuovo colloquio selezionando azienda, esito e note.</p>
+  </header>
+
+  <div *ngIf="isLoading" class="state">Caricamento anagrafiche...</div>
+
+  <div *ngIf="error && !isLoading" class="state error">{{ error }}</div>
+
+  <div *ngIf="successMessage" class="state success">{{ successMessage }}</div>
+
+  <form *ngIf="!isLoading" class="form-grid" [formGroup]="form" (ngSubmit)="registerColloquio()">
+    <label>
+      Data colloquio *
+      <input type="date" formControlName="dataColloquio" />
+    </label>
+
+    <label>
+      Allievo *
+      <select formControlName="allievoId">
+        <option [ngValue]="null">-- Seleziona allievo --</option>
+        <option *ngFor="let allievo of allievi" [ngValue]="allievo.id">
+          {{ getAllievoLabel(allievo) }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Azienda *
+      <select formControlName="aziendaId">
+        <option [ngValue]="null">-- Seleziona azienda --</option>
+        <option *ngFor="let azienda of aziende" [ngValue]="azienda.id">
+          {{ azienda.ragioneSociale }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Esito *
+      <select formControlName="esito">
+        <option *ngFor="let option of esitoOptions" [ngValue]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+    </label>
+
+    <label class="full-width">
+      Note
+      <textarea rows="4" formControlName="noteFeedback" placeholder="Note colloquio (opzionale)"></textarea>
+    </label>
+
+    <div class="actions full-width">
+      <button type="submit" class="btn-primary" [disabled]="form.invalid || isSubmitting">
+        {{ isSubmitting ? 'Salvataggio...' : 'Registra colloquio' }}
+      </button>
+    </div>
+  </form>
+
+  <section *ngIf="ultimoCreato" class="created-summary">
+    <h2>Ultimo colloquio registrato</h2>
+    <p><strong>ID:</strong> {{ ultimoCreato.id }}</p>
+    <p><strong>Data:</strong> {{ ultimoCreato.dataColloquio }}</p>
+    <p><strong>Esito:</strong> {{ ultimoCreato.esito }}</p>
+  </section>
+
+  <section class="list-section" *ngIf="!isLoading">
+    <div class="list-header">
+      <h2>Lista Colloqui</h2>
+      <span>{{ colloqui.length }} risultati</span>
+    </div>
+
+    <form class="filters-grid" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+      <label>
+        Filtro allievo
+        <select formControlName="allievoId">
+          <option [ngValue]="null">-- Tutti --</option>
+          <option *ngFor="let allievo of allievi" [ngValue]="allievo.id">
+            {{ getAllievoLabel(allievo) }}
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Filtro azienda
+        <select formControlName="aziendaId">
+          <option [ngValue]="null">-- Tutte --</option>
+          <option *ngFor="let azienda of aziende" [ngValue]="azienda.id">
+            {{ azienda.ragioneSociale }}
+          </option>
+        </select>
+      </label>
+
+      <div class="filters-actions">
+        <button type="submit" class="btn-primary" [disabled]="isLoadingList">Applica filtri</button>
+        <button type="button" class="btn-secondary" [disabled]="isLoadingList" (click)="resetFilters()">
+          Reset
+        </button>
+      </div>
+    </form>
+
+    <div *ngIf="isLoadingList" class="state">Caricamento colloqui...</div>
+    <div *ngIf="listError && !isLoadingList" class="state error">{{ listError }}</div>
+
+    <div class="table-toolbar" *ngIf="!isLoadingList && !listError && colloqui.length > 0">
+      <label>
+        Righe per pagina
+        <select [value]="pageSize" (change)="onPageSizeChange($any($event.target).value)">
+          <option *ngFor="let option of pageSizeOptions" [value]="option">{{ option }}</option>
+        </select>
+      </label>
+      <span>
+        Pagina {{ currentPage }} di {{ totalPages }}
+      </span>
+    </div>
+
+    <p *ngIf="!isLoadingList && !listError && colloqui.length === 0" class="empty-list">
+      Nessun colloquio trovato con i filtri selezionati.
+    </p>
+
+    <div class="table-wrapper" *ngIf="!isLoadingList && !listError && colloqui.length > 0">
+      <table class="colloqui-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Data</th>
+            <th>Allievo</th>
+            <th>Azienda</th>
+            <th>Esito</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let colloquio of paginatedColloqui; trackBy: trackByColloquioId">
+            <td>{{ colloquio.id }}</td>
+            <td>{{ colloquio.dataColloquio }}</td>
+            <td>{{ getColloquioAllievo(colloquio) }}</td>
+            <td>{{ colloquio.aziendaRagioneSociale || '-' }}</td>
+            <td>{{ getEsitoLabel(colloquio.esito) }}</td>
+            <td>{{ colloquio.noteFeedback || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination" *ngIf="!isLoadingList && !listError && colloqui.length > 0">
+      <button type="button" class="btn-secondary" (click)="previousPage()" [disabled]="!hasPreviousPage">
+        Precedente
+      </button>
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="nextPage()"
+        [disabled]="!hasNextPage"
+      >
+        Successiva
+      </button>
+    </div>
+  </section>
+</div>
