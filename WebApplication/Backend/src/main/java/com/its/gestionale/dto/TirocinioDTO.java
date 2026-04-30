@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.its.gestionale.entity.Tirocinio;
 import com.its.gestionale.entity.enums.StatoTirocinio;
+import com.its.gestionale.entity.enums.TipoTirocinio;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,8 +22,8 @@ public class TirocinioDTO {
 
     private LocalDate dataFine;
 
-    @Size(max = 50, message = "Il tipo non può superare 50 caratteri")
-    private String tipo;
+    @NotNull(message = "Il tipo è obbligatorio")
+    private TipoTirocinio tipo;
 
     @Size(max = 50, message = "La frequenza non può superare 50 caratteri")
     private String frequenza;

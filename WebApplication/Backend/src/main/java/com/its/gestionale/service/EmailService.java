@@ -33,13 +33,13 @@ public class EmailService {
         msg.setText(text);
         msg.setFrom("ITS Gestionale <noreply@its-gestionale.local>");
 
-        EmailLog log = new EmailLog();
-        log.setDestinatario(to);
-        log.setOggetto(subject);
-        log.setTesto(text);
-        log.setDataInvio(LocalDateTime.now());
+        EmailLog emailLog = new EmailLog();
+        emailLog.setDestinatario(to);
+        emailLog.setOggetto(subject);
+        emailLog.setTesto(text);
+        emailLog.setDataInvio(LocalDateTime.now());
 
-        emailLogRepository.save(log);
+        emailLogRepository.save(emailLog);
 
         JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
         if (mailSender == null) {
