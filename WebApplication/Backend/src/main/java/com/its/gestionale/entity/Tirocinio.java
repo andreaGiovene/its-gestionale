@@ -7,6 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import com.its.gestionale.entity.enums.StatoTirocinio;
+import com.its.gestionale.entity.enums.TipoTirocinio;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
