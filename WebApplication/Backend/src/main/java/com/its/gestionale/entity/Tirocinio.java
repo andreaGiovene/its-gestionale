@@ -67,9 +67,10 @@ public class Tirocinio {
     @Column(name = "data_fine")
     private LocalDate dataFine;
 
-    /** Tipologia del tirocinio (es. curriculare/extracurriculare). */
-    @Column(length = 50)
-    private String tipo;
+    /** Tipologia del tirocinio (STAGE o ALTO_APPRENDISTATO). */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo", length = 50)
+    private TipoTirocinio tipo;
 
     /** Stato del tirocinio secondo l'enum {@link StatoTirocinio}. */
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

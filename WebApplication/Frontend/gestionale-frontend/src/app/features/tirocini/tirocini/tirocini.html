@@ -72,8 +72,11 @@
       </label>
 
       <label>
-        Tipo
-        <input type="text" formControlName="tipo" maxlength="50" placeholder="Stage, apprendistato..." />
+        Tipo *
+        <select formControlName="tipo" [class.required-field]="form.controls.tipo.hasError('required')">
+          <option value="" disabled selected>Seleziona tipo tirocinio</option>
+          <option *ngFor="let option of tipoOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
       </label>
 
       <label>

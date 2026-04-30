@@ -14,6 +14,11 @@ interface StatoOption {
   label: string;
 }
 
+interface TipoOption {
+  value: string;
+  label: string;
+}
+
 /**
  * Pagina di gestione dei tirocini collegata al backend.
  * Permette di registrare, aggiornare e filtrare i tirocini tramite l'API /api/tirocini.
@@ -36,6 +41,11 @@ export class Tirocini implements OnInit, OnDestroy {
     { value: 'IN_CORSO', label: 'In corso' },
     { value: 'CONCLUSO', label: 'Concluso' },
     { value: 'INTERROTTO', label: 'Interrotto' },
+  ];
+
+  readonly tipoOptions: TipoOption[] = [
+    { value: 'STAGE', label: 'Stage' },
+    { value: 'ALTO_APPRENDISTATO', label: 'Alto apprendistato' },
   ];
 
   allievi: Allievo[] = [];
@@ -65,7 +75,7 @@ export class Tirocini implements OnInit, OnDestroy {
     aziendaId: [null as number | null, Validators.required],
     dataInizio: [this.todayIsoDate(), Validators.required],
     dataFine: [''],
-    tipo: ['', [Validators.maxLength(50)]],
+    tipo: ['', Validators.required],
     frequenza: ['', [Validators.maxLength(50)]],
     esito: ['IN_CORSO' as StatoTirocinio, Validators.required],
   });
