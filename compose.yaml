@@ -11,7 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
-      - ./PowerBI/dump-its_gestionale_tirocini-202603282222.sql:/bootstrap/dump.sql:ro
+      - ./Database/dump-its.sql:/bootstrap/dump.sql:ro
 
 volumes:
   postgres_data:

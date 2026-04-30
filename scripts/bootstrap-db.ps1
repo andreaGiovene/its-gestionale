@@ -115,10 +115,8 @@ if (-not (Test-Path $composeFile)) {
     throw "compose.yaml non trovato in: $repoRoot"
 }
 
-if ($ResetVolume) {
-    Write-Step "Reset completo container + volume"
-    Invoke-Compose -ComposeCmd $composeCmd -ComposeArgs @('-f', $composeFile, 'down', '-v', '--remove-orphans')
-}
+Write-Step "Reset completo container + volume"
+Invoke-Compose -ComposeCmd $composeCmd -ComposeArgs @('-f', $composeFile, 'down', '-v', '--remove-orphans')
 
 Write-Step "Avvio servizio postgres"
 Invoke-Compose -ComposeCmd $composeCmd -ComposeArgs @('-f', $composeFile, 'up', '-d', 'postgres')
@@ -127,7 +125,7 @@ Write-Step "Attendo disponibilita PostgreSQL"
 Wait-PostgresReady
 
 Write-Step "Ripristino dump iniziale"
-Restore-DatabaseDump -HostDumpPath (Join-Path $repoRoot 'PowerBI\dump-its_gestionale_tirocini-202603282222.sql') -ContainerDumpPath '/bootstrap/dump.sql'
+Restore-DatabaseDump -HostDumpPath (Join-Path $repoRoot 'Database\dump-its.sql') -ContainerDumpPath '/bootstrap/dump.sql'
 
 $migrationsDir = Join-Path $repoRoot 'Database\migrations'
 $migrationOrder = @(
@@ -147,7 +145,9 @@ $migrationOrder = @(
     '2026-04-15-restore-original-ruolo-contatto-enum.sql',
     '2026-04-15-deduplicate-allievi-unique-cf.sql',
     '2026-04-17-add-id-utente-to-contatto-aziendale.sql',
-    '2026-04-21-split-stato-esito-colloquio-tirocinio.sql'
+    '2026-04-21-split-stato-esito-colloquio-tirocinio.sql',
+    '2026-04-30-clean-legacy-allievi.sql',
+    '2026-04-30-reseed-allievi-from-historical-dump.sql'
 )
 
 Write-Step "Applico migration SQL in ordine"

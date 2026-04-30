@@ -4,7 +4,7 @@ Macro-area dati con schema relazionale PostgreSQL utilizzato dal backend Spring 
 
 ## Contenuti
 
-- dump.sql: dump principale del database applicativo
+- dump-its.sql: dump principale del database applicativo
 
 ## Contesto runtime
 
@@ -15,19 +15,19 @@ Macro-area dati con schema relazionale PostgreSQL utilizzato dal backend Spring 
 
 ## Ripristino dati
 
-All'avvio tramite Docker Compose, `dump.sql` viene importato automaticamente da PostgreSQL.
-Questa inizializzazione viene eseguita solo al primo avvio, quando il volume dati e vuoto.
+Il bootstrap locale ripristina `dump-its.sql` e poi applica le migration in `Database/migrations`.
+Il volume Docker viene sempre azzerato per evitare il riuso di dati vecchi.
 
 ### Ripristino in PostgreSQL locale
 
 ```bash
-psql -U admin -d db_its_stage -f dump.sql
+psql -U admin -d db_its_stage -f dump-its.sql
 ```
 
 ### Ripristino in container Docker
 
 ```bash
-docker exec -i postgres_db psql -U admin -d db_its_stage < dump.sql
+docker exec -i postgres_db psql -U admin -d db_its_stage -f /bootstrap/dump.sql
 ```
 
 ### Reinizializzare da zero il database Docker
@@ -51,7 +51,7 @@ Eseguire la migrazione:
 psql -U admin -d db_its_stage -f migrations/2026-04-03-drop-utente-username.sql
 ```
 
-Nota: il dump principale resta il punto di partenza per le nuove installazioni; gli script di migrazione servono per allineare gli ambienti gia' avviati.
+Nota: il dump principale contiene base schema+dati; le migration riallineano automaticamente lo stato all'ultima versione.
 
 ## Catalogo tabelle
 

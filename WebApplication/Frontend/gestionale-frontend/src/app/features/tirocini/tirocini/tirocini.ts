@@ -2,8 +2,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { forkJoin, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { forkJoin, Subject, distinctUntilChanged, startWith, takeUntil } from 'rxjs';
 
 import { AllievoService } from '@core/services/allievo.service';
 import { AziendaService } from '@core/services/azienda.service';
@@ -42,6 +41,10 @@ export class Tirocini implements OnInit, OnDestroy {
   allievi: Allievo[] = [];
   aziende: Azienda[] = [];
   tirocini: Tirocinio[] = [];
+  filteredAllievi: Allievo[] = [];
+  filteredAziende: Azienda[] = [];
+  filteredFilterAllievi: Allievo[] = [];
+  filteredFilterAziende: Azienda[] = [];
 
   isLoading = true;
   isLoadingList = false;
@@ -51,6 +54,11 @@ export class Tirocini implements OnInit, OnDestroy {
   listError: string | null = null;
   successMessage: string | null = null;
   editingId: number | null = null;
+
+  readonly allievoSearchControl = this.fb.nonNullable.control('');
+  readonly aziendaSearchControl = this.fb.nonNullable.control('');
+  readonly filterAllievoSearchControl = this.fb.nonNullable.control('');
+  readonly filterAziendaSearchControl = this.fb.nonNullable.control('');
 
   readonly form = this.fb.group({
     allievoId: [null as number | null, Validators.required],
@@ -70,6 +78,7 @@ export class Tirocini implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    this.bindSearchControls();
     this.loadLookupData();
   }
 
@@ -95,6 +104,10 @@ export class Tirocini implements OnInit, OnDestroy {
     });
     this.form.controls.allievoId.disable();
     this.form.controls.aziendaId.disable();
+    this.allievoSearchControl.setValue(this.getAllievoLabelById(tirocinio.allievoId), { emitEvent: false });
+    this.aziendaSearchControl.setValue(this.getAziendaLabelById(tirocinio.aziendaId), { emitEvent: false });
+    this.filteredAllievi = [];
+    this.filteredAziende = [];
   }
 
   cancelEdit(): void {
@@ -111,6 +124,10 @@ export class Tirocini implements OnInit, OnDestroy {
       allievoId: null,
       aziendaId: null,
     });
+    this.allievoSearchControl.setValue('', { emitEvent: false });
+    this.aziendaSearchControl.setValue('', { emitEvent: false });
+    this.filteredAllievi = [];
+    this.filteredAziende = [];
   }
 
   saveTirocinio(): void {
@@ -157,6 +174,8 @@ export class Tirocini implements OnInit, OnDestroy {
             allievoId: null,
             aziendaId: null,
           });
+          this.allievoSearchControl.setValue('', { emitEvent: false });
+          this.aziendaSearchControl.setValue('', { emitEvent: false });
           this.loadTirocini();
         },
         error: (err) => {
@@ -201,11 +220,31 @@ export class Tirocini implements OnInit, OnDestroy {
       start: '',
       end: '',
     });
+    this.filterAllievoSearchControl.setValue('', { emitEvent: false });
+    this.filterAziendaSearchControl.setValue('', { emitEvent: false });
+    this.filteredFilterAllievi = [];
+    this.filteredFilterAziende = [];
     this.loadTirocini();
   }
 
   getAllievoLabel(allievo: Allievo): string {
     return `${allievo.nome} ${allievo.cognome}`.trim();
+  }
+
+  getAllievoLabelById(allievoId: number | null | undefined): string {
+    if (!allievoId) {
+      return '';
+    }
+
+    return this.getAllievoLabel(this.allievi.find((allievo) => allievo.id === allievoId) ?? { id: allievoId, nome: '', cognome: '' });
+  }
+
+  getAziendaLabelById(aziendaId: number | null | undefined): string {
+    if (!aziendaId) {
+      return '';
+    }
+
+    return this.aziende.find((azienda) => azienda.id === aziendaId)?.ragioneSociale ?? '';
   }
 
   getTirocinioAllievo(tirocinio: Tirocinio): string {
@@ -254,6 +293,30 @@ export class Tirocini implements OnInit, OnDestroy {
     this.router.navigate(['/aziende', aziendaId]);
   }
 
+  selectAllievo(allievo: Allievo): void {
+    this.form.controls.allievoId.setValue(allievo.id);
+    this.allievoSearchControl.setValue(this.getAllievoLabel(allievo), { emitEvent: false });
+    this.filteredAllievi = [];
+  }
+
+  selectAzienda(azienda: Azienda): void {
+    this.form.controls.aziendaId.setValue(azienda.id);
+    this.aziendaSearchControl.setValue(azienda.ragioneSociale, { emitEvent: false });
+    this.filteredAziende = [];
+  }
+
+  selectFilterAllievo(allievo: Allievo): void {
+    this.filterForm.controls.allievoId.setValue(allievo.id);
+    this.filterAllievoSearchControl.setValue(this.getAllievoLabel(allievo), { emitEvent: false });
+    this.filteredFilterAllievi = [];
+  }
+
+  selectFilterAzienda(azienda: Azienda): void {
+    this.filterForm.controls.aziendaId.setValue(azienda.id);
+    this.filterAziendaSearchControl.setValue(azienda.ragioneSociale, { emitEvent: false });
+    this.filteredFilterAziende = [];
+  }
+
   private loadLookupData(): void {
     this.isLoading = true;
     this.error = null;
@@ -267,6 +330,7 @@ export class Tirocini implements OnInit, OnDestroy {
         next: ({ allievi, aziende }) => {
           this.allievi = allievi;
           this.aziende = aziende;
+          this.refreshSearchResults();
           this.loadTirocini();
           this.isLoading = false;
         },
@@ -303,6 +367,97 @@ export class Tirocini implements OnInit, OnDestroy {
           this.isLoadingList = false;
         },
       });
+  }
+
+  private bindSearchControls(): void {
+    this.allievoSearchControl.valueChanges
+      .pipe(startWith(this.allievoSearchControl.value), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((term) => {
+        if (!this.isEditing) {
+          this.form.controls.allievoId.setValue(null);
+        }
+
+        this.filteredAllievi = this.filterAllievi(term, this.allievi);
+      });
+
+    this.aziendaSearchControl.valueChanges
+      .pipe(startWith(this.aziendaSearchControl.value), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((term) => {
+        if (!this.isEditing) {
+          this.form.controls.aziendaId.setValue(null);
+        }
+
+        this.filteredAziende = this.filterAziende(term, this.aziende);
+      });
+
+    this.filterAllievoSearchControl.valueChanges
+      .pipe(startWith(this.filterAllievoSearchControl.value), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((term) => {
+        this.filteredFilterAllievi = this.filterAllievi(term, this.allievi);
+      });
+
+    this.filterAziendaSearchControl.valueChanges
+      .pipe(startWith(this.filterAziendaSearchControl.value), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((term) => {
+        this.filteredFilterAziende = this.filterAziende(term, this.aziende);
+      });
+  }
+
+  private refreshSearchResults(): void {
+    this.filteredAllievi = this.filterAllievi(this.allievoSearchControl.value, this.allievi);
+    this.filteredAziende = this.filterAziende(this.aziendaSearchControl.value, this.aziende);
+    this.filteredFilterAllievi = this.filterAllievi(this.filterAllievoSearchControl.value, this.allievi);
+    this.filteredFilterAziende = this.filterAziende(this.filterAziendaSearchControl.value, this.aziende);
+  }
+
+  private filterAllievi(term: string, source: Allievo[]): Allievo[] {
+    const normalizedTerm = term.trim().toLowerCase();
+
+    if (!normalizedTerm) {
+      return [];
+    }
+
+    return source
+      .filter((allievo) => {
+        const haystack = [
+          allievo.nome,
+          allievo.cognome,
+          allievo.email,
+          allievo.codiceFiscale,
+          allievo.telefono,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+
+        return haystack.includes(normalizedTerm);
+      })
+      .slice(0, 8);
+  }
+
+  private filterAziende(term: string, source: Azienda[]): Azienda[] {
+    const normalizedTerm = term.trim().toLowerCase();
+
+    if (!normalizedTerm) {
+      return [];
+    }
+
+    return source
+      .filter((azienda) => {
+        const haystack = [
+          azienda.ragioneSociale,
+          azienda.partitaIva,
+          azienda.email,
+          azienda.citta,
+          azienda.indirizzo,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+
+        return haystack.includes(normalizedTerm);
+      })
+      .slice(0, 8);
   }
 
   private todayIsoDate(): string {

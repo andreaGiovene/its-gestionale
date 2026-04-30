@@ -67,6 +67,12 @@
     margin-bottom: 16px;
   }
 
+  .search-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
   label {
     display: flex;
     flex-direction: column;
@@ -83,6 +89,45 @@
     padding: 10px 12px;
     font-size: 14px;
     background: #fff;
+  }
+
+  .suggestions {
+    display: grid;
+    gap: 8px;
+    margin-top: 2px;
+  }
+
+  .suggestion-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    border: 1px solid #d8e0ea;
+    border-radius: 12px;
+    background: #f8fbff;
+    padding: 10px 12px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .suggestion-item:hover {
+    background: #eef5ff;
+    border-color: #b8c9e2;
+  }
+
+  .suggestion-item span {
+    font-weight: 700;
+    color: #233044;
+  }
+
+  .suggestion-item small {
+    color: #5b6b7f;
+  }
+
+  .selection-note {
+    margin: 0;
+    font-size: 13px;
+    color: #4d5f73;
   }
 
   .full-width {

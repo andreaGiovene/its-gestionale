@@ -6,7 +6,7 @@ Monorepo applicativo per la gestione del ciclo corsi-allievi-tirocini ITS.
 
 Il repository centralizza:
 - applicazione web (backend + frontend)
-- dataset e dump SQL di lavoro
+- dataset e dump SQL di lavoro, con bootstrap sempre riallineato al dump applicativo
 - artefatti di analisi BI
 - materiale di supporto operativo
 
@@ -20,7 +20,7 @@ Il repository centralizza:
 ## Macro-aree del progetto
 
 - WebApplication: codice sorgente applicativo
-- Database: dump SQL e contenuti di inizializzazione
+- Database: dump SQL + migration incrementali
 - PowerBI: artefatti di reporting
 - PowerApps: workspace integrazione low-code
 - docs: documentazione tecnica e issue notes

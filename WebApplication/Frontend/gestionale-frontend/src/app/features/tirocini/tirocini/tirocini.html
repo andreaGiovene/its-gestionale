@@ -19,25 +19,47 @@
     </div>
 
     <form class="form-grid" [formGroup]="form" (ngSubmit)="saveTirocinio()">
-      <label>
-        Allievo *
-        <select formControlName="allievoId">
-          <option [ngValue]="null">Seleziona allievo</option>
-          <option *ngFor="let allievo of allievi" [ngValue]="allievo.id">
-            {{ getAllievoLabel(allievo) }}
-          </option>
-        </select>
-      </label>
+      <div class="search-field">
+        <label for="allievo-search">Allievo *</label>
+        <input
+          id="allievo-search"
+          type="text"
+          [formControl]="allievoSearchControl"
+          [disabled]="isEditing"
+          placeholder="Cerca allievo per nome, cognome o CF"
+          autocomplete="off"
+        />
+        <div class="suggestions" *ngIf="filteredAllievi.length > 0">
+          <button type="button" class="suggestion-item" *ngFor="let allievo of filteredAllievi" (click)="selectAllievo(allievo)">
+            <span>{{ getAllievoLabel(allievo) }}</span>
+            <small>{{ allievo.codiceFiscale || allievo.email || 'Allievo' }}</small>
+          </button>
+        </div>
+        <p class="selection-note" *ngIf="form.controls.allievoId.value">
+          Selezionato: {{ getAllievoLabelById(form.controls.allievoId.value) }}
+        </p>
+      </div>
 
-      <label>
-        Azienda *
-        <select formControlName="aziendaId">
-          <option [ngValue]="null">Seleziona azienda</option>
-          <option *ngFor="let azienda of aziende" [ngValue]="azienda.id">
-            {{ azienda.ragioneSociale }}
-          </option>
-        </select>
-      </label>
+      <div class="search-field">
+        <label for="azienda-search">Azienda *</label>
+        <input
+          id="azienda-search"
+          type="text"
+          [formControl]="aziendaSearchControl"
+          [disabled]="isEditing"
+          placeholder="Cerca azienda per ragione sociale o P.IVA"
+          autocomplete="off"
+        />
+        <div class="suggestions" *ngIf="filteredAziende.length > 0">
+          <button type="button" class="suggestion-item" *ngFor="let azienda of filteredAziende" (click)="selectAzienda(azienda)">
+            <span>{{ azienda.ragioneSociale }}</span>
+            <small>{{ azienda.partitaIva || azienda.citta || 'Azienda' }}</small>
+          </button>
+        </div>
+        <p class="selection-note" *ngIf="form.controls.aziendaId.value">
+          Selezionata: {{ getAziendaLabelById(form.controls.aziendaId.value) }}
+        </p>
+      </div>
 
       <label>
         Data inizio *
@@ -90,25 +112,39 @@
     </div>
 
     <form class="filters-grid" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-      <label>
-        Allievo
-        <select formControlName="allievoId">
-          <option [ngValue]="null">Tutti</option>
-          <option *ngFor="let allievo of allievi" [ngValue]="allievo.id">
-            {{ getAllievoLabel(allievo) }}
-          </option>
-        </select>
-      </label>
+      <div class="search-field">
+        <label for="filter-allievo-search">Allievo</label>
+        <input
+          id="filter-allievo-search"
+          type="text"
+          [formControl]="filterAllievoSearchControl"
+          placeholder="Cerca allievo..."
+          autocomplete="off"
+        />
+        <div class="suggestions" *ngIf="filteredFilterAllievi.length > 0">
+          <button type="button" class="suggestion-item" *ngFor="let allievo of filteredFilterAllievi" (click)="selectFilterAllievo(allievo)">
+            <span>{{ getAllievoLabel(allievo) }}</span>
+            <small>{{ allievo.codiceFiscale || allievo.email || 'Allievo' }}</small>
+          </button>
+        </div>
+      </div>
 
-      <label>
-        Azienda
-        <select formControlName="aziendaId">
-          <option [ngValue]="null">Tutte</option>
-          <option *ngFor="let azienda of aziende" [ngValue]="azienda.id">
-            {{ azienda.ragioneSociale }}
-          </option>
-        </select>
-      </label>
+      <div class="search-field">
+        <label for="filter-azienda-search">Azienda</label>
+        <input
+          id="filter-azienda-search"
+          type="text"
+          [formControl]="filterAziendaSearchControl"
+          placeholder="Cerca azienda..."
+          autocomplete="off"
+        />
+        <div class="suggestions" *ngIf="filteredFilterAziende.length > 0">
+          <button type="button" class="suggestion-item" *ngFor="let azienda of filteredFilterAziende" (click)="selectFilterAzienda(azienda)">
+            <span>{{ azienda.ragioneSociale }}</span>
+            <small>{{ azienda.partitaIva || azienda.citta || 'Azienda' }}</small>
+          </button>
+        </div>
+      </div>
 
       <label>
         Dal
