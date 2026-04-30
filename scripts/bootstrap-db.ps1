@@ -71,6 +71,23 @@ function Invoke-SqlFile {
     }
 }
 
+function Restore-DatabaseDump {
+    param(
+        [string]$HostDumpPath,
+        [string]$ContainerDumpPath
+    )
+
+    if (-not (Test-Path $HostDumpPath)) {
+        throw "Dump non trovato: $HostDumpPath"
+    }
+
+    Write-Host "Ripristino dump iniziale: $(Split-Path $HostDumpPath -Leaf)" -ForegroundColor DarkCyan
+    docker exec -i postgres_db psql -v ON_ERROR_STOP=1 -U postgres -d db_its_stage -f $ContainerDumpPath | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Errore durante il ripristino del dump iniziale: $HostDumpPath"
+    }
+}
+
 function Invoke-SqlScalar {
     param([string]$Sql)
 
@@ -108,6 +125,9 @@ Invoke-Compose -ComposeCmd $composeCmd -ComposeArgs @('-f', $composeFile, 'up', 
 
 Write-Step "Attendo disponibilita PostgreSQL"
 Wait-PostgresReady
+
+Write-Step "Ripristino dump iniziale"
+Restore-DatabaseDump -HostDumpPath (Join-Path $repoRoot 'PowerBI\dump-its_gestionale_tirocini-202603282222.sql') -ContainerDumpPath '/bootstrap/dump.sql'
 
 $migrationsDir = Join-Path $repoRoot 'Database\migrations'
 $migrationOrder = @(

@@ -1,6 +1,10 @@
 package com.its.gestionale.service;
 
 import java.time.LocalDateTime;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -11,12 +15,14 @@ import com.its.gestionale.repository.EmailLogRepository;
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
+
+    private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final EmailLogRepository emailLogRepository;
 
-    public EmailService(JavaMailSender mailSender,
+    public EmailService(ObjectProvider<JavaMailSender> mailSenderProvider,
                         EmailLogRepository emailLogRepository) {
-        this.mailSender = mailSender;
+        this.mailSenderProvider = mailSenderProvider;
         this.emailLogRepository = emailLogRepository;
     }
 
@@ -25,7 +31,7 @@ public class EmailService {
         msg.setTo(to);
         msg.setSubject(subject);
         msg.setText(text);
-        msg.setFrom("LA_TUA_EMAIL@gmail.com");
+        msg.setFrom("ITS Gestionale <noreply@its-gestionale.local>");
 
         EmailLog log = new EmailLog();
         log.setDestinatario(to);
@@ -35,8 +41,11 @@ public class EmailService {
 
         emailLogRepository.save(log);
 
-        // nome "ITS" visibile + mittente reale Gmail
-        msg.setFrom("ITS Gestionale <LA_TUA_EMAIL@gmail.com>");
+        JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
+        if (mailSender == null) {
+            log.warn("JavaMailSender non configurato: email salvata nello storico ma non inviata a {}", to);
+            return;
+        }
 
         mailSender.send(msg);
     }

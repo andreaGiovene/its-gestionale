@@ -44,7 +44,7 @@ Il repository centralizza:
 ```
 
 Il bootstrap applica in ordine:
-- dump iniziale (`Database/dump-its.sql`)
+- dump iniziale (`PowerBI/dump-its_gestionale_tirocini-202603282222.sql`)
 - migration SQL (`Database/migrations/*.sql`)
 
 Nota operativa:

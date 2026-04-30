@@ -28,7 +28,7 @@ BEGIN
             FROM public.corso c
             WHERE c.id_azienda_madrina = a.id
         )
-          AND UPPER(COALESCE(a.tipo, '')) <> 'MADRINA';
+          AND a.tipo IS DISTINCT FROM 'MADRINA'::public.tipo_azienda_enum;
 
         UPDATE public.azienda a
         SET tipo = 'NON_MADRINA'
@@ -37,7 +37,7 @@ BEGIN
             FROM public.corso c
             WHERE c.id_azienda_madrina = a.id
         )
-          AND UPPER(COALESCE(a.tipo, '')) <> 'NON_MADRINA';
+          AND a.tipo IS DISTINCT FROM 'NON_MADRINA'::public.tipo_azienda_enum;
 
     END IF;
 END $$;

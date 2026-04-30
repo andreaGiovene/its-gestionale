@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:18
     container_name: postgres_db
     restart: always
     environment:
@@ -10,10 +10,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./Database/dump-its.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
-      - ./Database/migrations:/docker-entrypoint-migrations:ro
-      - ./scripts/docker/apply-migrations.sh:/docker-entrypoint-initdb.d/02-apply-migrations.sh:ro
+      - postgres_data:/var/lib/postgresql
+      - ./PowerBI/dump-its_gestionale_tirocini-202603282222.sql:/bootstrap/dump.sql:ro
 
 volumes:
   postgres_data:
